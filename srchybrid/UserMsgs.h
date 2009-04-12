@@ -62,6 +62,9 @@ enum EUserWndMessages
 	//MORPH START leuk_he run as a ntservice v1
 	UM_SERVERSTATUS,
 	//MORPH START leuk_he run as a ntservice v1
+	//MORPH START - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
+	UM_IPFFILTERAUTOVERCHECK_RESPONSE,
+	//MORPH END   - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
 	// ==> StulleMule Version Check - Stulle
 	UM_SVERSIONCHECK_RESPONSE
 	// <== StulleMule Version Check - Stulle

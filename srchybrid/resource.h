@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by emule.rc
 //
-#define IDR_MANIFEST                    1
 #define IDNO2                           8
 #define IDNOMINIMIZE                    8
 #define IDYES2                          9
@@ -763,7 +762,6 @@
 #define IDS_USECREDITSYSTEM             833
 #define IDS_FIRSTAUTODOWN               834
 #define IDS_FIRSTAUTOUP                 835
-#define IDS_FIRSTFULLCHUNK              836
 #define IDS_AUTOMATIC                   836
 #define IDS_FIRSTSAFECON                837
 #define IDS_FIRSTAUTOCON                838
@@ -1483,7 +1481,6 @@
 #define IDS_UPNP_NOSERVICE              1525
 #define IDS_DELAYEDBYUPNP               1526
 #define IDS_DELAYEDBYUPNP2              1527
-#define IDS_UPnP                        1528
 #define IDS_UPNP                        1528
 #define IDS_UPNPCLOSEONEXIT             1529
 #define IDS_UPNPSKIPWANIP               1530
@@ -1492,7 +1489,6 @@
 #define IDS_SHAREEMULEMULTI             1533
 #define IDS_SHAREEMULEPUBLIC            1534
 #define IDS_SHAREEMULEOLD               1535
-#define IDS_SHAREMULEEWARNING           1536
 #define IDS_SHAREEMULEWARNING           1536
 #define IDS_SPAM                        1537
 #define IDS_MARKSPAM                    1538
@@ -1520,6 +1516,16 @@
 #define IDS_BETANAG                     1560
 #define IDS_CONFIRMNODESDOWNLOAD        1561
 #define IDS_NOTCONNECTEDANY             1562
+#define IDS_ERR_SHARED_DIR              1563
+#define IDS_FILE_WARNING_DRM            1564
+#define IDS_CHECK_FILE_OPEN             1565
+#define IDS_BOOTABLE                    1566
+#define IDS_UNSUPPORTEDIMAGE            1567
+#define IDS_UNSHARE                     1568
+#define IDS_WEBUPNPINCLUDE              1569
+#define IDS_ADDEDON                     1570
+#define IDS_FOLLOWLINKS                 1571
+#define IDS_RESOLVELINKS                1571
 #define IDC_ANIMATE1                    2000
 #define IDC_STATUS                      2001
 #define IDC_FILESTATUS                  2002
@@ -1591,7 +1597,6 @@
 #define IDC_SHOWCATINFO                 2110
 #define IDC_ADVSPAMFILTER               2112
 #define IDC_CB_TBN_ONNEWDOWNLOAD        2113
-#define IDC_ADVSPAMFILTER2              2113
 #define IDC_MSHOWSMILEYS                2113
 #define IDC_NETWORK_KADEMLIA            2114
 #define IDC_USECAPTCHAS                 2114
@@ -2012,6 +2017,7 @@
 #define IDC_REPAINT                     2669
 #define IDC_WSENABLED                   2671
 #define IDC_ENABLE                      2672
+#define IDC_WSUPNP                      2672
 #define IDC_WS_GZIP                     2673
 #define IDC_MSGONLYFRIENDS              2674
 #define IDC_WS_ALLOWHILEVFUNC           2674
@@ -2140,7 +2146,6 @@
 #define IDC_SAVE                        2811
 #define IDC_TOTAL_IPS_LABEL             2812
 #define IDC_TOTAL_IPS                   2813
-#define IDC_COPY                        2814
 #define IDC_APPEND                      2815
 #define IDC_FORMAT                      2816
 #define IDC_STATICIPLABEL               2818
@@ -2191,7 +2196,6 @@
 #define IDC_CLIENTDETAIL_KAD            2876
 #define IDC_LD_LINKEDI                  2877
 #define IDC_CLIENTDETAIL_KADCON         2878
-#define IDC_SEARCH_UNICODE              2879
 #define IDC_AUTOSTART                   2880
 #define IDC_STARTWIN                    2882
 #define IDC_RSRC                        2883
@@ -2291,7 +2295,11 @@
 #define IDC_AFKADIDLABEL                2993
 #define IDC_SHAREDFILES_FILTER          2994
 #define IDC_EDITCOMMENTFILTER           2995
-#define IDC_WIZZARDOBFUSCATION          2996
+#define IDC_WIZZARDOBFUSCATION          12996
+#define IDC_SPIN1                       12997
+#define IDC_TOOLTIPDELAY_SPIN           12997
+#define IDC_CHECK_FILE_OPEN             12998
+#define IDA_ENTER                       32771
 #define IDC_STATIC_PORT                 2996
 #define IDC_STATIC_CONTROLS             2997
 #define IDC_STATIC_NRBLOCKS             2998
@@ -3032,8 +3040,8 @@
 #define IDS_UPDATEFAKELISTWEEK_TIP      10077
 #define IDS_UPDATEIPFILTERWEEK_TIP      10078
 #define IDS_SCHEDTEXT                   10079
-#define IDC_AUTOBACKUP                  12998
-#define IDC_AUTOBACKUP2                 12999
+#define IDC_AUTOBACKUP                  10080
+#define IDC_AUTOBACKUP2                 10081
 #define IDS_SR13_IMPORTPARTS_ERR_ALREADYCOMPLETE 13000
 #define IDS_SR13_IMPORTPARTS_ERR_HASHSETINCOMPLETE 13001
 #define IDS_SR13_IMPORTPARTS_ERR_CANTOPENFILE 13002
@@ -3127,7 +3135,6 @@
 #define IDS_PREVIEWONICONDBLCLK         21099
 #define IDS_INTERNETSECURITYZONE        21100
 #define IDS_TXTEDITOR                   21101
-#define IDS_DATETIMEFORMAT              21102
 #define IDS_SERVERUDPPORT               21103
 #define IDS_REMOVEFILESTOBIN            21104
 #define IDS_MINIMULEAUTOCLOSE_TIP       21105
@@ -3644,7 +3651,6 @@
 #define IDC_MORPHWIZ_NEXT               30806
 #define IDC_MORPHWIZ_NET1               30807
 #define IDC_MORPHWIZ_IMPORT             30808
-#define IDA_ENTER                       30809
 #define IDS_ADVADMIN_GROUP              30900
 #define IDS_ADVADMIN_ACC                30901
 #define IDS_ADVADMIN_DELETE             30902
@@ -3737,32 +3743,54 @@
 #define IDS_NO_OBFUSCATION_KEY			31278
 #define IDS_OUTOFSERVERS_O              31279
 #define IDS_X_ADJUSTNTFSDAYLIGHTFILETIME_TIP 31280
-#define IDS_X_LOGERROR_TIP              31281
-#define IDS_X_SHOWVERTICALHOURMARKERS_TIP 31282
-#define IDS_X_REBARTOOLBAR_TIP          31283
+#define IDS_X_LOGERROR_TIP            31281
+#define IDS_X_SHOWVERTICALHOURMARKERS_TIP   31282
+#define IDS_X_REBARTOOLBAR_TIP 31283
 #define IDS_X_ICON_FLASH_ON_NEW_MESSAGE_TIP 31284
-#define IDS_X_SHOWCOPYED2KLINK_TIP      31285
-#define IDS_X_DONTCOMPRESSAVI_TIP       31286
-#define IDS_UPNPDETECTSTATUS            31287
-#define IDS_UPNPPORT_TIP                31288
-#define IDS_UPNPCLEARONCLOSE_TIP        31289
+#define IDS_X_SHOWCOPYED2KLINK_TIP 31285
+#define IDS_X_DONTCOMPRESSAVI_TIP 31286
+#define IDS_UPNPDETECTSTATUS 31287
+#define IDS_UPNPPORT_TIP  31288
+#define IDS_UPNPCLEARONCLOSE_TIP 31289
 #define IDS_UPNPLIMITTOFIRSTCONNECTION_TIP 31290
-#define IDS_DETECTUPNP_TIP              31291
+#define IDS_DETECTUPNP_TIP 31291
 #define IDS_UPNPLIMITTOFIRSTCONNECTION  31292
-#define IDS_UPNFORCEUPDATE              31293
-#define IDS_UPNFORCEUPDATE_TIP          31294
-#define IDS_DONOTWATCHCLIP              31295
-#define IDS_DONOTWATCHCLIP_TIP          31296
-#define IDS_USS_INITIAL_TTL             31297
-#define IDS_USS_INITIAL_TTL_TIP         31298
-#define IDC_SELFILES                    31299
-#define IDS_SELFILES_TIP                31300
-#define IDS_USEDOWNLOADOVERHEAD         31301
-#define IDS_USEDOWNLOADOVERHEAD_TIP     31302
+#define IDS_UPNFORCEUPDATE 31293
+#define IDS_UPNFORCEUPDATE_TIP 31294
+#define IDS_DONOTWATCHCLIP    31295
+#define IDS_DONOTWATCHCLIP_TIP 31296
+#define  IDS_USS_INITIAL_TTL 31297
+#define  IDS_USS_INITIAL_TTL_TIP  31298
+#define  IDC_SELFILES 31299
+#define  IDS_SELFILES_TIP 31300
+#define  IDS_USEDOWNLOADOVERHEAD 31301
+#define  IDS_USEDOWNLOADOVERHEAD_TIP 31302
 #define IDS_APPLY_SETTINGS              31303
 #define IDS_TAB_WEB_SERVER              31304
 #define IDS_TAB_MULTI_USER              31305
 #define IDS_TAB_NT_SERVICE              31306
+#define IDS_PURGE_DONT                  31307
+#define IDS_PURGE_PARTIALLY             31308
+#define IDS_PURGE_COMPLETLY             31309
+#define IDS_REMOVE_AICH_IMMEDIATLY      31310
+#define IDS_IPFILTERWHITELOADED         31311 //MORPH - Added by Stulle, IP Filter White List [Stulle]
+//MORPH START - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
+#define IDS_AUTOIPFILTERFAILED          31312
+#define IDS_DL_NONE                     31313
+//MORPH END   - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
+#define IDS_X_FILE_BUFFER_TIME_LIMIT    31314
+#define IDS_X_FILE_BUFFER_TIME_LIMIT_TIP 31315
+#define IDS_X_DATETIMEFORMAT4LIST       31316
+#define IDS_X_REARRANGEKADSEARCH        31317
+#define IDS_X_REARRANGEKADSEARCH_TIP    31318
+#define IDS_RESOLVE_SHARED_SHELL_TIP    31319
+#define IDS_AUTO_ARCH_TIP               31320
+#define IDS_MET_PURGE_DONT_TIP          31321
+#define IDS_MET_PURGE_PART_TIP          31322
+#define IDS_MET_PURGE_COMPL_TIP         31323
+#define IDS_REMOVE_AICH_TIP             31324
+#define IDS_WSUPNP_TIP                  31325
+#define IDS_CHECK_FILE_OPEN_TIP         31326
 
 #define IDS_EASTSHARE                   51583
 #define IDS_FINECS                      51584
@@ -4140,6 +4168,7 @@
 #define IDS_COLOR_W9                    60657
 #define IDS_COLOR_MASTER6               60658
 #define IDS_COLOR_W10                   60659
+#define IDS_COLOR_S3                    60660
 // <== Design Settings [eWombat/Stulle] - Stulle
 // ==> Automatic shared files updater [MoNKi] - Stulle
 #define IDS_AUTO_SHARED_UPDATER         60750
@@ -4147,6 +4176,7 @@
 #define IDS_ASFU_DELAY                  60752
 #define IDS_ASFU_RELOAD                 60753
 #define IDS_ASFU_RELOADING              60754
+#define IDS_ASFU_SINGLE                 60755
 // <== Automatic shared files updater [MoNKi] - Stulle
 // ==> Control download priority [tommy_gun/iONiX] - Stulle
 #define IDS_AUTO_DOWN_GROUP             60760
@@ -4176,12 +4206,25 @@
 #define IDS_FUNCTION                    60795
 #define IDS_RELEASER                    60796
 // <== XP Style Menu [Xanatos] - Stulle
+// ==> Adjustable NT Service Strings - Stulle
+#define IDS_SERVICE_STR_GROUP           60800
+#define IDS_SERVICE_NAME                60801
+#define IDS_SERVICE_DISP_NAME           60802
+#define IDS_SERVICE_DESCR               60803
+#define IDS_SERVICE_NAME_CHANGED        60804
+#define IDS_SERVICE_STR_CHANGED         60805
+#define IDS_SERVICE_DISP_CHANGED        60806
+#define IDS_SERVICE_UNINSTALL_FAIL      60807
+#define IDS_SERVICE_UNINSTALL_TITLE     60808
+#define IDS_SERVICE_INSTALL_FAIL        60809
+#define IDS_SERVICE_INSTALL_TITLE       60810
+// <== Adjustable NT Service Strings - Stulle
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        6225
+#define _APS_NEXT_RESOURCE_VALUE        6226
 #define _APS_NEXT_COMMAND_VALUE         31257
 #define _APS_NEXT_CONTROL_VALUE         6218
 #define _APS_NEXT_SYMED_VALUE           106

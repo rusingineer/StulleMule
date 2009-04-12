@@ -35,6 +35,9 @@ protected:
 	bool m_bStaticIcon;
 	// MORPH START show less controls
 	bool m_bShowLessControls;
+public:
+	bool m_bOverideBySetExtControls;
+protected:
 	// MORPH END  show less controls
 
 	
