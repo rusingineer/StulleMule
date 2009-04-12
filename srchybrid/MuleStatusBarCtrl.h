@@ -19,7 +19,11 @@ public:
 
 	void Init(void);
 
-	void UpdateColor(); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	void UpdateColor();
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 
 protected:
 	int GetPaneAtPosition(CPoint& point) const;

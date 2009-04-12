@@ -39,7 +39,7 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 #ifdef _DEBUG
@@ -87,7 +87,7 @@ CStatisticsDlg::~CStatisticsDlg()
 
 #ifdef _DEBUG
 	POSITION pos = blockFiles.GetStartPosition();
-	while (pos != NULL)
+	while (pos != NULL) 
 	{
 		const unsigned char* fileName;
 		HTREEITEM* pTag;
@@ -153,7 +153,11 @@ BOOL CStatisticsDlg::OnInitDialog()
 {
 	CResizableDialog::OnInitDialog();
 	EnableWindow(FALSE);
-	OnBackcolor(); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	OnBackcolor();
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 	SetAllIcons();
 	m_bTreepaneHidden=false;
 
@@ -177,7 +181,7 @@ BOOL CStatisticsDlg::OnInitDialog()
 	GetDlgItem(IDC_SCOPE_D)->DestroyWindow();
 	ScreenToClient(rcDown);
 	m_DownloadOMeter.Create(WS_VISIBLE | WS_CHILD, rcDown, this, IDC_SCOPE_D);
-	SetARange(true,thePrefs.GetMaxGraphDownloadRate());
+	SetARange(true, thePrefs.GetMaxGraphDownloadRate());
 	m_DownloadOMeter.SetYUnits(GetResString(IDS_KBYTESPERSEC));
 	
 	// Setup upload-scope
@@ -224,8 +228,8 @@ BOOL CStatisticsDlg::OnInitDialog()
 	ScreenToClient(rect) ;
 	m_Statistics.Create(WS_VISIBLE | WS_CHILD, rect, this, IDC_STATSSCOPE);
 	// MORPH END   - statistic fix [bluesonicboy]
-	m_Statistics.SetRanges(0, thePrefs.GetStatsMax()) ;
-	m_Statistics.autofitYscale=false;
+	m_Statistics.SetRanges(0, thePrefs.GetStatsMax());
+	m_Statistics.autofitYscale = false;
 	// Set the trend ratio of the Active Connections trend in the Connection Statistics scope.
 	m_Statistics.SetTrendRatio(0, thePrefs.GetStatsConnectionsGraphRatio());
 
@@ -276,9 +280,8 @@ BOOL CStatisticsDlg::OnInitDialog()
 	rcSpl.bottom = rcW.bottom - 5;
 	*/
 	rcSpl.left=rcTree.right+1; rcSpl.right=rcSpl.left+4; rcSpl.top=rcW.top+2; rcSpl.bottom=rcW.bottom-5;
-	m_wndSplitterstat.Create(WS_CHILD | WS_VISIBLE, rcSpl, this, IDC_SPLITTER_STAT);
 	// MORPH END   - statistic fix [bluesonicboy]
-
+	m_wndSplitterstat.Create(WS_CHILD | WS_VISIBLE, rcSpl, this, IDC_SPLITTER_STAT);
 	int PosStatVinitX = rcSpl.left;
 	int PosStatVnewX = thePrefs.GetSplitterbarPositionStat()*rcW.Width()/100;
 	int maxX = rcW.right-13;
@@ -288,19 +291,19 @@ BOOL CStatisticsDlg::OnInitDialog()
 	else if (thePrefs.GetSplitterbarPositionStat() < 10)
 		PosStatVnewX = minX;
 	rcSpl.left = PosStatVnewX;
-	rcSpl.right = PosStatVnewX+4;
+	rcSpl.right = PosStatVnewX + 4;
 	m_wndSplitterstat.MoveWindow(rcSpl);
 
 	//HR splitter
-	rcSpl.left=rcDown.left;
-	rcSpl.right=rcDown.right;
+	rcSpl.left = rcDown.left;
+	rcSpl.right = rcDown.right;
 	// MORPH START - statistic fix [bluesonicboy]
 	/*	
 	rcSpl.top = rcDown.bottom;
 	*/
 	rcSpl.top=rcDown.bottom+1;
 	// MORPH END   - statistic fix [bluesonicboy]
-	rcSpl.bottom=rcSpl.top+4; 
+	rcSpl.bottom = rcSpl.top + 4;
 	m_wndSplitterstat_HR.Create(WS_CHILD | WS_VISIBLE, rcSpl, this, IDC_SPLITTER_STAT_HR);
 
 	// MORPH START - statistic fix [bluesonicboy]
@@ -331,15 +334,15 @@ BOOL CStatisticsDlg::OnInitDialog()
 	// MORPH END   - statistic fix [bluesonicboy]
 
 	//HL splitter
-	rcSpl.left=rcUp.left;
-	rcSpl.right=rcUp.right;
+	rcSpl.left = rcUp.left;
+	rcSpl.right = rcUp.right;
 	// MORPH START - statistic fix [bluesonicboy]
 	/*	
 	rcSpl.top = rcUp.bottom;
 	*/
 	rcSpl.top=rcUp.bottom+1;
 	// MORPH END   - statistic fix [bluesonicboy]
-	rcSpl.bottom=rcSpl.top+4;
+	rcSpl.bottom = rcSpl.top + 4;
 	m_wndSplitterstat_HL.Create(WS_CHILD | WS_VISIBLE, rcSpl, this, IDC_SPLITTER_STAT_HL);
 
 	// MORPH START - statistic fix [bluesonicboy]
@@ -383,13 +386,13 @@ BOOL CStatisticsDlg::OnInitDialog()
 	
 	m_TimeToolTips = new CToolTipCtrl();
 	m_TimeToolTips->Create(this);
-	m_TimeToolTips->AddTool(GetDlgItem(IDC_SCOPE_D),	_T(""),NULL,0);
-	m_TimeToolTips->AddTool(GetDlgItem(IDC_SCOPE_U),	_T(""),NULL,0);
-	m_TimeToolTips->AddTool(GetDlgItem(IDC_STATSSCOPE),	_T(""),NULL, 0);
+	m_TimeToolTips->AddTool(GetDlgItem(IDC_SCOPE_D), _T(""), NULL, 0);
+	m_TimeToolTips->AddTool(GetDlgItem(IDC_SCOPE_U), _T(""), NULL, 0);
+	m_TimeToolTips->AddTool(GetDlgItem(IDC_STATSSCOPE),	_T(""), NULL, 0);
 	// Any Autopop-Time which is specified higher than ~30 sec. will get reset to 5 sec.
 	m_TimeToolTips->SetDelayTime(TTDT_AUTOPOP, 30000);
-	m_TimeToolTips->SetDelayTime(TTDT_INITIAL,	30000);
-	m_TimeToolTips->SetDelayTime(TTDT_RESHOW,	30000);
+	m_TimeToolTips->SetDelayTime(TTDT_INITIAL, 30000);
+	m_TimeToolTips->SetDelayTime(TTDT_RESHOW,  30000);
 	EnableToolTips(TRUE);
 
 	return true;
@@ -545,49 +548,49 @@ LRESULT CStatisticsDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam
 {
 	switch (message) 
 	{
-	case WM_PAINT:
-		if (m_wndSplitterstat) 
-		{
-			CRect rctree,rcSpl,rcW;
-			GetWindowRect(rcW);
-			ScreenToClient(rcW);
-
-			GetDlgItem(IDC_STATTREE)->GetWindowRect(rctree);
-			ScreenToClient(rctree);
-  
-			if (rcW.Width()>0) 
+		case WM_PAINT:
+			if (m_wndSplitterstat) 
 			{
-				// MORPH START - statistic fix [bluesonicboy]
-				/*
-					rcSpl.left = rctree.right;
-				rcSpl.right=rcSpl.left+4;
-				rcSpl.top=rcW.top+2;
-					rcSpl.bottom = rcW.bottom - 5;
-				*/
-				rcSpl.left=rctree.right+1;
-				rcSpl.right=rcSpl.left+4;
-				rcSpl.top=rcW.top+2;
-				rcSpl.bottom=rcW.bottom-6;
-				// MORPH END   - statistic fix [bluesonicboy]
+				CRect rctree,rcSpl,rcW;
+				GetWindowRect(rcW);
+				ScreenToClient(rcW);
 
-				m_wndSplitterstat.MoveWindow(rcSpl,true);
+				GetDlgItem(IDC_STATTREE)->GetWindowRect(rctree);
+				ScreenToClient(rctree);
+				
+				if (rcW.Width()>0) 
+				{
+					// MORPH START - statistic fix [bluesonicboy]
+					/*
+					rcSpl.left = rctree.right;
+					rcSpl.right = rcSpl.left + 4;
+					rcSpl.top = rcW.top + 2;
+					rcSpl.bottom = rcW.bottom - 5;
+					*/
+					rcSpl.left=rctree.right+1;
+					rcSpl.right=rcSpl.left+4;
+					rcSpl.top=rcW.top+2;
+					rcSpl.bottom=rcW.bottom-6;
+					// MORPH END   - statistic fix [bluesonicboy]
+
+					m_wndSplitterstat.MoveWindow(rcSpl,true);
+				}
 			}
-		}
 			if (m_wndSplitterstat_HL) 
 			{
-			CRect rcUp,rcSpl,rcW;
-			CWnd* pWnd;
+				CRect rcUp,rcSpl,rcW;
+				CWnd* pWnd;
 
-			GetWindowRect(rcW);
-			ScreenToClient(rcW);
+				GetWindowRect(rcW);
+				ScreenToClient(rcW);
 
-			pWnd = &m_UploadOMeter;
-			pWnd->GetWindowRect(rcUp);
+				pWnd = &m_UploadOMeter;
+				pWnd->GetWindowRect(rcUp);
 
-			ScreenToClient(rcUp);
-  
-			if (rcW.Height()>0) 
-			{
+				ScreenToClient(rcUp);
+
+				if (rcW.Height()>0) 
+				{
 					// MORPH START - statistic fix [bluesonicboy]
 					/*
 					rcSpl.left = rcUp.left;
@@ -601,23 +604,23 @@ LRESULT CStatisticsDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam
 					rcSpl.bottom=rcUp.bottom+5;
 					// MORPH END   - statistic fix [bluesonicboy]
 
-				m_wndSplitterstat_HL.MoveWindow(rcSpl,true);
+					m_wndSplitterstat_HL.MoveWindow(rcSpl,true);
+				}
 			}
-		}
 			if (m_wndSplitterstat_HR) 
 			{
-			CRect rcDown,rcSpl,rcW;
-			CWnd* pWnd;
+				CRect rcDown,rcSpl,rcW;
+				CWnd* pWnd;
 
-			GetWindowRect(rcW);
-			ScreenToClient(rcW);
+				GetWindowRect(rcW);
+				ScreenToClient(rcW);
 
-			pWnd = &m_DownloadOMeter;
-			pWnd->GetWindowRect(rcDown);
-			ScreenToClient(rcDown);
-  
-			if (rcW.Height()>0) 
-			{
+				pWnd = &m_DownloadOMeter;
+				pWnd->GetWindowRect(rcDown);
+				ScreenToClient(rcDown);
+
+				if (rcW.Height()>0) 
+				{
 					// MORPH START - statistic fix [bluesonicboy]
 					/*
 					rcSpl.left = rcDown.left;
@@ -631,38 +634,38 @@ LRESULT CStatisticsDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam
 					rcSpl.bottom=rcDown.bottom+5;
 					// MORPH END   - statistic fix [bluesonicboy]
 
-				m_wndSplitterstat_HR.MoveWindow(rcSpl,true);
+					m_wndSplitterstat_HR.MoveWindow(rcSpl,true);
+				}
 			}
-		}
-	break;
-	case WM_NOTIFY:
-		if (wParam == IDC_SPLITTER_STAT)
-		{ 
-			SPC_NMHDR* pHdr = (SPC_NMHDR*) lParam;
-			DoResize_V(pHdr->delta);
-		}
-		else if (wParam == IDC_SPLITTER_STAT_HL)
-		{ 
-			SPC_NMHDR* pHdr = (SPC_NMHDR*) lParam;
-			DoResize_HL(pHdr->delta);
-		}
-		else if (wParam == IDC_SPLITTER_STAT_HR)
-		{ 
-			SPC_NMHDR* pHdr = (SPC_NMHDR*) lParam;
-			DoResize_HR(pHdr->delta);
-		}
-		break;
-	case WM_WINDOWPOSCHANGED : 
-		{
-			CRect rcW;
-			GetWindowRect(rcW);
-			ScreenToClient(rcW);
-			if (m_wndSplitterstat && rcW.Width()>0) Invalidate();
-			if (m_wndSplitterstat_HL && rcW.Height()>0) Invalidate();
-			if (m_wndSplitterstat_HR && rcW.Height()>0) Invalidate();
 			break;
-		}
-	case WM_SIZE:
+		case WM_NOTIFY:
+			if (wParam == IDC_SPLITTER_STAT)
+			{ 
+				SPC_NMHDR* pHdr = (SPC_NMHDR*) lParam;
+				DoResize_V(pHdr->delta);
+			}
+			else if (wParam == IDC_SPLITTER_STAT_HL)
+			{ 
+				SPC_NMHDR* pHdr = (SPC_NMHDR*) lParam;
+				DoResize_HL(pHdr->delta);
+			}
+			else if (wParam == IDC_SPLITTER_STAT_HR)
+			{ 
+				SPC_NMHDR* pHdr = (SPC_NMHDR*) lParam;
+				DoResize_HR(pHdr->delta);
+			}
+			break;
+
+		case WM_WINDOWPOSCHANGED:
+			if (m_wndSplitterstat)
+				m_wndSplitterstat.Invalidate();
+			if (m_wndSplitterstat_HL)
+				m_wndSplitterstat_HL.Invalidate();
+			if (m_wndSplitterstat_HR)
+				m_wndSplitterstat_HR.Invalidate();
+			break;
+
+		case WM_SIZE:
 		{
 			//set range
 			if (m_wndSplitterstat)
@@ -688,7 +691,7 @@ LRESULT CStatisticsDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam
 					*/
 					rcSpl.left=splitposstat; rcSpl.right=rcSpl.left+4; rcSpl.top=rcW.top+2; rcSpl.bottom=rcW.bottom-5;
 					// MORPH END   - statistic fix [bluesonicboy]
-    				m_wndSplitterstat.MoveWindow(rcSpl,true);
+	   				m_wndSplitterstat.MoveWindow(rcSpl,true);
 					m_wndSplitterstat.SetRange(rcW.left+11, rcW.right-11);
 				}
 			}
@@ -746,10 +749,10 @@ LRESULT CStatisticsDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam
 					m_wndSplitterstat_HL.SetRange(splitposstat_HR+14, rcW.bottom-7);
 				}
 			}
-		break;
+			break;
 		}
-}
-return CResizableDialog::DefWindowProc(message, wParam, lParam);
+	}
+	return CResizableDialog::DefWindowProc(message, wParam, lParam);
 }
 
 void CStatisticsDlg::RepaintMeters() 
@@ -1235,7 +1238,7 @@ void CStatisticsDlg::ShowStatistics(bool forceUpdate)
 						percentSessions = 100 - percentSessions; // There were some good sessions and bad ones...
 					else if (percentSessions == 0 && statBadSessions > 0) 
 						percentSessions = 100; // There were bad sessions and no good ones, must be 100%
-					else 
+					else
 						percentSessions = 0; // No sessions at all, or no bad ones.
 					cbuffer.Format( _T("%s: %u (%1.1f%%)") , GetResString(IDS_STATS_FDLSES) , statBadSessions , percentSessions );
 					stattree.SetItemText( down_ssessions[1] , cbuffer );
@@ -3082,6 +3085,7 @@ void CStatisticsDlg::ShowStatistics(bool forceUpdate)
 			} // End Clients -> Client Software -> aMule Section
 
 			// ==> Compat Client Stats - Stulle
+#ifdef COMPAT_CLIENTS_STATS
 			CRBMap<CString, uint32> compatClients;
 			theApp.clientlist->GetCompatClientsStats(&compatClients);
 
@@ -3111,6 +3115,7 @@ void CStatisticsDlg::ShowStatistics(bool forceUpdate)
 				cbuffer.Format(_T("%s: %i (%1.1f%%)"), name, count, (double)count/myStats[ 5]*100);
 				stattree.InsertItem(cbuffer, clisoft[6]);
 			}
+#endif
 			// <== Compat Client Stats - Stulle
 
 		} // - End Clients -> Client Software Section
@@ -3176,6 +3181,7 @@ void CStatisticsDlg::ShowStatistics(bool forceUpdate)
 		//MORPH END   - Added by IceCream, secure/leecher client in stats
 
 		// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifndef GLOBAL_MOD_STATS
 		CRBMap<CString, int> pureMods;
 		CRBMultiMap<int,CString> SortedByValuePureMods;
 		theApp.clientlist->GetModPureStats(&pureMods);
@@ -3230,6 +3236,7 @@ void CStatisticsDlg::ShowStatistics(bool forceUpdate)
 			cbuffer.Format(_T("%s: %i (%1.1f%%)"), GetResString(IDS_STATS_PRTOTHER), iOtherCount, (double)iOtherCount/myStats[ 2]*100);
 			stattree.InsertItem(cbuffer, cligen[7]);
 		}
+#endif
 		// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 	} // - END CLIENTS SECTION
 
@@ -3716,7 +3723,11 @@ void CStatisticsDlg::CreateMyTree()
 			cligen[i] = stattree.InsertItem(GetResString(IDS_FSTAT_WAITING), h_clients);
 	cligen[6] = stattree.InsertItem(GetResString(IDS_FSTAT_WAITING), h_clients); //MORPH - Added by SiRoB, Leecher counter
 
-	cligen[7] = stattree.InsertItem(GetResString(IDS_MOD_STATS), h_clients); // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+	// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifdef GLOBAL_MOD_STATS
+	cligen[7] = stattree.InsertItem(GetResString(IDS_MOD_STATS), h_clients);
+#endif
+	// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 
 	h_servers = stattree.InsertItem(GetResString(IDS_FSTAT_SERVERS),4,4);					// Servers section
 	for(int i = 0; i<6; i++)
@@ -3866,7 +3877,7 @@ BOOL CStatisticsDlg::OnHelpInfo(HELPINFO* /*pHelpInfo*/)
 }
 
 // ==> Design Settings [eWombat/Stulle] - Stulle
-/*
+#ifndef DESIGN_SETTINGS
 HBRUSH CStatisticsDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = theApp.emuledlg->GetCtlColor(pDC, pWnd, nCtlColor);
@@ -3874,7 +3885,7 @@ HBRUSH CStatisticsDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		return hbr;
 	return __super::OnCtlColor(pDC, pWnd, nCtlColor);
 }
-*/
+#else
 HBRUSH CStatisticsDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
@@ -3906,5 +3917,5 @@ void CStatisticsDlg::OnBackcolor()
 	else
 		m_brMyBrush.CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
 }
-
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle

@@ -370,7 +370,11 @@ void CUpDownClient::Init()
 
 	m_bSendIP = false; // Inform Clients after IP Change - Stulle
 
-	m_strModPure.Empty(); // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+	// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifdef GLOBAL_MOD_STATS
+	m_strModPure.Empty();
+#endif
+	// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 }
 
 CUpDownClient::~CUpDownClient(){
@@ -502,10 +506,10 @@ uint8 CUpDownClient::TestLeecher(){
 	// <== Leecher Name [Xman] - Stulle
 	// ==> Community Check [Xman] - Stulle
 	}else if(thePrefs.IsCommunityCheck()){
-		//MORPH START - Added by Stulle, AppleJuice Detection [Xman]
+	//MORPH START - Added by Stulle, AppleJuice Detection [Xman]
 		if(IsEmuleClient() && CheckUserHash())
 			return BAN_APPLE_JUICE;
-		//MORPH END   - Added by Stulle, AppleJuice Detection [Xman]
+	//MORPH END   - Added by Stulle, AppleJuice Detection [Xman]
 		else if(IsSnakeOrGamer(m_pszUsername))
 			return BAN_COMMUNITY;
 		// ==> New United Community Detection [Xman] - Stulle
@@ -682,7 +686,7 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_strModVersion, _T("SPEED EMULE"))|| //MyTh	
 				StrStrI(m_strModVersion, _T("SPIKE2 +"))|| //MyTh hard leecher
 				StrStrI(m_strModVersion, _T("WIKINGER"))|| //MyTh apple-com
-				StrStrI(m_strModVersion, _T("Adunanza"))|| //MyTh italian ISP-spec com user
+				//StrStrI(m_strModVersion, _T("Adunanza"))|| //MyTh italian ISP-spec com user
 				StrStrI(m_strModVersion, _T("Asiklar"))|| //MyTh apple-com
 				StrStrI(m_strModVersion, _T("Shadow"))|| //MyTh
 				StrStrI(m_strModVersion, _T("RC-Atlantis"))|| //MyTh
@@ -737,7 +741,7 @@ uint8 CUpDownClient::TestLeecher(){
 			if (StrStrI(m_pszUsername,_T("$GAM3R$"))||
 				StrStrI(m_pszUsername,_T("G@m3r"))||
 				StrStrI(m_pszUsername,_T("$WAREZ$"))||
-					//StrStrI(m_pszUsername,_T("RAMMSTEIN"))|| // removed - Stulle	
+				//StrStrI(m_pszUsername,_T("RAMMSTEIN"))|| // removed - Stulle	
 				//StrStrI(m_pszUsername,_T("toXic"))|| //removed for the moment
 				StrStrI(m_pszUsername,_T("Leecha"))||
 				//StrStrI(m_pszUsername,_T("eDevil"))|| //removed for the moment
@@ -747,7 +751,7 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_pszUsername,_T("Reverse"))||
 				StrStrI(m_pszUsername,_T("eVortex"))||
 				StrStrI(m_pszUsername,_T("|eVorte|X|"))||
-					//StrStrI(m_pszUsername,_T("Chief"))|| // removed - Stulle	
+				//StrStrI(m_pszUsername,_T("Chief"))|| // removed - Stulle	
 				//StrStrI(m_pszUsername,"Mison"))|| //Temporaly desactivated, ban only on mod tag
 				StrStrI(m_pszUsername,_T("$motty"))||
 				StrStrI(m_pszUsername,_T("emule-speed"))||
@@ -831,7 +835,7 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_pszUsername,_T("emule")) && StrStrI(m_pszUsername,_T("booster"))
 				)
 			{
-			old_m_pszUsername = m_pszUsername;
+				old_m_pszUsername = m_pszUsername;
 				return BAN_BAD_NICK;
 			}
 		}
@@ -877,7 +881,7 @@ uint8 CUpDownClient::TestLeecher(){
 	//MORPH START - Added, Community/Corrupt userhash check [zz_fly/squallATF]
 	if(thePrefs.IsCommunityCheck()){ // ban systems optional - Stulle
 		CString userhash=md4str(GetUserHash());
-	//community userhash check 
+		//community userhash check 
 		static const TCHAR refuserhash0[] = _T("154CE646120E96CC798C439A20D26F8D");
 		static const TCHAR refuserhash1[] = _T("455361F9D95C3CD7E6BF2192D1CB3D02");
 		static const TCHAR refuserhash2[] = _T("DA1CEEE05B0E5319B3B48CAED24C6F4A");
@@ -902,6 +906,7 @@ uint8 CUpDownClient::TestLeecher(){
 			// <== Reduce Score for leecher - Stulle
 	} // ban systems optional - Stulle
 	//MORPH END   - Added, Community/Corrupt userhash check [zz_fly/squallATF]
+
 	//MORPH START - Added by leuk_he, eMCrypt Detection [Xman]
 	if (thePrefs.IsEmcrypt() && !m_bGPLEvildoer && m_bUnicodeSupport==false && m_nClientVersion == MAKE_CLIENT_VERSION(0,44,3) && m_strModVersion.IsEmpty() && m_byCompatibleClient==0)
 	{
@@ -983,7 +988,11 @@ bool CUpDownClient::ProcessHelloTypePacket(CSafeMemFile* data)
 	//MORPH END   - Added by SiRoB, ET_MOD_VERSION 0x55
 	m_uModClient = MOD_NONE; //MOPPH - Added by Stulle, Mod Icons
 	uint8 uBanReason = 0; // Reduce Score for leecher - Stulle
-	m_strModPure.Empty(); // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+	// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifdef GLOBAL_MOD_STATS
+	m_strModPure.Empty();
+#endif
+	// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 	
 	data->ReadHash16(m_achUserHash);
 	if (bDbgInfo)
@@ -1095,7 +1104,9 @@ bool CUpDownClient::ProcessHelloTypePacket(CSafeMemFile* data)
 					// <== StulleMule is not banned - Stulle
 
 					// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifdef GLOBAL_MOD_STATS
 					SetModPureString();
+#endif
 					// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 
 					//MOPRH START - Added by Stulle, Mod Icons
@@ -1615,7 +1626,7 @@ void CUpDownClient::SendHelloPacket(){
 	if (thePrefs.GetDebugClientTCPLevel() > 0)
 		DebugSend("OP__Hello", this);
 	theStats.AddUpDataOverheadOther(packet->size);
-	socket->SendPacket(packet,true);
+	SendPacket(packet,true);
 	AskTime=::GetTickCount(); //MORPH - Added by SiRoB, Smart Upload Control v2 (SUC) [lovelace]
 
 	m_bHelloAnswerPending = true;
@@ -1693,7 +1704,7 @@ void CUpDownClient::SendMuleInfoPacket(bool bAnswer){
 	if (thePrefs.GetDebugClientTCPLevel() > 0)
 		DebugSend(!bAnswer ? "OP__EmuleInfo" : "OP__EmuleInfoAnswer", this);
 	theStats.AddUpDataOverheadOther(packet->size);
-	socket->SendPacket(packet,true,true);
+	SendPacket(packet, true);
 }
 
 void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
@@ -1935,7 +1946,9 @@ void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
 					// <== StulleMule is not banned - Stulle
 
 					// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifdef GLOBAL_MOD_STATS
 					SetModPureString();
+#endif
 					// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 
 					//MOPRH START - Added by Stulle, Mod Icons
@@ -2462,9 +2475,13 @@ void CUpDownClient::ProcessMuleCommentPacket(const uchar* pachPacket, uint32 nSi
 		if (uLength > 0)
 		{
 			// we have to increase the raw max. allowed file comment len because of possible UTF8 encoding.
-			if (uLength > MAXFILECOMMENTLEN*3)
-				uLength = MAXFILECOMMENTLEN*3;
+			if (uLength > MAXFILECOMMENTLEN*4)
+				uLength = MAXFILECOMMENTLEN*4;
 			strComment = data.ReadString(GetUnicodeSupport()!=utf8strNone, uLength);
+
+			if (strComment.GetLength() > MAXFILECOMMENTLEN) // enforce the max len on the comment
+				strComment = strComment.Left(MAXFILECOMMENTLEN);
+
 			if (thePrefs.GetLogRatingDescReceived() && !strComment.IsEmpty())
 				AddDebugLogLine(false, GetResString(IDS_DESCRIPTIONRECV), m_strClientFilename, strComment);
 
@@ -2502,7 +2519,7 @@ void CUpDownClient::ProcessMuleCommentPacket(const uchar* pachPacket, uint32 nSi
 bool CUpDownClient::Disconnected(LPCTSTR pszReason, bool bFromSocket)
 {
 	ASSERT( theApp.clientlist->IsValidClient(this) );
-
+	
 	// TODO LOGREMOVE
 	if (m_nConnectingState == CCS_DIRECTCALLBACK)
 		DebugLog(_T("Direct Callback failed - %s"), DbgGetClientInfo());
@@ -2515,7 +2532,7 @@ bool CUpDownClient::Disconnected(LPCTSTR pszReason, bool bFromSocket)
 		DebugLogWarning(_T("Buddy client disconnected - %s, %s"), pszReason, DbgGetClientInfo());
 	//If this is a KAD client object, just delete it!
 	SetKadState(KS_NONE);
-	
+
 	//MORPH START - Changed by SiRoB
 	/*
     if (GetUploadState() == US_UPLOADING || GetUploadState() == US_CONNECTING)
@@ -2617,8 +2634,8 @@ bool CUpDownClient::Disconnected(LPCTSTR pszReason, bool bFromSocket)
 	{
 		if (m_nDownloadState != DS_NONE) // Unable to connect = Remove any downloadstate
 			theApp.downloadqueue->RemoveSource(this);
-				theApp.clientlist->m_globDeadSourceList.AddDeadSource(this);
-			bDelete = true;
+		theApp.clientlist->m_globDeadSourceList.AddDeadSource(this);
+		bDelete = true;
 	}
 
 	// We keep chat partners in any case
@@ -2632,7 +2649,7 @@ bool CUpDownClient::Disconnected(LPCTSTR pszReason, bool bFromSocket)
 	
 	// Delete Socket
 	if (!bFromSocket && socket){
-		ASSERT (theApp.listensocket->IsValidSocket(socket));
+		ASSERT( theApp.listensocket->IsValidSocket(socket) );
 		socket->Safe_Delete();
 	}
 	socket = NULL;
@@ -2797,15 +2814,15 @@ bool CUpDownClient::TryToConnect(bool bIgnoreMaxCon, bool bNoCallbacks, CRuntime
 	{
 		ASSERT( pClassSocket == NULL );
 		if(!theApp.CanDoCallback(this)) // lowid2lowid check used for the whole function, don't remove
-			{
+		{
 			// We cannot reach this client, so we hard fail to connect, if this client should be kept,
 			// for example because we might want to wait a bit and hope we get a highid, this check has
 			// to be done before calling this function
 			if(Disconnected(_T("LowID->LowID")))
-				{
+			{
 				delete this;
 				return false;
-				}
+			}
 			return true;
 		}
 
@@ -2813,26 +2830,26 @@ bool CUpDownClient::TryToConnect(bool bIgnoreMaxCon, bool bNoCallbacks, CRuntime
 		if (bNoCallbacks){
 			DebugLogError(_T("TryToConnect: Would like to do callback on a no-callback client, %s"), DbgGetClientInfo());
 			if(Disconnected(_T("LowID: No Callback Option allowed")))
-					{
-						delete this;
-						return false;
-					}
-				return true;
+			{
+				delete this;
+				return false;
 			}
+			return true;
+		}
 
 		// Is any callback available?
 		if (!( (SupportsDirectUDPCallback() && thePrefs.GetUDPPort() != 0 && GetConnectIP() != 0) // Direct Callback
 			|| (HasValidBuddyID() && Kademlia::CKademlia::IsConnected()) // Kad Callback
 			|| theApp.serverconnect->IsLocalServer(GetServerIP(), GetServerPort()) )) // Server Callback
-			{
+		{
 			// Nope
 			if(Disconnected(_T("LowID: No Callback Option available")))
-				{
+			{
 				delete this;
 				return false;
-				}
-			return true;
 			}
+			return true;
+		}
 	}
 
 	// Prechecks finished, now for the real connecting
@@ -2855,7 +2872,7 @@ bool CUpDownClient::TryToConnect(bool bIgnoreMaxCon, bool bNoCallbacks, CRuntime
 			// we let the timeout handle the cleanup in this case
 			DebugLogError(_T("TryToConnect: Failed to create socket for outgoing connection, %s"), DbgGetClientInfo());
 		}
-	else
+		else
 			Connect();
 		return true;
 	}
@@ -2881,51 +2898,51 @@ bool CUpDownClient::TryToConnect(bool bIgnoreMaxCon, bool bNoCallbacks, CRuntime
 	}
 	////////////////////////////////////////////////////////////
 	// 6) Server Callback + 7) Kad Callback
-		if (GetDownloadState() == DS_CONNECTING)
-			SetDownloadState(DS_WAITCALLBACK);
+	if (GetDownloadState() == DS_CONNECTING)
+		SetDownloadState(DS_WAITCALLBACK);
 	
 	if (GetUploadState() == US_CONNECTING){
 		ASSERT( false ); // we should never try to connect in this case, but wait for the LowID to connect to us
 		DebugLogError( _T("LowID and US_CONNECTING (%s)"), DbgGetClientInfo());
-		}
+	}
 
-		if (theApp.serverconnect->IsLocalServer(m_dwServerIP,m_nServerPort))
-		{
+	if (theApp.serverconnect->IsLocalServer(m_dwServerIP, m_nServerPort))
+	{
 		m_nConnectingState = CCS_SERVERCALLBACK;
-			Packet* packet = new Packet(OP_CALLBACKREQUEST,4);
-			PokeUInt32(packet->pBuffer, m_nUserIDHybrid);
-			if (thePrefs.GetDebugServerTCPLevel() > 0 || thePrefs.GetDebugClientTCPLevel() > 0)
-				DebugSend("OP__CallbackRequest", this);
-			theStats.AddUpDataOverheadServer(packet->size);
-			theApp.serverconnect->SendPacket(packet);
-						return true;
-					}
+		Packet* packet = new Packet(OP_CALLBACKREQUEST,4);
+		PokeUInt32(packet->pBuffer, m_nUserIDHybrid);
+		if (thePrefs.GetDebugServerTCPLevel() > 0 || thePrefs.GetDebugClientTCPLevel() > 0)
+			DebugSend("OP__CallbackRequest", this);
+		theStats.AddUpDataOverheadServer(packet->size);
+		theApp.serverconnect->SendPacket(packet);
+		return true;
+	}
 	else if (HasValidBuddyID() && Kademlia::CKademlia::IsConnected())
-				{
+	{
 		m_nConnectingState = CCS_KADCALLBACK;
-					if( GetBuddyIP() && GetBuddyPort())
-					{
-						CSafeMemFile bio(34);
-						bio.WriteUInt128(&Kademlia::CUInt128(GetBuddyID()));
-						bio.WriteUInt128(&Kademlia::CUInt128(reqfile->GetFileHash()));
-						bio.WriteUInt16(thePrefs.GetPort());
-						if (thePrefs.GetDebugClientKadUDPLevel() > 0 || thePrefs.GetDebugClientUDPLevel() > 0)
-							DebugSend("KadCallbackReq", this);
-						Packet* packet = new Packet(&bio, OP_KADEMLIAHEADER);
-						packet->opcode = KADEMLIA_CALLBACK_REQ;
-						theStats.AddUpDataOverheadKad(packet->size);
-						// FIXME: We dont know which kadversion the buddy has, so we need to send unencrypted
-						theApp.clientudp->SendPacket(packet, GetBuddyIP(), GetBuddyPort(), false, NULL, true, 0);
-						SetDownloadState(DS_WAITCALLBACKKAD);
-					}
-					else
-					{
+		if( GetBuddyIP() && GetBuddyPort())
+		{
+			CSafeMemFile bio(34);
+			bio.WriteUInt128(&Kademlia::CUInt128(GetBuddyID()));
+			bio.WriteUInt128(&Kademlia::CUInt128(reqfile->GetFileHash()));
+			bio.WriteUInt16(thePrefs.GetPort());
+			if (thePrefs.GetDebugClientKadUDPLevel() > 0 || thePrefs.GetDebugClientUDPLevel() > 0)
+				DebugSend("KadCallbackReq", this);
+			Packet* packet = new Packet(&bio, OP_KADEMLIAHEADER);
+			packet->opcode = KADEMLIA_CALLBACK_REQ;
+			theStats.AddUpDataOverheadKad(packet->size);
+			// FIXME: We dont know which kadversion the buddy has, so we need to send unencrypted
+			theApp.clientudp->SendPacket(packet, GetBuddyIP(), GetBuddyPort(), false, NULL, true, 0);
+			SetDownloadState(DS_WAITCALLBACKKAD);
+		}
+		else
+		{
 			// I don't think we should ever have a buddy without its IP (anymore), but nevertheless let the functionality in
-						//Create search to find buddy.
-						Kademlia::CSearch *findSource = new Kademlia::CSearch;
-						findSource->SetSearchTypes(Kademlia::CSearch::FINDSOURCE);
-						findSource->SetTargetID(Kademlia::CUInt128(GetBuddyID()));
-						findSource->AddFileID(Kademlia::CUInt128(reqfile->GetFileHash()));
+			//Create search to find buddy.
+			Kademlia::CSearch *findSource = new Kademlia::CSearch;
+			findSource->SetSearchTypes(Kademlia::CSearch::FINDSOURCE);
+			findSource->SetTargetID(Kademlia::CUInt128(GetBuddyID()));
+			findSource->AddFileID(Kademlia::CUInt128(reqfile->GetFileHash()));
 			if( Kademlia::CKademlia::GetPrefs()->GetTotalSource() > 0 || Kademlia::CSearchManager::AlreadySearchingFor(Kademlia::CUInt128(GetBuddyID())))
 			{
 				//There are too many source lookups already or we are already searching this key.
@@ -2935,19 +2952,19 @@ bool CUpDownClient::TryToConnect(bool bIgnoreMaxCon, bool bNoCallbacks, CRuntime
 				DebugLogWarning(_T("TryToConnect: Buddy without knonw IP, Lookup crrently impossible"));
 				return true;
 			}
-						if(Kademlia::CSearchManager::StartSearch(findSource))
-						{
-							//Started lookup..
-							SetDownloadState(DS_WAITCALLBACKKAD);
-						}
-						else
-						{
-							//This should never happen..
-							ASSERT(0);
-						}
-					}
+			if(Kademlia::CSearchManager::StartSearch(findSource))
+			{
+				//Started lookup..
+				SetDownloadState(DS_WAITCALLBACKKAD);
+			}
+			else
+			{
+				//This should never happen..
+				ASSERT(0);
+			}
+		}
 		return true;
-				}
+	}
 	else {
 		ASSERT( false );
 		DebugLogError(_T("TryToConnect: Bug: No Callback available despite prechecks"));
@@ -3052,7 +3069,7 @@ void CUpDownClient::ConnectionEstablished()
 					DebugSend("OP__AcceptUploadReq", this);
 				Packet* packet = new Packet(OP_ACCEPTUPLOADREQ,0);
 				theStats.AddUpDataOverheadFileRequest(packet->size);
-				socket->SendPacket(packet,true);
+				SendPacket(packet,true);
 			}
 	}
 
@@ -3062,14 +3079,14 @@ void CUpDownClient::ConnectionEstablished()
 			DebugSend(m_fSharedDirectories ? "OP__AskSharedDirs" : "OP__AskSharedFiles", this);
         Packet* packet = new Packet(m_fSharedDirectories ? OP_ASKSHAREDDIRS : OP_ASKSHAREDFILES,0);
 		theStats.AddUpDataOverheadOther(packet->size);
-		socket->SendPacket(packet,true,true);
+		SendPacket(packet,true);
 	}
 
 	while (!m_WaitingPackets_list.IsEmpty())
 	{
 		if (thePrefs.GetDebugClientTCPLevel() > 0)
 			DebugSend("Buffered Packet", this);
-		socket->SendPacket(m_WaitingPackets_list.RemoveHead());
+		SendPacket(m_WaitingPackets_list.RemoveHead(), true);
 	}
 
 }
@@ -3099,12 +3116,13 @@ void CUpDownClient::InitClientSoftwareVersion()
 				break;
 			case SO_SHAREAZA:
 			// ==> Enhanced Client Recognition [Spike] - Stulle
-			/*
+#ifndef ENHANCED_CLIENTS_RECOG
 			case 40:
-			*/
+#else
 			case SO_SHAREAZA2:
 			case SO_SHAREAZA3:
 			case SO_SHAREAZA4:
+#endif
 			// <== Enhanced Client Recognition [Spike] - Stulle
 				m_clientSoft = SO_SHAREAZA;
 				pszSoftware = _T("Shareaza");
@@ -3114,6 +3132,7 @@ void CUpDownClient::InitClientSoftwareVersion()
 				pszSoftware = _T("lphant");
 				break;
 			// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifdef ENHANCED_CLIENTS_RECOG
 			case SO_EMULEPLUS:
 				m_clientSoft = SO_EMULEPLUS;
 				pszSoftware = _T("eMule Plus");
@@ -3126,22 +3145,25 @@ void CUpDownClient::InitClientSoftwareVersion()
 				m_clientSoft = SO_TRUSTYFILES;
 				pszSoftware = _T("TrustyFiles");
 				break;
+#endif
 			// <== Enhanced Client Recognition [Spike] - Stulle
 			default:
 				// ==> Enhanced Client Recognition [Spike] - Stulle
-				/*
+#ifndef ENHANCED_CLIENTS_RECOG
 				if (m_bIsML || m_byCompatibleClient == SO_MLDONKEY){
-				*/
+#else
 				if (m_bIsML || m_byCompatibleClient == SO_MLDONKEY || m_byCompatibleClient == SO_MLDONKEY2 || m_byCompatibleClient == SO_MLDONKEY3){
+#endif
 				// <== Enhanced Client Recognition [Spike] - Stulle
 					m_clientSoft = SO_MLDONKEY;
 					pszSoftware = _T("MLdonkey");
 				}
 				// ==> Enhanced Client Recognition [Spike] - Stulle
-				/*
+#ifndef ENHANCED_CLIENTS_RECOG
 				else if (m_bIsHybrid){
-				*/
+#else
 				else if (m_bIsHybrid || m_byCompatibleClient == SO_EDONKEYHYBRID){
+#endif
 				// <== Enhanced Client Recognition [Spike] - Stulle
 					m_clientSoft = SO_EDONKEYHYBRID;
 					pszSoftware = _T("eDonkeyHybrid");
@@ -3149,6 +3171,7 @@ void CUpDownClient::InitClientSoftwareVersion()
 				else if (m_byCompatibleClient != 0){
 					// ==> Enhanced Client Recognition [Spike] - Stulle
 					// Recognize other Shareazas - just to be sure :)
+#ifdef ENHANCED_CLIENTS_RECOG
 					if (StrStrI(m_pszUsername,_T("shareaza")))
 					{
 						m_clientSoft = SO_SHAREAZA;
@@ -3162,10 +3185,15 @@ void CUpDownClient::InitClientSoftwareVersion()
 					}
 					else
 					{
+#endif
 					// <== Enhanced Client Recognition [Spike] - Stulle
 					m_clientSoft = SO_XMULE; // means: 'eMule Compatible'
 					pszSoftware = _T("eMule Compat");
-					} // Enhanced Client Recognition [Spike] - Stulle
+					// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifdef ENHANCED_CLIENTS_RECOG
+					}
+#endif
+					// <== Enhanced Client Recognition [Spike] - Stulle
 				}
 				else{
 					m_clientSoft = SO_EMULE;
@@ -3192,6 +3220,7 @@ void CUpDownClient::InitClientSoftwareVersion()
 			if (m_clientSoft == SO_EMULE)
 				iLen = _sntprintf(szSoftware, ARRSIZE(szSoftware), _T("%s v%u.%u%c"), pszSoftware, nClientMajVersion, nClientMinVersion, _T('a') + nClientUpVersion);
 			// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifdef ENHANCED_CLIENTS_RECOG
 			else if (m_clientSoft == SO_EMULEPLUS)
 			{
 				if(nClientMinVersion == 0)
@@ -3209,14 +3238,15 @@ void CUpDownClient::InitClientSoftwareVersion()
 						iLen = _sntprintf(szSoftware, ARRSIZE(szSoftware), _T("%s v%u.%u%c"), pszSoftware, nClientMajVersion, nClientMinVersion, _T('a') + nClientUpVersion - 1);
 				}
 			}
+#endif
 			// <== Enhanced Client Recognition [Spike] - Stulle
 			else if (m_clientSoft == SO_AMULE || nClientUpVersion != 0)
 				iLen = _sntprintf(szSoftware, ARRSIZE(szSoftware), _T("%s v%u.%u.%u"), pszSoftware, nClientMajVersion, nClientMinVersion, nClientUpVersion);
 			else if (m_clientSoft == SO_LPHANT)
 			{
 				if (nClientMinVersion < 10)
-				iLen = _sntprintf(szSoftware, ARRSIZE(szSoftware), _T("%s v%u.0%u"), pszSoftware, (nClientMajVersion-1), nClientMinVersion);
-			else
+				    iLen = _sntprintf(szSoftware, ARRSIZE(szSoftware), _T("%s v%u.0%u"), pszSoftware, (nClientMajVersion-1), nClientMinVersion);
+				else
 					iLen = _sntprintf(szSoftware, ARRSIZE(szSoftware), _T("%s v%u.%u"), pszSoftware, (nClientMajVersion-1), nClientMinVersion);
 			}
 			else
@@ -3234,10 +3264,11 @@ void CUpDownClient::InitClientSoftwareVersion()
 	}
 
 	// ==> Enhanced Client Recognition [Spike] - Stulle
-	/*
+#ifndef ENHANCED_CLIENTS_RECOG
 	if (m_bIsHybrid){
-	*/
+#else
 	if (m_bIsHybrid || m_byCompatibleClient == SO_EDONKEYHYBRID){
+#endif
 	// <== Enhanced Client Recognition [Spike] - Stulle
 		m_clientSoft = SO_EDONKEYHYBRID;
 		// seen:
@@ -3317,10 +3348,11 @@ void CUpDownClient::InitClientSoftwareVersion()
 	}
 
 	// ==> Enhanced Client Recognition [Spike] - Stulle
-	/*
+#ifndef ENHANCED_CLIENTS_RECOG
 	if (m_bIsML || iHashType == SO_MLDONKEY){
-	*/
+#else
 	if (m_bIsML || iHashType == SO_MLDONKEY || iHashType == SO_OLD_MLDONKEY){
+#endif
 	// <== Enhanced Client Recognition [Spike] - Stulle
 		m_clientSoft = SO_MLDONKEY;
 		UINT nClientMinVersion = m_nClientVersion;
@@ -3378,8 +3410,10 @@ int CUpDownClient::GetHashType() const
 		return SO_EMULE;
  	else if (m_achUserHash[5] == 'M' && m_achUserHash[14] == 'L')
 	// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifdef ENHANCED_CLIENTS_RECOG
 		return SO_OLD_MLDONKEY;
 	else if (m_achUserHash[5] == 0x0E && m_achUserHash[14] == 0x6F) // Spike2 by Torni - recognize newer MLdonkeys (needed for Enhanced Client Recognization & emulate-Settings!)
+#endif
 	// <== Enhanced Client Recognition [Spike] - Stulle
 		return SO_MLDONKEY;
 	else
@@ -3389,7 +3423,7 @@ int CUpDownClient::GetHashType() const
 void CUpDownClient::SetUserName(LPCTSTR pszNewName)
 {
 	free(m_pszUsername);
-	if( pszNewName )
+	if (pszNewName)
 		m_pszUsername = _tcsdup(pszNewName);
 	else
 		m_pszUsername = NULL;
@@ -3470,7 +3504,7 @@ void CUpDownClient::SendPublicKeyPacket()
 	packet->pBuffer[0] = theApp.clientcredits->GetPubKeyLen();
 	if (thePrefs.GetDebugClientTCPLevel() > 0)
 		DebugSend("OP__PublicKey", this);
-	socket->SendPacket(packet,true,true);
+	SendPacket(packet, true);
 	m_SecureIdentState = IS_SIGNATURENEEDED;
 }
 
@@ -3528,7 +3562,7 @@ void CUpDownClient::SendSignaturePacket()
 		packet->pBuffer[1+siglen] = byChaIPKind;
 	if (thePrefs.GetDebugClientTCPLevel() > 0)
 		DebugSend("OP__Signature", this);
-	socket->SendPacket(packet,true,true);
+	SendPacket(packet, true);
 	m_SecureIdentState = IS_ALLREQUESTSSEND;
 }
 
@@ -3537,7 +3571,7 @@ void CUpDownClient::ProcessPublicKeyPacket(const uchar* pachPacket, uint32 nSize
 	theApp.clientlist->AddTrackClient(this);
 
 	if (socket == NULL || credits == NULL || pachPacket[0] != nSize-1
-		|| nSize == 0 || nSize > 250){
+		|| nSize < 10 || nSize > 250){
 		ASSERT ( false );
 		return;
 	}
@@ -3567,7 +3601,7 @@ void CUpDownClient::ProcessSignaturePacket(const uchar* pachPacket, uint32 nSize
 {
 	// here we spread the good guys from the bad ones ;)
 
-	if (socket == NULL || credits == NULL || nSize == 0 || nSize > 250){
+	if (socket == NULL || credits == NULL || nSize > 250 || nSize < 10){
 		ASSERT ( false );
 		return;
 	}
@@ -3653,7 +3687,7 @@ void CUpDownClient::SendSecIdentStatePacket()
 		PokeUInt32(packet->pBuffer+1, dwRandom);
 		if (thePrefs.GetDebugClientTCPLevel() > 0)
 			DebugSend("OP__SecIdentState", this);
-		socket->SendPacket(packet,true,true);
+		SendPacket(packet, true);
 	}
 	else
 		ASSERT ( false );
@@ -3735,7 +3769,7 @@ void CUpDownClient::SendPreviewRequest(const CAbstractFile* pForFile)
 		Packet* packet = new Packet(OP_REQUESTPREVIEW,16,OP_EMULEPROT);
 		md4cpy(packet->pBuffer,pForFile->GetFileHash());
 		theStats.AddUpDataOverheadOther(packet->size);
-		SafeSendPacket(packet);
+		SafeConnectAndSendPacket(packet);
 	}
 	else{
 		LogWarning(LOG_STATUSBAR, GetResString(IDS_ERR_PREVIEWALREADY));
@@ -3779,7 +3813,7 @@ void CUpDownClient::SendPreviewAnswer(const CKnownFile* pForFile, CxImage** imgF
 	if (thePrefs.GetDebugClientTCPLevel() > 0)
 		DebugSend("OP__PreviewAnswer", this, (uchar*)packet->pBuffer);
 	theStats.AddUpDataOverheadOther(packet->size);
-	SafeSendPacket(packet);
+	SafeConnectAndSendPacket(packet);
 }
 
 void CUpDownClient::ProcessPreviewReq(const uchar* pachPacket, uint32 nSize)
@@ -3830,9 +3864,10 @@ void CUpDownClient::ProcessPreviewAnswer(const uchar* pachPacket, uint32 nSize)
 			CxImage* image = new CxImage(pBuffer, nImgSize, CXIMAGE_FORMAT_PNG);
 			delete[] pBuffer;
 			pBuffer = NULL;
-			if (image->IsValid()){
+			if (image->IsValid())
 				sfile->AddPreviewImg(image);
-			}
+			else
+				delete image;
 		}
 	}
 	catch(...){
@@ -3845,14 +3880,33 @@ void CUpDownClient::ProcessPreviewAnswer(const uchar* pachPacket, uint32 nSize)
 // sends a packet, if needed it will establish a connection before
 // options used: ignore max connections, control packet, delete packet
 // !if the functions returns false that client object was deleted because the connection try failed and the object wasn't needed anymore.
-bool CUpDownClient::SafeSendPacket(Packet* packet){
-	if (socket && socket->IsConnected()){
-		socket->SendPacket(packet, true);
+bool CUpDownClient::SafeConnectAndSendPacket(Packet* packet)
+{
+	if (socket != NULL && socket->IsConnected())
+	{
+		socket->SendPacket(packet, true, true);
 		return true;
 	}
-	else{
+	else
+	{
 		m_WaitingPackets_list.AddTail(packet);
 		return TryToConnect(true);
+	}
+}
+
+bool CUpDownClient::SendPacket(Packet* packet, bool bDeletePacket, bool bVerifyConnection)
+{
+	if (socket != NULL && (!bVerifyConnection || socket->IsConnected()))
+	{
+		socket->SendPacket(packet, bDeletePacket, true);
+		return true;
+	}
+	else
+	{
+		DebugLogError(_T("Outgoing packet (0x%X) discarded because expected socket or connection does not exists %s"), packet->opcode, DbgGetClientInfo());
+		if (bDeletePacket)
+			delete packet;
+		return false;
 	}
 }
 
@@ -4103,7 +4157,7 @@ CString CUpDownClient::DbgGetClientInfo(bool bFormatIP) const
 			}
 		}
 		catch(...){
-			str.Format(_T("%08x - Invalid client instance"), this);
+			str.Format(_T("%p - Invalid client instance"), this);
 		}
 	}
 	return str;
@@ -4336,7 +4390,7 @@ void CUpDownClient::SendPublicIPRequest(){
 			DebugSend("OP__PublicIPReq", this);
 		Packet* packet = new Packet(OP_PUBLICIP_REQ,0,OP_EMULEPROT);
 		theStats.AddUpDataOverheadOther(packet->size);
-		socket->SendPacket(packet,true);
+		SendPacket(packet, true);
 		m_fNeedOurPublicIP = 1;
 	}
 }
@@ -4362,7 +4416,7 @@ void CUpDownClient::CheckFailedFileIdReqs(const uchar* aucFileHash)
 		if (m_fFailedFileIdReqs < 6)// NOTE: Do not increase this nr. without increasing the bits for 'm_fFailedFileIdReqs'
 		{
 			m_fFailedFileIdReqs++;
-	     		// morph some extra suprious verbose tracking, read http://forum.emule-project.net/index.php?showtopic=136682
+     		// morph some extra suprious verbose tracking, read http://forum.emule-project.net/index.php?showtopic=136682
 	    	DebugLogError( _T("Client: %s (%s), Increased set m_fFailedFileIdReqs to %d"), GetUserName(), ipstr(GetConnectIP()),m_fFailedFileIdReqs );
 		}
 		if (m_fFailedFileIdReqs == 6)
@@ -4513,7 +4567,8 @@ void CUpDownClient::ProcessChatMessage(CSafeMemFile* data, uint32 nLength)
 							m_cCaptchasSent++;
 							Packet* packet = new Packet(&fileAnswer, OP_EMULEPROT, OP_CHATCAPTCHAREQ);
 							theStats.AddUpDataOverheadOther(packet->size);
-							SafeSendPacket(packet);
+							if (!SafeConnectAndSendPacket(packet))
+								return; // deleted client while connecting
 						}
 						else{
 							ASSERT( false );
@@ -4529,9 +4584,9 @@ void CUpDownClient::ProcessChatMessage(CSafeMemFile* data, uint32 nLength)
 					{
 						m_cCaptchasSent++;
 						// always sent in english
-						CString rstrMessage = _T("In order to avoid spam messages, this user requires you to solve a captcha before you can send a message to him. However your client does not supports captchas, so you will not be able to chat with this user.");
-						SendChatMessage(rstrMessage);
+						CString rstrMessage = _T("In order to avoid spam messages, this user requires you to solve a captcha before you can send a message to him. However your client does not support captchas, so you will not be able to chat with this user.");
 						DebugLog(_T("Received message from client not supporting captchs, filtered and sent notifier (%s)"), DbgGetClientInfo());
+						SendChatMessage(rstrMessage); // could delete client
 					}
 					else
 						DebugLog(_T("Received message from client not supporting captchs, filtered, didn't sent notifier (%s)"), DbgGetClientInfo());
@@ -4553,7 +4608,10 @@ void CUpDownClient::ProcessChatMessage(CSafeMemFile* data, uint32 nLength)
 					Packet* packet = new Packet(OP_CHATCAPTCHARES, 1, OP_EMULEPROT, false);
 					packet->pBuffer[0] = 0; // status response
 					theStats.AddUpDataOverheadOther(packet->size);
-					SafeSendPacket(packet);
+					if (!SafeConnectAndSendPacket(packet)) {
+						ASSERT( false ); // deleted client while connecting
+						return;
+					}
 				}
 				else{ // wrong, cleanup and ignore
 					DebugLogWarning(_T("Captcha answer failed (%s)"), DbgGetClientInfo());
@@ -4563,7 +4621,7 @@ void CUpDownClient::ProcessChatMessage(CSafeMemFile* data, uint32 nLength)
 					Packet* packet = new Packet(OP_CHATCAPTCHARES, 1, OP_EMULEPROT, false);
 					packet->pBuffer[0] = (m_cCaptchasSent < 3)? 1 : 2; // status response
 					theStats.AddUpDataOverheadOther(packet->size);
-					SafeSendPacket(packet);
+					SafeConnectAndSendPacket(packet);
 					return; // nothing more todo
 				}
 			}	
@@ -4680,7 +4738,7 @@ void CUpDownClient::SendChatMessage(CString strMessage)
 	data.WriteString(strMessage, GetUnicodeSupport());
 	Packet* packet = new Packet(&data, OP_EDONKEYPROT, OP_MESSAGE);
 	theStats.AddUpDataOverheadOther(packet->size);
-	SafeSendPacket(packet);
+	SafeConnectAndSendPacket(packet);
 }
 
 bool CUpDownClient::HasPassedSecureIdent(bool bPassIfUnavailable) const
@@ -4710,14 +4768,13 @@ void CUpDownClient::SendFirewallCheckUDPRequest()
 		SetKadState(KS_NONE);
 		return;
 	}
-	ASSERT( Kademlia::CKademlia::GetPrefs()->GetExternalKadPort() != 0 );
 	CSafeMemFile data;
 	data.WriteUInt16(Kademlia::CKademlia::GetPrefs()->GetInternKadPort());
 	data.WriteUInt16(Kademlia::CKademlia::GetPrefs()->GetExternalKadPort());
 	data.WriteUInt32(Kademlia::CKademlia::GetPrefs()->GetUDPVerifyKey(GetConnectIP()));
 	Packet* packet = new Packet(&data, OP_EMULEPROT, OP_FWCHECKUDPREQ);
 	theStats.AddUpDataOverheadKad(packet->size);
-	SafeSendPacket(packet);
+	SafeConnectAndSendPacket(packet);
 }
 
 void CUpDownClient::ProcessFirewallCheckUDPRequest(CSafeMemFile* data){
@@ -4769,6 +4826,120 @@ void CUpDownClient::SetConnectOptions(uint8 byOptions, bool bEncryption, bool bC
 	SetCryptLayerRequest((byOptions & 0x02) != 0 && bEncryption);
 	SetCryptLayerRequires((byOptions & 0x04) != 0 && bEncryption);
 	SetDirectUDPCallbackSupport((byOptions & 0x08) != 0 && bCallback);
+}
+
+void CUpDownClient::SendSharedDirectories()
+{
+	// SLUGFILLER: shareSubdir - enumerate according to shared files
+	/*
+	//TODO: Don't send shared directories which do not contain any files
+	// add shared directories
+	CString strDir;
+	CStringArray arFolders;
+	POSITION pos = thePrefs.shareddir_list.GetHeadPosition();
+	while (pos)
+	{
+		strDir = theApp.sharedfiles->GetPseudoDirName(thePrefs.shareddir_list.GetNext(pos));
+		if (!strDir.IsEmpty())
+			arFolders.Add(strDir);
+	}
+
+	// add incoming folders
+	for (int iCat = 0; iCat < thePrefs.GetCatCount(); iCat++)
+	{
+		strDir = theApp.sharedfiles->GetPseudoDirName(thePrefs.GetCategory(iCat)->strIncomingPath);
+		if (!strDir.IsEmpty())
+			arFolders.Add(strDir);
+	}
+
+	// add temporary folder if there are any temp files
+	if (theApp.downloadqueue->GetFileCount() > 0)
+		arFolders.Add(CString(OP_INCOMPLETE_SHARED_FILES));
+	// add "Other" folder (for single shared files) if there are any single shared files
+	if (theApp.sharedfiles->ProbablyHaveSingleSharedFiles())
+		arFolders.Add(CString(OP_OTHER_SHARED_FILES));
+
+	// build packet
+	CSafeMemFile tempfile(80);
+	tempfile.WriteUInt32(arFolders.GetCount());
+	for (int i = 0; i < arFolders.GetCount(); i++)
+		tempfile.WriteString(arFolders.GetAt(i), GetUnicodeSupport());
+	*/
+	CStringList toSend;		// String list, because it's easier and faster
+	CCKey bufKey;
+	CKnownFile* cur_file;
+
+	// move single shared files to new list to save some loops when using this a lot
+	CStringList	liSingleSharedFiles;
+	if (theApp.sharedfiles->ProbablyHaveSingleSharedFiles())
+	{
+		for (POSITION pos = theApp.sharedfiles->m_liSingleSharedFiles.GetHeadPosition(); pos != NULL; theApp.sharedfiles->m_liSingleSharedFiles.GetNext(pos))
+			liSingleSharedFiles.AddTail(theApp.sharedfiles->m_liSingleSharedFiles.GetAt(pos));
+	}
+
+	for (POSITION pos = theApp.sharedfiles->m_Files_map.GetStartPosition();pos != 0;){
+		theApp.sharedfiles->m_Files_map.GetNextAssoc(pos,bufKey,cur_file);
+		if (cur_file->IsLargeFile() && !SupportsLargeFiles())
+			continue;
+		if (cur_file->IsPartFile()) // partfiles will be taken care of differently
+			continue;
+		// check if this file is explicitly shared
+		if (theApp.sharedfiles->ProbablyHaveSingleSharedFiles())
+		{
+			bool bSingleShared = false;
+			for (POSITION pos = liSingleSharedFiles.GetHeadPosition(); pos != NULL; liSingleSharedFiles.GetNext(pos) )
+			{
+				if (cur_file->GetFilePath().CompareNoCase(liSingleSharedFiles.GetAt(pos)) == 0)
+				{
+					liSingleSharedFiles.RemoveAt(pos); // remove this item so we do not check it again
+					bSingleShared = true;
+					break;
+				}
+			}
+			if (bSingleShared)
+				continue;
+		}
+		// xMule_MOD: showSharePermissions - don't send dir names that are empty
+		// due to file browse permissions
+		int Perm = cur_file->GetPermissions()>=0?cur_file->GetPermissions():thePrefs.GetPermissions();
+		// Mighty Knife: Community visible filelist
+		if ( Perm == PERM_NOONE 
+			|| (Perm == PERM_COMMUNITY && !(IsCommunity() || IsFriend()) ) 
+			|| (Perm == PERM_FRIENDS && !IsFriend()) )
+			continue;
+		// [end] Mighty Knife
+		// xMule_MOD: showSharePermissions
+		CString path = theApp.sharedfiles->GetPseudoDirName(cur_file->GetPath());
+		path.MakeLower();
+		if (toSend.Find(path) == NULL)
+			toSend.AddTail(path);
+	}
+
+	// add temporary folder if there are any temp files
+	if (theApp.downloadqueue->GetFileCount() > 0)
+		toSend.AddTail(CString(OP_INCOMPLETE_SHARED_FILES));
+	// add "Other" folder (for single shared files) if there are any single shared files
+	if (theApp.sharedfiles->ProbablyHaveSingleSharedFiles())
+		toSend.AddTail(CString(OP_OTHER_SHARED_FILES));
+
+	// should actually be empty here but we delete it all just in case
+	ASSERT( liSingleSharedFiles.IsEmpty() );
+	if(liSingleSharedFiles.IsEmpty() == false)
+		liSingleSharedFiles.RemoveAll();
+
+	//build packet
+	CSafeMemFile tempfile(80);
+	tempfile.WriteUInt32(toSend.GetCount());
+	for (POSITION pos = toSend.GetHeadPosition();pos != 0;toSend.GetNext(pos))
+		tempfile.WriteString((LPCTSTR)toSend.GetAt(pos), GetUnicodeSupport());
+	// SLUGFILLER: shareSubdir - enumerate according to shared files
+
+	if (thePrefs.GetDebugClientTCPLevel() > 0)
+		DebugSend("OP__AskSharedDirsAnswer", this);
+	Packet* replypacket = new Packet(&tempfile);
+	replypacket->opcode = OP_ASKSHAREDDIRSANS;
+	theStats.AddUpDataOverheadOther(replypacket->size);
+	VERIFY( SendPacket(replypacket, true, true) );
 }
 
 //MORPH START - Added by SiRoB, ZZUL_20040904
@@ -5230,7 +5401,7 @@ bool CUpDownClient::GetOldMorph()
 //MOPRH START - Anti ModID Faker [Xman]
 bool CUpDownClient::IsModFaker()
 {
-
+	
 	// ==> this ain't no MorphXT
 	/*
 	if(CemuleApp::m_szMMVersion[0]!=0)
@@ -5587,6 +5758,7 @@ CString CUpDownClient::GetBanReasonString() const
 // <== Reduce Score for leecher - Stulle
 
 // ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 int CUpDownClient::GetClientStyle(bool bDl, bool bUl, bool bShare, bool bOwnCredits) const
 {
 	CKnownFile* currequpfile = CheckAndGetReqUpFile();
@@ -5614,6 +5786,7 @@ int CUpDownClient::GetClientStyle(bool bDl, bool bUl, bool bShare, bool bOwnCred
 	}
 	return iClientStyle;
 }
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle
 
 // ==> Display reason for zero score - Stulle
@@ -5657,12 +5830,13 @@ void CUpDownClient::SendIPChange()
 	PokeUInt32(packet->pBuffer, theApp.GetPublicIP()); // New ID
 	PokeUInt32(packet->pBuffer + 4, theApp.serverconnect->IsConnected() ? theApp.serverconnect->GetCurrentServer()->GetIP() : 0x00000000); // New Server IP
 	theStats.AddUpDataOverheadOther(packet->size);
-	SafeSendPacket(packet);
+	SafeConnectAndSendPacket(packet);
 	WeSentIP();
 }
 // <== Inform Clients after IP Change - Stulle
 
 // ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifdef GLOBAL_MOD_STATS
 void CUpDownClient::SetModPureString()
 {
 	int endpos = 0;
@@ -5695,4 +5869,5 @@ void CUpDownClient::SetModPureString()
 	else
 		m_strModPure = m_strModVersion;
 }
+#endif
 // <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle

@@ -69,7 +69,7 @@ BEGIN_MESSAGE_MAP(CChatWnd, CResizableDialog)
     ON_WM_CONTEXTMENU()
 	ON_WM_HELPINFO()
 	ON_NOTIFY(LVN_ITEMACTIVATE, IDC_FRIENDS_LIST, OnLvnItemActivateFriendList)
-	ON_NOTIFY(NM_CLICK, IDC_FRIENDS_LIST, OnNMClickFriendList)
+	ON_NOTIFY(NM_CLICK, IDC_FRIENDS_LIST, OnNmClickFriendList)
 	ON_STN_DBLCLK(IDC_FRIENDSICON, OnStnDblClickFriendIcon)
 	ON_BN_CLICKED(IDC_CSEND, OnBnClickedSend)
 	ON_BN_CLICKED(IDC_CCLOSE, OnBnClickedClose)
@@ -263,7 +263,11 @@ BOOL CChatWnd::OnInitDialog()
 
 	chatselector.Init(this);
 	m_FriendListCtrl.Init();
-	OnBackcolor(); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	OnBackcolor();
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
     // MORPH START - Added by Commander, Friendlinks [emulEspaña]
 	if ( theApp.m_fontSymbol.m_hObject )
 	{
@@ -278,8 +282,9 @@ BOOL CChatWnd::OnInitDialog()
 	rcSpl.left = rcSpl.right + SPLITTER_HORZ_MARGIN;
 	rcSpl.right = rcSpl.left + SPLITTER_HORZ_WIDTH;
 	m_wndSplitterHorz.Create(WS_CHILD | WS_VISIBLE, rcSpl, this, IDC_SPLITTER_FRIEND);
-	
-	m_wndFormat.ModifyStyle(0, TBSTYLE_TOOLTIPS);
+
+	// Vista: Remove the TBSTYLE_TRANSPARENT to avoid flickering (can be done only after the toolbar was initially created with TBSTYLE_TRANSPARENT !?)
+	m_wndFormat.ModifyStyle((theApp.m_ullComCtrlVer >= MAKEDLLVERULL(6, 16, 0, 0)) ? TBSTYLE_TRANSPARENT : 0, TBSTYLE_TOOLTIPS);
 	m_wndFormat.SetExtendedStyle(m_wndFormat.GetExtendedStyle() | TBSTYLE_EX_MIXEDBUTTONS);
 	TBBUTTON atb[1] = {0};
 	atb[0].iBitmap = 0;
@@ -338,7 +343,7 @@ void CChatWnd::DoResize(int iDelta)
 {
 	CSplitterControl::ChangeWidth(&m_FriendListCtrl, iDelta);
 	m_FriendListCtrl.SetColumnWidth(0, LVSCW_AUTOSIZE_USEHEADER);
-	CSplitterControl::ChangeWidth(GetDlgItem(IDC_FRIENDS_MSG), iDelta);
+	CSplitterControl::ChangeWidth(&m_cUserInfo, iDelta);
 	CSplitterControl::ChangeWidth(GetDlgItem(IDC_FRIENDS_NAME_EDIT), iDelta);
 	CSplitterControl::ChangeWidth(GetDlgItem(IDC_FRIENDS_USERHASH_EDIT), iDelta);
 	CSplitterControl::ChangeWidth(GetDlgItem(IDC_FRIENDS_CLIENTE_EDIT), iDelta);
@@ -348,7 +353,7 @@ void CChatWnd::DoResize(int iDelta)
 	//Commander - Added: IP2Country - Start
 	CSplitterControl::ChangeWidth(GetDlgItem(IDC_FRIENDS_COUNTRY_EDIT), iDelta);
     //Commander - Added: IP2Country - End
-	CSplitterControl::ChangeWidth(GetDlgItem(IDC_CHATSEL), -iDelta, CW_RIGHTALIGN);
+	CSplitterControl::ChangeWidth(&chatselector, -iDelta, CW_RIGHTALIGN);
 	CSplitterControl::ChangePos(GetDlgItem(IDC_MESSAGES_LBL), -iDelta, 0);
 	CSplitterControl::ChangePos(GetDlgItem(IDC_MESSAGEICON), -iDelta, 0);
 	CSplitterControl::ChangePos(&m_wndFormat, -iDelta, 0);
@@ -366,10 +371,10 @@ void CChatWnd::DoResize(int iDelta)
 
 	RemoveAnchor(m_FriendListCtrl);
 	AddAnchor(m_FriendListCtrl, TOP_LEFT, BOTTOM_LEFT);
-	RemoveAnchor(IDC_FRIENDS_MSG);
-	AddAnchor(IDC_FRIENDS_MSG, BOTTOM_LEFT, BOTTOM_LEFT);
-	RemoveAnchor(IDC_CHATSEL);
-	AddAnchor(IDC_CHATSEL, TOP_LEFT, BOTTOM_RIGHT);
+	RemoveAnchor(m_cUserInfo);
+	AddAnchor(m_cUserInfo, BOTTOM_LEFT, BOTTOM_LEFT);
+	RemoveAnchor(chatselector);
+	AddAnchor(chatselector, TOP_LEFT, BOTTOM_RIGHT);
 	RemoveAnchor(IDC_MESSAGES_LBL);
 	AddAnchor(IDC_MESSAGES_LBL, TOP_LEFT);
 	RemoveAnchor(IDC_MESSAGEICON);
@@ -422,7 +427,7 @@ LRESULT CChatWnd::DefWindowProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMessage)
 	{
-	case WM_PAINT:
+		case WM_PAINT:
 			if (m_wndSplitterHorz)
 			{
 				CRect rcWnd;
@@ -449,13 +454,6 @@ LRESULT CChatWnd::DefWindowProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 
-		case WM_WINDOWPOSCHANGED: {
-			CRect rcWnd;
-			GetWindowRect(rcWnd);
-			if (m_wndSplitterHorz && rcWnd.Width() > 0)
-				Invalidate();
-			break;
-		}
 		case WM_SIZE:
 			if (m_wndSplitterHorz)
 			{
@@ -475,7 +473,7 @@ void CChatWnd::StartSession(CUpDownClient* client)
 	if (!client->GetUserName())
 		return;
 	theApp.emuledlg->SetActiveDialog(this);
-	chatselector.StartSession(client,true);
+	chatselector.StartSession(client, true);
 }
 
 void CChatWnd::OnShowWindow(BOOL bShow, UINT /*nStatus*/)
@@ -500,8 +498,8 @@ BOOL CChatWnd::PreTranslateMessage(MSG* pMsg)
 		if (pMsg->hwnd == m_wndMessage && (pMsg->wParam == VK_UP || pMsg->wParam == VK_DOWN)){
 			ScrollHistory(pMsg->wParam == VK_DOWN);
 			return TRUE;
-			}
 		}
+	}
 	else if (pMsg->message == WM_KEYUP)
 	{
 		if (pMsg->hwnd == m_FriendListCtrl.m_hWnd)
@@ -520,7 +518,7 @@ BOOL CChatWnd::PreTranslateMessage(MSG* pMsg)
 	return CResizableDialog::PreTranslateMessage(pMsg);
 }
 
-void CChatWnd::OnNMClickFriendList(NMHDR *pNMHDR, LRESULT *pResult)
+void CChatWnd::OnNmClickFriendList(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	OnLvnItemActivateFriendList(pNMHDR, pResult);
 	*pResult = 0;
@@ -557,7 +555,7 @@ void CChatWnd::Localize()
 	GetDlgItem(IDC_FRIENDS_IDENT)->SetWindowText(GetResString(IDS_CHAT_IDENT));
 	GetDlgItem(IDC_FRIENDS_CLIENT)->SetWindowText(GetResString(IDS_CD_CSOFT));
 	GetDlgItem(IDC_FRIENDS_NAME)->SetWindowText(GetResString(IDS_CD_UNAME));
-	GetDlgItem(IDC_FRIENDS_USERHASH)->SetWindowText(GetResString(IDS_CD_UHASH));	
+	GetDlgItem(IDC_FRIENDS_USERHASH)->SetWindowText(GetResString(IDS_CD_UHASH));
 	//MORPH START - Added by SiRoB, New friend message window
 	GetDlgItem(IDC_FRIENDS_COUNTRY)->SetWindowText(GetResString(IDS_COUNTRY) + _T(":"));
 	//MORPH END   - Added by SiRoB, New friend message window
@@ -701,12 +699,12 @@ void CChatWnd::OnBnClickedSend()
 HBRUSH CChatWnd::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	// ==> Design Settings [eWombat/Stulle] - Stulle
-	/*
+#ifndef DESIGN_SETTINGS
 	HBRUSH hbr = theApp.emuledlg->GetCtlColor(pDC, pWnd, nCtlColor);
 	if (hbr)
 		return hbr;
 	return __super::OnCtlColor(pDC, pWnd, nCtlColor);
-	*/
+#else
 	hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
 
 	if (nCtlColor == CTLCOLOR_DLG)
@@ -720,6 +718,7 @@ HBRUSH CChatWnd::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		hbr = (HBRUSH) WHITE_BRUSH;
 
 	return hbr;
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle}
 }
 
@@ -772,6 +771,7 @@ void CChatWnd::OnBnClickedBnmenu()
 // MORPH END - Added by Commander, Friendlinks [emulEspaña]
 
 // ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 void CChatWnd::OnBackcolor() 
 {
 	clrChatColor = thePrefs.GetStyleBackColor(window_styles, style_w_messages);
@@ -786,4 +786,5 @@ void CChatWnd::OnBackcolor()
 	else
 		m_brMyBrush.CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
 }
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle

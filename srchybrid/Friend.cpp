@@ -61,7 +61,7 @@ CFriend::CFriend(const uchar* abyUserhash, uint32 dwLastSeen, uint32 dwLastUsedI
 	m_dwLastUsedIP = dwLastUsedIP;
 	m_nLastUsedPort = nLastUsedPort;
 	m_dwLastChatted = dwLastChatted;
-	if( dwHasHash && abyUserhash){
+	if(dwHasHash && abyUserhash){
 		md4cpy(m_abyUserhash,abyUserhash);
 	}
 	else
@@ -146,16 +146,16 @@ void CFriend::LoadFromFile(CFileDataIO* file)
 				break;
 			}
 			// <== Import 0x66 FriendSlots - Stulle
-		// MORPH (CB) Friendnote START
-		case FF_FRIENDNOTE: {
-			ASSERT( newtag->IsStr() );
-			if (newtag->IsStr()) {
-				if (m_frNote.IsEmpty())
-				m_frNote = newtag->GetStr();
+			// MORPH (CB) Friendnote START
+			case FF_FRIENDNOTE: {
+				ASSERT( newtag->IsStr() );
+				if (newtag->IsStr()) {
+					if (m_frNote.IsEmpty())
+					m_frNote = newtag->GetStr();
+				}
+				break;
 			}
-			break;
-		}
-		// MORPH (CB) Friendnote END
+			// MORPH (CB) Friendnote END
 		}
 		delete newtag;
 	}
@@ -174,10 +174,8 @@ void CFriend::WriteToFile(CFileDataIO* file)
 	file->WriteUInt32(uTagCount);
 
 	if (!m_strName.IsEmpty()){
-		if (WriteOptED2KUTF8Tag(file, m_strName, FF_NAME))
-			uTagCount++;
 		CTag nametag(FF_NAME, m_strName);
-		nametag.WriteTagToFile(file);
+		nametag.WriteTagToFile(file, utf8strOptBOM);
 		uTagCount++;
 	}
 	if (HasKadID()){
@@ -191,14 +189,12 @@ void CFriend::WriteToFile(CFileDataIO* file)
 		CTag friendslottag(FF_FRIENDSLOT,1);
 		friendslottag.WriteTagToFile(file);
 		uTagCount++;
-    }
+	}
 	//MORPH END   - Added by SiRoB, Slot Friend
 	// MORPH START CB: FriendNote	 START
 	if (!m_frNote.IsEmpty()) {
-		if (WriteOptED2KUTF8Tag(file, m_frNote, FF_FRIENDNOTE))
-			uTagCount++;
-		CTag nametag(FF_FRIENDNOTE, m_frNote); // repeating string in file if the above is executed?
-		nametag.WriteTagToFile(file);
+		CTag nametag(FF_FRIENDNOTE, m_frNote);
+		nametag.WriteTagToFile(file, utf8strOptBOM);
 		uTagCount++;
 	}
 	// // MORPH END CB: FriendNote END
@@ -211,7 +207,7 @@ void CFriend::WriteToFile(CFileDataIO* file)
 bool CFriend::HasUserhash() const
 {
 	return isnulmd4(m_abyUserhash) == 0;
- }
+}
 
 bool CFriend::HasKadID() const
 {
@@ -235,7 +231,7 @@ bool CFriend::GetFriendSlot() const {
 }
 
 void CFriend::SetLinkedClient(CUpDownClient* linkedClient) {
-    if(linkedClient != m_LinkedClient) {
+	if(linkedClient != m_LinkedClient) {
         if(linkedClient != NULL) {
             if(m_LinkedClient == NULL) {
                 linkedClient->SetFriendSlot(m_friendSlot);

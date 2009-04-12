@@ -75,6 +75,7 @@ protected:
 	int m_iExtractMetaData;
 	int m_iShareeMule;
 	bool bShowedWarning;
+	bool m_bResolveShellLinks;
 	// MORPH START leuk_he Advanced official preferences.
 	bool bMiniMuleAutoClose;
 	int iMiniMuleTransparency;
@@ -98,7 +99,6 @@ protected:
 	bool m_bPreviewOnIconDblClk;
 	CString sInternetSecurityZone;
 	CString sTxtEditor;
-	CString sdatetimeformat;
 	int iServerUDPPort; // really a unsigned int 16
 	bool m_bRemoveFilesToBin;
     bool m_bHighresTimer;
@@ -114,6 +114,7 @@ protected:
 	bool m_bAdjustNTFSDaylightFileTime; //neo offcial pref II
 	CString m_strDateTimeFormat;
 	CString m_strDateTimeFormat4Log;
+	CString m_strDateTimeFormat4List;
 	COLORREF m_crLogError;
 	COLORREF m_crLogWarning;
 	COLORREF m_crLogSuccess;
@@ -123,6 +124,8 @@ protected:
 	bool m_bShowCopyEd2kLinkCmd;
 	bool m_dontcompressavi;
 	bool m_ICH;
+	int m_iFileBufferTimeLimit;
+	bool m_bRearrangeKadSearchKeywords;
 
     // continue extra official preferences....
 	HTREEITEM m_hti_advanced;
@@ -148,7 +151,6 @@ protected:
 	HTREEITEM m_hti_m_bPreviewOnIconDblClk;
 	HTREEITEM m_hti_sInternetSecurityZone;
 	HTREEITEM m_hti_sTxtEditor;
-	HTREEITEM m_hti_sdatetimeformat;
 	HTREEITEM m_hti_iServerUDPPort;
 	HTREEITEM m_hti_m_bRemoveFilesToBin;
 	HTREEITEM m_hti_HighresTimer;
@@ -162,7 +164,9 @@ protected:
 	HTREEITEM m_hti_DebugSearchResultDetailLevel;
 	HTREEITEM m_htiCryptTCPPaddingLength;
 	HTREEITEM m_htiAdjustNTFSDaylightFileTime;	  //neo offcial pref II
+	HTREEITEM m_htidatetimeformat;
 	HTREEITEM m_htidatetimeformat4log;
+	HTREEITEM m_htidatetimeformat4list;
 	HTREEITEM m_htiLogError;
 	HTREEITEM m_htiLogWarning;
 	HTREEITEM m_htiLogSuccess;
@@ -172,6 +176,8 @@ protected:
 	HTREEITEM m_htiShowCopyEd2kLinkCmd;
 	HTREEITEM m_htidontcompressavi;
 	HTREEITEM m_htiICH;
+	HTREEITEM m_htiFileBufferTimeLimit;
+	HTREEITEM m_htiRearrangeKadSearchKeywords;
 	// MORPH END  leuk_he Advanced official preferences. 
 	
 
@@ -247,6 +253,7 @@ protected:
 	HTREEITEM m_htiShareeMulePublicUser;
 	HTREEITEM m_htiShareeMuleOldStyle;
 	//HTREEITEM m_htiExtractMetaDataMediaDet;
+	HTREEITEM m_htiResolveShellLinks;
 
 	virtual void DoDataExchange(CDataExchange* pDX);
 	virtual BOOL OnInitDialog();

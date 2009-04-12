@@ -53,7 +53,7 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 #define	SVWND_SPLITTER_YOFF		6
@@ -235,7 +235,11 @@ BOOL CServerWnd::OnInitDialog()
 	}
 	//MORPH END   - Added by SiRoB, Morph Log
 
-	OnBackcolor(); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	OnBackcolor();
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 
 	SetAllIcons();
 	Localize();
@@ -248,21 +252,21 @@ BOOL CServerWnd::OnInitDialog()
 	CString name;
 	name = GetResString(IDS_SV_SERVERINFO);
 	name.Replace(_T("&"), _T("&&"));
-	newitem.mask = TCIF_TEXT|TCIF_IMAGE;
+	newitem.mask = TCIF_TEXT | TCIF_IMAGE;
 	newitem.pszText = const_cast<LPTSTR>((LPCTSTR)name);
 	newitem.iImage = 1;
 	VERIFY( StatusSelector.InsertItem(StatusSelector.GetItemCount(), &newitem) == PaneServerInfo );
 
 	name = GetResString(IDS_SV_LOG);
 	name.Replace(_T("&"), _T("&&"));
-	newitem.mask = TCIF_TEXT|TCIF_IMAGE;
+	newitem.mask = TCIF_TEXT | TCIF_IMAGE;
 	newitem.pszText = const_cast<LPTSTR>((LPCTSTR)name);
 	newitem.iImage = 0;
 	VERIFY( StatusSelector.InsertItem(StatusSelector.GetItemCount(), &newitem) == PaneLog );
 
-	name=SZ_DEBUG_LOG_TITLE;
+	name = SZ_DEBUG_LOG_TITLE;
 	name.Replace(_T("&"), _T("&&"));
-	newitem.mask = TCIF_TEXT|TCIF_IMAGE;
+	newitem.mask = TCIF_TEXT | TCIF_IMAGE;
 	newitem.pszText = const_cast<LPTSTR>((LPCTSTR)name);
 	newitem.iImage = 0;
 	VERIFY( StatusSelector.InsertItem(StatusSelector.GetItemCount(), &newitem) == PaneVerboseLog );
@@ -289,19 +293,19 @@ BOOL CServerWnd::OnInitDialog()
 	AddAnchor(IDC_SERVLIST_TEXT, TOP_LEFT);
 	AddAnchor(serverlistctrl, TOP_LEFT, MIDDLE_RIGHT);
 	AddAnchor(m_ctrlNewServerFrm, TOP_RIGHT);
-	AddAnchor(IDC_SSTATIC4,TOP_RIGHT);
-	AddAnchor(IDC_SSTATIC7,TOP_RIGHT);
-	AddAnchor(IDC_IPADDRESS,TOP_RIGHT);
-	AddAnchor(IDC_SSTATIC3,TOP_RIGHT);
-	AddAnchor(IDC_SNAME,TOP_RIGHT);
-	AddAnchor(IDC_ADDSERVER,TOP_RIGHT );
-	AddAnchor(IDC_SSTATIC5,TOP_RIGHT);
+	AddAnchor(IDC_SSTATIC4, TOP_RIGHT);
+	AddAnchor(IDC_SSTATIC7, TOP_RIGHT);
+	AddAnchor(IDC_IPADDRESS, TOP_RIGHT);
+	AddAnchor(IDC_SSTATIC3, TOP_RIGHT);
+	AddAnchor(IDC_SNAME, TOP_RIGHT);
+	AddAnchor(IDC_ADDSERVER, TOP_RIGHT);
+	AddAnchor(IDC_SSTATIC5, TOP_RIGHT);
 	AddAnchor(m_ctrlMyInfoFrm, TOP_RIGHT, BOTTOM_RIGHT);
 	AddAnchor(m_MyInfo, TOP_RIGHT, BOTTOM_RIGHT);
-	AddAnchor(IDC_SPORT,TOP_RIGHT);
+	AddAnchor(IDC_SPORT, TOP_RIGHT);
 	AddAnchor(m_ctrlUpdateServerFrm, TOP_RIGHT);
-	AddAnchor(IDC_SERVERMETURL,TOP_RIGHT);
-	AddAnchor(IDC_UPDATESERVERMETFROMURL,TOP_RIGHT);
+	AddAnchor(IDC_SERVERMETURL, TOP_RIGHT);
+	AddAnchor(IDC_UPDATESERVERMETFROMURL, TOP_RIGHT);
 	AddAnchor(StatusSelector, MIDDLE_LEFT, BOTTOM_RIGHT);
 	//MORPH START - Added by SiRoB, XML News [O²]
 	AddAnchor(IDC_FEEDUPDATE, MIDDLE_RIGHT);
@@ -309,8 +313,8 @@ BOOL CServerWnd::OnInitDialog()
 	AddAnchor(IDC_FEEDLIST, MIDDLE_LEFT, MIDDLE_RIGHT);
 	//MORPH END   - Added by SiRoB, XML News [O²]
 	AddAnchor(IDC_LOGRESET, MIDDLE_RIGHT); // avoid resizing GUI glitches with the tab control by adding this control as the last one (Z-order)
-	AddAnchor(IDC_ED2KCONNECT,TOP_RIGHT);
-	AddAnchor(IDC_DD,TOP_RIGHT);
+	AddAnchor(IDC_ED2KCONNECT, TOP_RIGHT);
+	AddAnchor(IDC_DD, TOP_RIGHT);
 	// The resizing of those log controls (rich edit controls) works 'better' when added as last anchors (?)
 	AddAnchor(*servermsgbox, MIDDLE_LEFT, BOTTOM_RIGHT);
 	AddAnchor(*logbox, MIDDLE_LEFT, BOTTOM_RIGHT);
@@ -408,7 +412,7 @@ BOOL CServerWnd::OnInitDialog()
 	// splitter
 	CRect rcSpl;
 	rcSpl.left = 55;
-	rcSpl.right = 300;//rcDlgItem.right;
+	rcSpl.right = 300;
 	rcSpl.top = 55+NEWSOFFSET;
 	rcSpl.bottom = rcSpl.top + SVWND_SPLITTER_HEIGHT;
 	m_wndSplitter.Create(WS_CHILD | WS_VISIBLE, rcSpl, this, IDC_SPLITTER_SERVER);
@@ -482,7 +486,7 @@ void CServerWnd::SetAllIcons()
 	m_ctrlMyInfoFrm.SetIcon(_T("Info"));
 
 	CImageList iml;
-	iml.Create(16,16,theApp.m_iDfltImageListColorFlags|ILC_MASK,0,1);
+	iml.Create(16, 16, theApp.m_iDfltImageListColorFlags | ILC_MASK, 0, 1);
 	iml.Add(CTempIconLoader(_T("Log")));
 	iml.Add(CTempIconLoader(_T("ServerInfo")));
 	StatusSelector.SetImageList(&iml);
@@ -499,60 +503,60 @@ void CServerWnd::Localize()
 {
 	serverlistctrl.Localize();
 
-	    GetDlgItem(IDC_SERVLIST_TEXT)->SetWindowText(GetResString(IDS_SV_SERVERLIST));
-	    m_ctrlNewServerFrm.SetWindowText(GetResString(IDS_SV_NEWSERVER));
-	    GetDlgItem(IDC_SSTATIC4)->SetWindowText(GetResString(IDS_SV_ADDRESS));
-	    GetDlgItem(IDC_SSTATIC7)->SetWindowText(GetResString(IDS_SV_PORT));
-	    GetDlgItem(IDC_SSTATIC3)->SetWindowText(GetResString(IDS_SW_NAME));
-	    GetDlgItem(IDC_ADDSERVER)->SetWindowText(GetResString(IDS_SV_ADD));
-	    m_ctrlUpdateServerFrm.SetWindowText(GetResString(IDS_SV_MET));
-	    GetDlgItem(IDC_UPDATESERVERMETFROMURL)->SetWindowText(GetResString(IDS_SV_UPDATE));
-	    GetDlgItem(IDC_LOGRESET)->SetWindowText(GetResString(IDS_PW_RESET));
-	    m_ctrlMyInfoFrm.SetWindowText(GetResString(IDS_MYINFO));
+	serverlistctrl.ShowServerCount();
+	m_ctrlNewServerFrm.SetWindowText(GetResString(IDS_SV_NEWSERVER));
+	GetDlgItem(IDC_SSTATIC4)->SetWindowText(GetResString(IDS_SV_ADDRESS));
+	GetDlgItem(IDC_SSTATIC7)->SetWindowText(GetResString(IDS_SV_PORT));
+	GetDlgItem(IDC_SSTATIC3)->SetWindowText(GetResString(IDS_SW_NAME));
+	GetDlgItem(IDC_ADDSERVER)->SetWindowText(GetResString(IDS_SV_ADD));
+	m_ctrlUpdateServerFrm.SetWindowText(GetResString(IDS_SV_MET));
+	GetDlgItem(IDC_UPDATESERVERMETFROMURL)->SetWindowText(GetResString(IDS_SV_UPDATE));
+	GetDlgItem(IDC_LOGRESET)->SetWindowText(GetResString(IDS_PW_RESET));
+	m_ctrlMyInfoFrm.SetWindowText(GetResString(IDS_MYINFO));
 
     	//MORPH START - Added by SiRoB, XML News [O²]
-		GetDlgItem(IDC_FEEDUPDATE)->SetWindowText(GetResString(IDS_SF_RELOAD)); // Added by O? XML News
-		//MORPH END   - Added by SiRoB, XML News [O²]
+	GetDlgItem(IDC_FEEDUPDATE)->SetWindowText(GetResString(IDS_SF_RELOAD)); // Added by O? XML News
+	//MORPH END   - Added by SiRoB, XML News [O²]
 
-		// Mighty Knife: Popup-Menu for editing news feeds
-		GetDlgItem(IDC_FEEDCHANGE)->SetWindowText(GetResString(IDS_FEEDBUTTON));
-		// [end] Mighty Knife
-    
-	    TCITEM item;
-	    CString name;
-	    name = GetResString(IDS_SV_SERVERINFO);
+	// Mighty Knife: Popup-Menu for editing news feeds
+	GetDlgItem(IDC_FEEDCHANGE)->SetWindowText(GetResString(IDS_FEEDBUTTON));
+	// [end] Mighty Knife
+   
+	TCITEM item;
+	CString name;
+	name = GetResString(IDS_SV_SERVERINFO);
 	name.Replace(_T("&"), _T("&&"));
-	    item.mask = TCIF_TEXT;
-		item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
-		StatusSelector.SetItem(PaneServerInfo, &item);
+	item.mask = TCIF_TEXT;
+	item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
+	StatusSelector.SetItem(PaneServerInfo, &item);
 
-	    name = GetResString(IDS_SV_LOG);
+	name = GetResString(IDS_SV_LOG);
 	name.Replace(_T("&"), _T("&&"));
-	    item.mask = TCIF_TEXT;
-		item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
-		StatusSelector.SetItem(PaneLog, &item);
+	item.mask = TCIF_TEXT;
+	item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
+	StatusSelector.SetItem(PaneLog, &item);
 
-	    name = SZ_DEBUG_LOG_TITLE;
+	name = SZ_DEBUG_LOG_TITLE;
 	name.Replace(_T("&"), _T("&&"));
-	    item.mask = TCIF_TEXT;
-		item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
-		StatusSelector.SetItem(PaneVerboseLog, &item);
+	item.mask = TCIF_TEXT;
+	item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
+	StatusSelector.SetItem(PaneVerboseLog, &item);
 
-	    //MORPH START - Added by SiRoB, XML News [O²]
-		name = GetResString(IDS_FEED);
+	//MORPH START - Added by SiRoB, XML News [O²]
+	name = GetResString(IDS_FEED);
 	name.Replace(_T("&"), _T("&&"));
-	    item.mask = TCIF_TEXT;
-		item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
-		StatusSelector.SetItem(PaneNews, &item);
-		//MORPH END   - Added by SiRoB, XML News [O²]
+	item.mask = TCIF_TEXT;
+	item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
+	StatusSelector.SetItem(PaneNews, &item);
+	//MORPH END   - Added by SiRoB, XML News [O²]
 
-	    //MORPH START - Added by SiRoB, Morph LOg
-		name = GetResString(IDS_MORPH_LOG);
+	//MORPH START - Added by SiRoB, Morph LOg
+	name = GetResString(IDS_MORPH_LOG);
 	name.Replace(_T("&"), _T("&&"));
-	    item.mask = TCIF_TEXT;
-		item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
-		StatusSelector.SetItem(PaneMorphLog, &item);
-		//MORPH END   - Added by SiRoB, Morph Log
+	item.mask = TCIF_TEXT;
+	item.pszText = const_cast<LPTSTR>((LPCTSTR)name);
+	StatusSelector.SetItem(PaneMorphLog, &item);
+	//MORPH END   - Added by SiRoB, Morph Log
 
 	UpdateLogTabSelection();
 	UpdateControlsState();
@@ -681,14 +685,14 @@ bool CServerWnd::AddServer(uint16 nPort, CString strAddress, CString strName, bo
 		else
 		{
 			if (bShowErrorMB)
-			AfxMessageBox(GetResString(IDS_SRV_NOTADDED));
+				AfxMessageBox(GetResString(IDS_SRV_NOTADDED));
 		}
 		delete toadd;
 		return false;
 	}
 	else
 	{
-		AddLogLine(true,GetResString(IDS_SERVERADDED), toadd->GetListName());
+		AddLogLine(true, GetResString(IDS_SERVERADDED), toadd->GetListName());
 		return true;
 	}
 }
@@ -702,7 +706,7 @@ void CServerWnd::OnBnClickedUpdateServerMetFromUrl()
 	{
 		if (thePrefs.addresses_list.IsEmpty())
 		{
-			AddLogLine(true, GetResString(IDS_SRV_NOURLAV) );
+			AddLogLine(true, GetResString(IDS_SRV_NOURLAV));
 		}
 		else
 		{
@@ -711,7 +715,7 @@ void CServerWnd::OnBnClickedUpdateServerMetFromUrl()
 			while (!bDownloaded && pos != NULL)
 			{
 				strURL = thePrefs.addresses_list.GetNext(pos);
-				bDownloaded=UpdateServerMetFromURL(strURL);
+				bDownloaded = UpdateServerMetFromURL(strURL);
 			}
 		}
 	}
@@ -848,13 +852,13 @@ void CServerWnd::UpdateLogTabSelection()
 void CServerWnd::ToggleDebugWindow()
 {
 	int cur_sel = StatusSelector.GetCurSel();
-	if (thePrefs.GetVerbose() && !debug)	
+	if (thePrefs.GetVerbose() && !debug)
 	{
 		TCITEM newitem;
 		CString name;
 		name = SZ_DEBUG_LOG_TITLE;
 		name.Replace(_T("&"), _T("&&"));
-		newitem.mask = TCIF_TEXT|TCIF_IMAGE;
+		newitem.mask = TCIF_TEXT | TCIF_IMAGE;
 		newitem.pszText = const_cast<LPTSTR>((LPCTSTR)name);
 		newitem.iImage = 0;
 		//MORPH START - Changed by SiRoB, XML News & Morph Log
@@ -882,7 +886,7 @@ void CServerWnd::ToggleDebugWindow()
 }
 
 void CServerWnd::UpdateMyInfo()
-{       
+{
 	m_MyInfo.SetRedraw(FALSE);
 	m_MyInfo.SetWindowText(_T(""));
 	CreateNetworkInfo(m_MyInfo, m_cfDef, m_cfBold);
@@ -897,7 +901,7 @@ CString CServerWnd::GetMyInfoString() {
 	return buffer;
 }
 
-BOOL CServerWnd::PreTranslateMessage(MSG* pMsg) 
+BOOL CServerWnd::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN)
 	{
@@ -910,7 +914,7 @@ BOOL CServerWnd::PreTranslateMessage(MSG* pMsg)
 		if (pMsg->wParam == VK_DELETE && m_pacServerMetURL && m_pacServerMetURL->IsBound() && pMsg->hwnd == GetDlgItem(IDC_SERVERMETURL)->m_hWnd)
 		{
 			if (GetAsyncKeyState(VK_MENU)<0 || GetAsyncKeyState(VK_CONTROL)<0)
-			m_pacServerMetURL->Clear();
+				m_pacServerMetURL->Clear();
 			else
 				m_pacServerMetURL->RemoveSelectedItem();
 		}
@@ -942,7 +946,7 @@ BOOL CServerWnd::PreTranslateMessage(MSG* pMsg)
 			}
 		}
 	}
-   
+
 	return CResizableDialog::PreTranslateMessage(pMsg);
 }
 
@@ -969,8 +973,8 @@ void CServerWnd::OnEnLinkServerBox(NMHDR *pNMHDR, LRESULT *pResult)
 		servermsgbox->GetTextRange(pEnLink->chrg.cpMin, pEnLink->chrg.cpMax, strUrl);
 		if (strUrl == m_strClickNewVersion){
 			// MOD Note: Do not remove this part - Merkur
-					strUrl.Format(_T("/en/version_check.php?version=%i&language=%i"),theApp.m_uCurVersionCheck,thePrefs.GetLanguageID());
-					strUrl = thePrefs.GetVersionCheckBaseURL()+strUrl;
+			strUrl.Format(_T("/en/version_check.php?version=%i&language=%i"),theApp.m_uCurVersionCheck,thePrefs.GetLanguageID());
+			strUrl = thePrefs.GetVersionCheckBaseURL()+strUrl;
 			// MOD Note: end
 		}
 		//MORPH START - Added by SiRoB, New Version Check
@@ -985,9 +989,9 @@ void CServerWnd::OnEnLinkServerBox(NMHDR *pNMHDR, LRESULT *pResult)
 void CServerWnd::UpdateControlsState()
 {
 	CString strLabel;
-	if( theApp.serverconnect->IsConnected() )
+	if (theApp.serverconnect->IsConnected())
 		strLabel = GetResString(IDS_MAIN_BTN_DISCONNECT);
-	else if( theApp.serverconnect->IsConnecting() )
+	else if (theApp.serverconnect->IsConnecting())
 		strLabel = GetResString(IDS_MAIN_BTN_CANCEL);
 	else
 		strLabel = GetResString(IDS_MAIN_BTN_CONNECT);
@@ -999,7 +1003,7 @@ void CServerWnd::OnBnConnect()
 {
 	if (theApp.serverconnect->IsConnected())
 		theApp.serverconnect->Disconnect();
-	else if (theApp.serverconnect->IsConnecting() )
+	else if (theApp.serverconnect->IsConnecting())
 		theApp.serverconnect->StopConnectionTry();
 	else
 		theApp.serverconnect->ConnectToAnyServer();
@@ -1013,10 +1017,10 @@ void CServerWnd::SaveAllSettings()
 
 void CServerWnd::OnDDClicked()
 {
-	CWnd* box=GetDlgItem(IDC_SERVERMETURL);
+	CWnd* box = GetDlgItem(IDC_SERVERMETURL);
 	box->SetFocus();
 	box->SetWindowText(_T(""));
-	box->SendMessage(WM_KEYDOWN,VK_DOWN,0x00510001);
+	box->SendMessage(WM_KEYDOWN, VK_DOWN, 0x00510001);
 }
 
 void CServerWnd::ResetHistory()
@@ -1024,7 +1028,7 @@ void CServerWnd::ResetHistory()
 	if (m_pacServerMetURL == NULL)
 		return;
 	GetDlgItem(IDC_SERVERMETURL)->SendMessage(WM_KEYDOWN, VK_ESCAPE, 0x00510001);
-		m_pacServerMetURL->Clear();
+	m_pacServerMetURL->Clear();
 }
 
 BOOL CServerWnd::OnHelpInfo(HELPINFO* /*pHelpInfo*/)
@@ -1204,10 +1208,10 @@ void CServerWnd::ReattachAnchors()
 	AddAnchor(IDC_FEEDCHANGE, BOTTOM_RIGHT);
 	AddAnchor(IDC_FEEDLIST, BOTTOM_LEFT, BOTTOM_RIGHT);
 	//MORPH END   - Added by SiRoB, XML News
-	AddAnchor(IDC_LOGRESET,  BOTTOM_RIGHT);
-	AddAnchor(*servermsgbox,  CSize(0, thePrefs.GetSplitterbarPositionServer()), BOTTOM_RIGHT);
-	AddAnchor(*logbox,  CSize(0, thePrefs.GetSplitterbarPositionServer()), BOTTOM_RIGHT);
-	AddAnchor(*debuglog,  CSize(0, thePrefs.GetSplitterbarPositionServer()), BOTTOM_RIGHT);
+	AddAnchor(IDC_LOGRESET, MIDDLE_RIGHT);
+	AddAnchor(*servermsgbox, CSize(0, thePrefs.GetSplitterbarPositionServer()), BOTTOM_RIGHT);
+	AddAnchor(*logbox, CSize(0, thePrefs.GetSplitterbarPositionServer()), BOTTOM_RIGHT);
+	AddAnchor(*debuglog, CSize(0, thePrefs.GetSplitterbarPositionServer()), BOTTOM_RIGHT);
 	//MORPH START - Added by SiRoB, XML News
 	AddAnchor(*newsmsgbox,  CSize(0, thePrefs.GetSplitterbarPositionServer()), BOTTOM_RIGHT);
 	//MORPH END   - Added by SiRoB, XML News
@@ -1240,14 +1244,13 @@ void CServerWnd::UpdateSplitterRange()
 	ScreenToClient(rcWnd);
 
 	CRect rcDlgItem;
-
 	serverlistctrl.GetWindowRect(rcDlgItem);
 	ScreenToClient(rcDlgItem);
 
-	m_wndSplitter.SetRange(rcWnd.top+100,rcWnd.bottom-50-NEWSOFFSET);  //(rcDlgItem.top,rcDlgItem2.bottom-50);
+	m_wndSplitter.SetRange(rcWnd.top + 100, rcWnd.bottom - 50-NEWSOFFSET);
 
 	LONG splitpos = rcDlgItem.bottom + SVWND_SPLITTER_YOFF;
-	thePrefs.SetSplitterbarPositionServer( (splitpos  * 100) / rcWnd.Height());
+	thePrefs.SetSplitterbarPositionServer((splitpos  * 100) / rcWnd.Height());
 
 	//MORPH START - Added by SiRoB, XML News
 	GetDlgItem(IDC_FEEDUPDATE)->GetWindowRect(rcDlgItem);
@@ -1310,21 +1313,14 @@ LRESULT CServerWnd::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				}
 			}
 			break;
+
+		case WM_WINDOWPOSCHANGED:
+			if (m_wndSplitter)
+				m_wndSplitter.Invalidate();
+			break;
 	}
 
 	return CResizableDialog::DefWindowProc(message, wParam, lParam);
-}
-
-void CServerWnd::OnWindowPosChanged(WINDOWPOS* lpwndpos)
-{
-	if (m_wndSplitter)
-	{
-		CRect rcWnd;
-		GetWindowRect(rcWnd);
-		if (rcWnd.Height() > 0)
-			Invalidate();
-	}
-	CResizableDialog::OnWindowPosChanged(lpwndpos);
 }
 
 void CServerWnd::OnSplitterMoved(NMHDR* pNMHDR, LRESULT* /*pResult*/)
@@ -1336,12 +1332,12 @@ void CServerWnd::OnSplitterMoved(NMHDR* pNMHDR, LRESULT* /*pResult*/)
 HBRUSH CServerWnd::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	// ==> Design Settings [eWombat/Stulle] - Stulle
-	/*
+#ifndef DESIGN_SETTINGS
 	HBRUSH hbr = theApp.emuledlg->GetCtlColor(pDC, pWnd, nCtlColor);
 	if (hbr)
 		return hbr;
 	return __super::OnCtlColor(pDC, pWnd, nCtlColor);
-	*/
+#else
 	hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
 
 	if (nCtlColor == CTLCOLOR_DLG)
@@ -1355,6 +1351,7 @@ HBRUSH CServerWnd::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		hbr = (HBRUSH) WHITE_BRUSH;
 
 	return hbr;
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 }
 
@@ -1857,6 +1854,7 @@ void CServerWnd::WriteXMLList (CStringList& _names, CStringList& _urls) {
 // [end] Mighty Knife
 
 // ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 void CServerWnd::OnBackcolor() 
 {
 	clrSrvColor = thePrefs.GetStyleBackColor(window_styles, style_w_server);
@@ -1872,4 +1870,5 @@ void CServerWnd::OnBackcolor()
 		m_brMyBrush.CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
 	SetAllIcons();
 }
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle

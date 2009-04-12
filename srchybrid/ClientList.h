@@ -187,10 +187,14 @@ public:
 	// <== Reduce Score for leecher - Stulle
 
 	// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifdef GLOBAL_MOD_STATS
 	void	GetModPureStats(CRBMap<CString, int> *pureMods);
+#endif
 	// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 
 	// ==> Compat Client Stats - Stulle
+#ifdef COMPAT_CLIENTS_STATS
 	void	GetCompatClientsStats(CRBMap<CString, uint32> *compatClients);
+#endif
 	// <== Compat Client Stats - Stulle
 };

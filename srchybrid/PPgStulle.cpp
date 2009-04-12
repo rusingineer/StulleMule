@@ -14,6 +14,7 @@
 #include "ClientList.h" // Reduce Score for leecher - Stulle
 #include "TransferWnd.h" // CPU/MEM usage [$ick$/Stulle] - Stulle
 #include "MuleToolbarCtrl.h" // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
+#include "NTservice.h" // Adjustable NT Service Strings - Stulle
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -218,7 +219,19 @@ CPPgStulle::CPPgStulle()
 	m_htiReleaseBonusDaysEdit = NULL;
 	// <== Release Bonus [sivka] - Stulle
 	m_htiReleaseScoreAssurance = NULL; // Release Score Assurance - Stulle
-	m_htiAutoSharedUpdater = NULL; // Automatic shared files updater [MoNKi] - Stulle
+	// ==> Adjustable NT Service Strings - Stulle
+	m_htiServiceStrGrp = NULL;
+	m_htiServiceName = NULL;
+	m_htiServiceDispName = NULL;
+	m_htiServiceDescr = NULL;
+	// <== Adjustable NT Service Strings - Stulle
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+	m_htiAutoSharedGroup = NULL;
+	m_htiAutoSharedUpdater = NULL;
+	m_htiSingleSharedDirUpdater = NULL;
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 }
 
 CPPgStulle::~CPPgStulle()
@@ -229,6 +242,7 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STULLE_OPTS, m_ctrlTreeOptions);
+	DDX_Control(pDX, IDC_PUSHSMALL_SLIDER, m_ctlPushSmallSize); // push small files [sivka] - Stulle
 	if (!m_bInitializedTreeOpts)
 	{
 		int iImgSecu = 8;
@@ -251,6 +265,8 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 		int iImgGlobal = 8;
 		int iImgEmulate = 8;
 		int iImgReleaseBonus = 8;
+		int iImgServiceStrGrp = 8;
+		int iImgASFU = 8;
 
 		CImageList* piml = m_ctrlTreeOptions.GetImageList(TVSIL_NORMAL);
 		if (piml){
@@ -274,6 +290,8 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 			iImgGlobal = piml->Add(CTempIconLoader(_T("SEARCHMETHOD_GLOBAL")));
 			iImgEmulate = piml->Add(CTempIconLoader(_T("EMULATEICON")));
 			iImgReleaseBonus = piml->Add(CTempIconLoader(_T("RELEASEBONUS")));
+			iImgServiceStrGrp = piml->Add(CTempIconLoader(_T("TWEAK")));
+			iImgASFU = piml->Add(CTempIconLoader(_T("SHAREDFILESLIST")));
 		}
 		
 		CString Buffer;
@@ -330,11 +348,11 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 		m_ctrlTreeOptions.Expand(m_htiSecu, TVE_EXPAND);
 		
 		m_htiPush = m_ctrlTreeOptions.InsertGroup(GetResString(IDS_PUSH), iImgPush, TVI_ROOT); // push files - Stulle
-		// ==> push small files [sivka]  - Stulle
+		// ==> push small files [sivka] - Stulle
 		m_htiEnablePushSmallFile = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_PUSH_SMALL), m_htiPush, m_bEnablePushSmallFile);
 		m_htiPushSmallFileBoost = m_ctrlTreeOptions.InsertItem(GetResString(IDS_PUSH_SMALL_BOOST), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT, m_htiPush);
 		m_ctrlTreeOptions.AddEditBox(m_htiPushSmallFileBoost, RUNTIME_CLASS(CNumTreeOptionsEdit));
-		// <== push small files [sivka]  - Stulle
+		// <== push small files [sivka] - Stulle
 		m_htiEnablePushRareFile = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_PUSH_RARE), m_htiPush, m_bEnablePushRareFile); // push rare file - Stulle
 
 		// ==> FunnyNick Tag - Stulle
@@ -501,7 +519,22 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 		m_ctrlTreeOptions.Expand(m_htiReleaseBonusDays, TVE_EXPAND);
 		// <== Release Bonus [sivka] - Stulle
 		m_htiReleaseScoreAssurance = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_RELEASE_SCORE_ASSURANCE), m_htiReleaseBonusGroup, m_bReleaseScoreAssurance); // Release Score Assurance - Stulle
-		m_htiAutoSharedUpdater = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_AUTO_SHARED_UPDATER), m_htiMisc, m_bAutoSharedUpdater); // Automatic shared files updater [MoNKi] - Stulle
+		// ==> Adjustable NT Service Strings - Stulle
+		m_htiServiceStrGrp = m_ctrlTreeOptions.InsertGroup(GetResString(IDS_SERVICE_STR_GROUP), iImgServiceStrGrp, m_htiMisc);
+		m_htiServiceName = m_ctrlTreeOptions.InsertItem(GetResString(IDS_SERVICE_NAME), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT,m_htiServiceStrGrp);
+		m_ctrlTreeOptions.AddEditBox(m_htiServiceName, RUNTIME_CLASS(CTreeOptionsEditEx));
+		m_htiServiceDispName = m_ctrlTreeOptions.InsertItem(GetResString(IDS_SERVICE_DISP_NAME), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT,m_htiServiceStrGrp);
+		m_ctrlTreeOptions.AddEditBox(m_htiServiceDispName, RUNTIME_CLASS(CTreeOptionsEditEx));
+		m_htiServiceDescr = m_ctrlTreeOptions.InsertItem(GetResString(IDS_SERVICE_DESCR), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT,m_htiServiceStrGrp);
+		m_ctrlTreeOptions.AddEditBox(m_htiServiceDescr, RUNTIME_CLASS(CTreeOptionsEditEx));
+		// <== Adjustable NT Service Strings - Stulle
+		// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+		m_htiAutoSharedGroup = m_ctrlTreeOptions.InsertGroup(GetResString(IDS_AUTO_SHARED_UPDATER), iImgASFU, m_htiMisc);
+		m_htiAutoSharedUpdater = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_SUC_ENABLED), m_htiAutoSharedGroup, m_bAutoSharedUpdater);
+		m_htiSingleSharedDirUpdater = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_ASFU_SINGLE), m_htiAutoSharedGroup, m_bSingleSharedDirUpdater);
+#endif
+		// <== Automatic shared files updater [MoNKi] - Stulle
 
 		m_ctrlTreeOptions.SendMessage(WM_VSCROLL, SB_TOP);
 		m_bInitializedTreeOpts = true;
@@ -683,7 +716,17 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxInt(pDX, m_iReleaseBonusDays, 1, 16);
 	// <== Release Bonus [sivka] - Stulle
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiReleaseScoreAssurance, m_bReleaseScoreAssurance); // Release Score Assurance - Stulle
-	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiAutoSharedUpdater, m_bAutoSharedUpdater); // Automatic shared files updater [MoNKi] - Stulle
+	// ==> Adjustable NT Service Strings - Stulle
+	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiServiceName, m_strServiceName);
+	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiServiceDispName, m_strServiceDispName);
+	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiServiceDescr, m_strServiceDescr);
+	// <== Adjustable NT Service Strings - Stulle
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiAutoSharedUpdater, m_bAutoSharedUpdater);
+	if(m_htiSingleSharedDirUpdater) DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiSingleSharedDirUpdater, m_bSingleSharedDirUpdater);
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 
 	// ==> ban systems optional - Stulle
 	if (m_htiBadModString)		m_ctrlTreeOptions.SetCheckBoxEnable(m_htiBadModString, m_bEnableAntiLeecher);
@@ -721,6 +764,12 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 	// ==> CPU/MEM usage [$ick$/Stulle] - Stulle
 	if (m_htiSysInfoGlobal)	m_ctrlTreeOptions.SetCheckBoxEnable(m_htiSysInfoGlobal, m_bSysInfo);
 	// <== CPU/MEM usage [$ick$/Stulle] - Stulle
+
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+	if (m_htiSingleSharedDirUpdater)	m_ctrlTreeOptions.SetCheckBoxEnable(m_htiSingleSharedDirUpdater, m_bAutoSharedUpdater);
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 }
 
 
@@ -874,13 +923,29 @@ BOOL CPPgStulle::OnInitDialog()
 	}
 	// <== Release Bonus [sivka] - Stulle
 	m_bReleaseScoreAssurance = thePrefs.GetReleaseScoreAssurance(); // Release Score Assurance - Stulle
-	m_bAutoSharedUpdater = thePrefs.GetDirectoryWatcher(); // Automatic shared files updater [MoNKi] - Stulle
+	// ==> Adjustable NT Service Strings - Stulle
+	m_strServiceName = thePrefs.GetServiceName();
+	m_strServiceDispName = thePrefs.GetServiceDispName();
+	m_strServiceDescr = thePrefs.GetServiceDescr();
+	// <== Adjustable NT Service Strings - Stulle
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+	m_bAutoSharedUpdater = thePrefs.GetDirectoryWatcher();
+	m_bSingleSharedDirUpdater = thePrefs.GetSingleSharedDirWatcher();
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 
-	CPropertyPage::OnInitDialog();
+	m_ctrlTreeOptions.SetImageListColorFlags(theApp.m_iDfltImageListColorFlags);
+    CPropertyPage::OnInitDialog();
 
 	// ==> push small files [sivka] - Stulle
 	InitWindowStyles(this);
-	LoadSettings();
+	m_ctlPushSmallSize.SetRange(1, PARTSIZE>>10, TRUE);
+	m_ctlPushSmallSize.SetPos(thePrefs.GetPushSmallFileSize()>>10);
+	m_ctlPushSmallSize.SetTicFreq(1024);
+	m_ctlPushSmallSize.SetPageSize(1024);
+	ShowPushSmallFileValues();
+//	LoadSettings();
 	// <== push small files [sivka] - Stulle
 
 	Localize();
@@ -888,6 +953,7 @@ BOOL CPPgStulle::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
+/*
 void CPPgStulle::LoadSettings(void)
 {
 	if(m_hWnd)
@@ -895,12 +961,15 @@ void CPPgStulle::LoadSettings(void)
 		CString strBuffer;
 	
 		// ==> push small files [sivka] - Stulle
-		((CSliderCtrl*)GetDlgItem(IDC_PUSHSMALL_SLIDER))->SetRange(1, PARTSIZE, TRUE);
-		((CSliderCtrl*)GetDlgItem(IDC_PUSHSMALL_SLIDER))->SetPos(thePrefs.GetPushSmallFileSize());
+		m_ctlPushSmallSize.SetRange(1, PARTSIZE, TRUE);
+		m_ctlPushSmallSize.SetPos(thePrefs.GetPushSmallFileSize());
+		m_ctlPushSmallSize.SetTicFreq(20);
+		m_ctlPushSmallSize.SetPageSize(10);
 		ShowPushSmallFileValues();
 		// <== push small files [sivka] - Stulle
 	}
 }
+*/
 
 BOOL CPPgStulle::OnKillActive()
 {
@@ -968,9 +1037,9 @@ BOOL CPPgStulle::OnApply()
 	// ==> push small files [sivka] - Stulle
 	thePrefs.enablePushSmallFile = m_bEnablePushSmallFile;
 	thePrefs.m_iPushSmallBoost = (uint16)m_iPushSmallFileBoost;
-	CString strBuffer;
-	((CSliderCtrl*)GetDlgItem(IDC_PUSHSMALL_SLIDER))->SetRange(1, PARTSIZE, TRUE);
-	thePrefs.m_iPushSmallFiles = ((CSliderCtrl*)GetDlgItem(IDC_PUSHSMALL_SLIDER))->GetPos();
+//	CString strBuffer;
+//	m_ctlPushSmallSize.SetRange(1, PARTSIZE, TRUE);
+	thePrefs.m_iPushSmallFiles = m_ctlPushSmallSize.GetPos()<<10;
 	// <== push small files [sivka] - Stulle
 	thePrefs.enablePushRareFile = m_bEnablePushRareFile; // push rare file - Stulle
 
@@ -1097,14 +1166,79 @@ BOOL CPPgStulle::OnApply()
 		thePrefs.m_uReleaseBonus = (uint8)(m_iReleaseBonusDays*2);
 	// <== Release Bonus [sivka] - Stulle
 	thePrefs.m_bReleaseScoreAssurance = m_bReleaseScoreAssurance; // Release Score Assurance - Stulle
+	// ==> Adjustable NT Service Strings - Stulle
+	int iChangedStr = 0; // nothing changed
+	if(CompareLocaleStringNoCase(thePrefs.GetServiceName(),m_strServiceName))
+		iChangedStr = 1; // name under which we install changed, this is important!
+	else if(CompareLocaleStringNoCase(thePrefs.GetServiceDispName(),m_strServiceDispName) || CompareLocaleStringNoCase(thePrefs.GetServiceDescr(),m_strServiceDescr))
+		iChangedStr = 2; // only visual strings changed, not so important...
+
+	if(iChangedStr>0)
+	{
+		int b_installed;
+		int i_startupmode;
+		int rights;
+		// Startup with system, store in service.
+		NTServiceGet(b_installed,i_startupmode,	rights);
+		if(b_installed == 0)
+		{
+			thePrefs.SetServiceName(m_strServiceName);
+			thePrefs.SetServiceDispName(m_strServiceDispName);
+			thePrefs.SetServiceDescr(m_strServiceDescr);
+		}
+		else
+		{
+			int iResult = IDCANCEL;
+			if(iChangedStr == 1)
+				iResult = MessageBox(GetResString(IDS_SERVICE_NAME_CHANGED),GetResString(IDS_SERVICE_STR_CHANGED),MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2);
+			else if(iChangedStr == 2)
+				iResult = MessageBox(GetResString(IDS_SERVICE_DISP_CHANGED),GetResString(IDS_SERVICE_STR_CHANGED),MB_YESNOCANCEL|MB_ICONQUESTION|MB_DEFBUTTON2);
+
+			if((iChangedStr == 1 && iResult == IDYES) || (iChangedStr == 2 && iResult != IDCANCEL))
+			{
+				if(iChangedStr == 2 && iResult == IDNO)
+				{
+					thePrefs.SetServiceName(m_strServiceName);
+					thePrefs.SetServiceDispName(m_strServiceDispName);
+					thePrefs.SetServiceDescr(m_strServiceDescr);
+				}
+				else if(CmdRemoveService()==0)
+				{
+					thePrefs.SetServiceName(m_strServiceName);
+					thePrefs.SetServiceDispName(m_strServiceDispName);
+					thePrefs.SetServiceDescr(m_strServiceDescr);
+					if(CmdInstallService(i_startupmode == 1) != 0)
+						MessageBox(GetResString(IDS_SERVICE_INSTALL_FAIL), GetResString(IDS_SERVICE_INSTALL_TITLE), MB_OK|MB_ICONWARNING);
+				}
+				else
+				{
+					MessageBox(GetResString(IDS_SERVICE_UNINSTALL_FAIL),GetResString(IDS_SERVICE_UNINSTALL_TITLE),MB_OK|MB_ICONWARNING);
+					m_strServiceName = thePrefs.GetServiceName();
+					m_strServiceDispName = thePrefs.GetServiceDispName();
+					m_strServiceDescr = thePrefs.GetServiceDescr();
+				}
+			}
+			else
+			{
+				m_strServiceName = thePrefs.GetServiceName();
+				m_strServiceDispName = thePrefs.GetServiceDispName();
+				m_strServiceDescr = thePrefs.GetServiceDescr();
+			}
+		}
+	}
+	// <== Adjustable NT Service Strings - Stulle
 	// ==> Automatic shared files updater [MoNKi] - Stulle
-	if(m_bAutoSharedUpdater != thePrefs.GetDirectoryWatcher()){
+#ifdef ASFU
+	if(m_bAutoSharedUpdater != thePrefs.GetDirectoryWatcher() || m_bSingleSharedDirUpdater != thePrefs.GetSingleSharedDirWatcher()){
 		thePrefs.SetDirectoryWatcher(m_bAutoSharedUpdater);
+		thePrefs.SetSingleSharedDirWatcher(m_bSingleSharedDirUpdater);
+		theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: OnApply"));
 		theApp.ResetDirectoryWatcher();
 	}
+#endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
-	LoadSettings();
+//	LoadSettings();
 
 	// ==> Show sources on title - Stulle
 	TCHAR buffer[510];
@@ -1259,7 +1393,17 @@ void CPPgStulle::Localize(void)
 		if (m_htiLogEmulator) m_ctrlTreeOptions.SetItemText(m_htiLogEmulator, GetResString(IDS_EMULATE_LOG));
 		// <== Emulate others [WiZaRd/Spike/shadow2004] - Stulle
 		if (m_htiReleaseScoreAssurance) m_ctrlTreeOptions.SetItemText(m_htiReleaseScoreAssurance, GetResString(IDS_RELEASE_SCORE_ASSURANCE)); // Release Score Assurance - Stulle
-		if (m_htiAutoSharedUpdater) m_ctrlTreeOptions.SetItemText(m_htiAutoSharedUpdater, GetResString(IDS_AUTO_SHARED_UPDATER)); // Automatic shared files updater [MoNKi] - Stulle
+		// ==> Adjustable NT Service Strings - Stulle
+		if (m_htiServiceName) m_ctrlTreeOptions.SetEditLabel(m_htiServiceName, GetResString(IDS_SERVICE_NAME));
+		if (m_htiServiceDispName) m_ctrlTreeOptions.SetEditLabel(m_htiServiceDispName, GetResString(IDS_SERVICE_DISP_NAME));
+		if (m_htiServiceDescr) m_ctrlTreeOptions.SetEditLabel(m_htiServiceDescr, GetResString(IDS_SERVICE_DESCR));
+		// <== Adjustable NT Service Strings - Stulle
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+		if (m_htiAutoSharedUpdater) m_ctrlTreeOptions.SetItemText(m_htiAutoSharedUpdater, GetResString(IDS_SUC_ENABLED));
+		if (m_htiSingleSharedDirUpdater) m_ctrlTreeOptions.SetItemText(m_htiSingleSharedDirUpdater,GetResString(IDS_ASFU_SINGLE));
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 	}
 
 }
@@ -1444,7 +1588,19 @@ void CPPgStulle::OnDestroy()
 	m_htiReleaseBonusDaysEdit = NULL;
 	// <== Release Bonus [sivka] - Stulle
 	m_htiReleaseScoreAssurance = NULL; // Release Score Assurance - Stulle
-	m_htiAutoSharedUpdater = NULL; // Automatic shared files updater [MoNKi] - Stulle
+	// ==> Adjustable NT Service Strings - Stulle
+	m_htiServiceStrGrp = NULL;
+	m_htiServiceName = NULL;
+	m_htiServiceDispName = NULL;
+	m_htiServiceDescr = NULL;
+	// <== Adjustable NT Service Strings - Stulle
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+	m_htiAutoSharedGroup = NULL;
+	m_htiAutoSharedUpdater = NULL;
+	m_htiSingleSharedDirUpdater = NULL;
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 
 	CPropertyPage::OnDestroy();
 }
@@ -1511,27 +1667,39 @@ LRESULT CPPgStulle::OnTreeOptsCtrlNotify(WPARAM wParam, LPARAM lParam)
 		}
 		// <== CPU/MEM usage [$ick$/Stulle] - Stulle
 
+		// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+		if (m_htiAutoSharedUpdater && pton->hItem == m_htiAutoSharedUpdater)
+		{
+			if (m_ctrlTreeOptions.GetCheckBox(m_htiAutoSharedUpdater, bCheck))
+			{
+				if (m_htiSingleSharedDirUpdater)	m_ctrlTreeOptions.SetCheckBoxEnable(m_htiSingleSharedDirUpdater, bCheck);
+			}
+		}
+#endif
+		// <== Automatic shared files updater [MoNKi] - Stulle
+
 		SetModified();
 	}
 	return 0;
 }
 
-void CPPgStulle::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CPPgStulle::OnHScroll(UINT /*nSBCode*/, UINT /*nPos*/, CScrollBar* pScrollBar) 
 {
 	// ==> push small files [sivka] - Stulle
-	if( pScrollBar == (CScrollBar*)GetDlgItem(IDC_PUSHSMALL_SLIDER) )
+	if( pScrollBar->GetSafeHwnd() == m_ctlPushSmallSize.m_hWnd )
 		ShowPushSmallFileValues();
 	// <== push small files [sivka] - Stulle
 
 	SetModified(TRUE);
-	UpdateData(false); 
-	CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+//	UpdateData(false); 
+//	CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 // ==> push small files [sivka] - Stulle
 void CPPgStulle::ShowPushSmallFileValues()
 {
-	GetDlgItem(IDC_PUSHSMALL)->SetWindowText(CastItoXBytes(float(((CSliderCtrl*)GetDlgItem(IDC_PUSHSMALL_SLIDER))->GetPos())));
+	GetDlgItem(IDC_PUSHSMALL)->SetWindowText(CastItoXBytes(float(m_ctlPushSmallSize.GetPos()<<10)));
 }
 // <== push small files [sivka] - Stulle
 

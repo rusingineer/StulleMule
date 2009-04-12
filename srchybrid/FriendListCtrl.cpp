@@ -39,22 +39,23 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 
 IMPLEMENT_DYNAMIC(CFriendListCtrl, CMuleListCtrl)
 
 BEGIN_MESSAGE_MAP(CFriendListCtrl, CMuleListCtrl)
+	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnLvnColumnClick)
+	ON_NOTIFY_REFLECT(NM_DBLCLK, OnNmDblClk)
 	ON_WM_CONTEXTMENU()
 	ON_WM_SYSCOLORCHANGE()
-	ON_NOTIFY_REFLECT(NM_DBLCLK, OnNMDblclk)
-	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnLvnColumnclick)
 END_MESSAGE_MAP()
 
 CFriendListCtrl::CFriendListCtrl()
 {
-	SetGeneralPurposeFind(true, false);
+	SetGeneralPurposeFind(true);
+	SetSkinKey(L"FriendsLv");
 }
 
 CFriendListCtrl::~CFriendListCtrl()
@@ -63,13 +64,13 @@ CFriendListCtrl::~CFriendListCtrl()
 
 void CFriendListCtrl::Init()
 {
-	SetName(_T("FriendListCtrl"));
+	SetPrefsKey(_T("FriendListCtrl"));
 
 	SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 
 	RECT rcWindow;
 	GetWindowRect(&rcWindow);
-	InsertColumn(0, GetResString(IDS_QL_USERNAME), LVCFMT_LEFT, rcWindow.right - rcWindow.left - 4, 0);
+	InsertColumn(0, GetResString(IDS_QL_USERNAME), LVCFMT_LEFT, rcWindow.right - rcWindow.left - 4);
 
 	SetAllIcons();
 	theApp.friendlist->SetWindow(this);
@@ -86,8 +87,7 @@ void CFriendListCtrl::OnSysColorChange()
 void CFriendListCtrl::SetAllIcons()
 {
 	CImageList iml;
-	iml.Create(16,16,theApp.m_iDfltImageListColorFlags|ILC_MASK,0,1);
-	iml.SetBkColor(CLR_NONE);
+	iml.Create(16, 16, theApp.m_iDfltImageListColorFlags | ILC_MASK, 0, 1);
 	iml.Add(CTempIconLoader(_T("FriendNoClient")));
 	iml.Add(CTempIconLoader(_T("FriendWithClient")));
 	iml.Add(CTempIconLoader(_T("FriendConnected")));
@@ -123,7 +123,12 @@ void CFriendListCtrl::UpdateFriend(int iItem, const CFriend* pFriend)
 {
     // Mighty Knife: log friend activities
 	CString OldName = GetItemText (iItem,0);
-	if ((OldName != pFriend->m_strName) && (thePrefs.GetLogFriendlistActivities ())) {
+	// don't log if the new or old name is/ was a FunnyNick
+	bool bOldNameWasFunny = ((_tcsnicmp(OldName, _T("http://"),7) == 0 || _tcsnicmp(OldName, _T("0."),2) == 0 || _tcsicmp(OldName, _T("")) == 0) &&
+		thePrefs.DisplayFunnyNick());
+	bool bNewNameIsFunny = ((_tcsnicmp(pFriend->m_strName, _T("http://"),7) == 0 || _tcsnicmp(pFriend->m_strName, _T("0."),2) == 0 || _tcsicmp(pFriend->m_strName, _T("")) == 0) &&
+		thePrefs.DisplayFunnyNick());
+	if (!bOldNameWasFunny && !bNewNameIsFunny && (OldName != pFriend->m_strName) && (thePrefs.GetLogFriendlistActivities ())) {
  		#ifdef MIGHTY_TWEAKS
 		AddLogLine(false, GetResString(IDS_FRIENDNAME_CHANGED1),
 									(LPCTSTR) OldName, (LPCTSTR) pFriend->m_strName, (uint8)pFriend->m_dwLastUsedIP, 
@@ -150,7 +155,7 @@ void CFriendListCtrl::UpdateFriend(int iItem, const CFriend* pFriend)
 	if (pFriend->GetFriendSlot()) iImage += 3;
 	//MORPH END   - Added by SiRoB, Friend Addon 
 
-	SetItem(iItem,0,LVIF_IMAGE,0,iImage,0,0,0,0);
+	SetItem(iItem, 0, LVIF_IMAGE, 0, iImage, 0, 0, 0, 0);
 }
 
 void CFriendListCtrl::AddFriend(const CFriend* pFriend)
@@ -161,7 +166,7 @@ void CFriendListCtrl::AddFriend(const CFriend* pFriend)
 	if (!theApp.emuledlg->IsRunning())
 		return;
 	//MORPH END    - Added by SiRoB, HotFix to avoid crash at shutdown
-	int iItem = InsertItem(LVIF_TEXT|LVIF_PARAM,GetItemCount(),pFriend->m_strName,0,0,0,(LPARAM)pFriend);
+	int iItem = InsertItem(LVIF_TEXT | LVIF_PARAM, GetItemCount(), pFriend->m_strName, 0, 0, 0, (LPARAM)pFriend);
 	if (iItem >= 0)
 		UpdateFriend(iItem, pFriend);
 	theApp.emuledlg->chatwnd->UpdateFriendlistCount(theApp.friendlist->GetCount());
@@ -206,7 +211,7 @@ void CFriendListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 
 	const CFriend* cur_friend = NULL;
 	int iSel = GetNextItem(-1, LVIS_SELECTED | LVIS_FOCUSED);
-	if (iSel != -1){
+	if (iSel != -1) {
 		cur_friend = (CFriend*)GetItemData(iSel);
 		ClientMenu.AppendMenu(MF_STRING,MP_DETAIL, GetResString(IDS_SHOWDETAILS), _T("CLIENTDETAILS"));
 		ClientMenu.SetDefaultItem(MP_DETAIL);
@@ -243,7 +248,7 @@ void CFriendListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 
 	GetPopupMenuPos(*this, point);
 	ClientMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
-	VERIFY( ClientMenu.DestroyMenu() ); //Fafner: missing?
+	VERIFY( ClientMenu.DestroyMenu() ); // XP Style Menu [Xanatos] - Stulle
 }
 // MORPH START - Modified by Commander, Friendlinks [emulEspaña]
 
@@ -269,7 +274,7 @@ BOOL CFriendListCtrl::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 			{
 				theApp.friendlist->RemoveFriend(cur_friend);
 				// auto select next item after deleted one.
-				if (iSel < GetItemCount()){
+				if (iSel < GetItemCount()) {
 					SetSelectionMark(iSel);
 					SetItemState(iSel, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 				}
@@ -294,7 +299,7 @@ BOOL CFriendListCtrl::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 					cur_friend->GetLinkedClient()->RequestSharedFileList();
 				else
 				{
-					CUpDownClient* newclient = new CUpDownClient(0,cur_friend->m_nLastUsedPort,cur_friend->m_dwLastUsedIP,0,0,true);
+					CUpDownClient* newclient = new CUpDownClient(0, cur_friend->m_nLastUsedPort, cur_friend->m_dwLastUsedIP, 0, 0, true);
 					newclient->SetUserName(cur_friend->m_strName);
 					theApp.clientlist->AddClient(newclient);
 					newclient->RequestSharedFileList();
@@ -323,7 +328,7 @@ BOOL CFriendListCtrl::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 				/*
 				theApp.friendlist->RemoveAllFriendSlots();
 				*/
-				if (!bIsAlready )
+				if (!bIsAlready)
                     			cur_friend->SetFriendSlot(true);
 				else
 					cur_friend->SetFriendSlot(false);
@@ -403,16 +408,15 @@ BOOL CFriendListCtrl::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 				theApp.CopyTextToClipboard(sCompleteLink);
 		}
 		break;
-	case MP_FIND:
-		OnFindStart();
-		break;
-		
+		case MP_FIND:
+			OnFindStart();
+			break;
 	}
 	return true;
 }
 // MORPH END - Added by Commander, Friendlinks [emulEspaña]
 
-void CFriendListCtrl::OnNMDblclk(NMHDR* /*pNMHDR*/, LRESULT* pResult)
+void CFriendListCtrl::OnNmDblClk(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
 	int iSel = GetNextItem(-1, LVIS_SELECTED | LVIS_FOCUSED);
 	if (iSel != -1) 
@@ -448,9 +452,9 @@ BOOL CFriendListCtrl::PreTranslateMessage(MSG* pMsg)
 	return CMuleListCtrl::PreTranslateMessage(pMsg);
 }
 
-void CFriendListCtrl::OnLvnColumnclick(NMHDR *pNMHDR, LRESULT *pResult)
+void CFriendListCtrl::OnLvnColumnClick(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	NMLISTVIEW *pNMListView = (NMLISTVIEW *)pNMHDR;
 
 	// Determine ascending based on whether already sorted on this column
 	int iSortItem = GetSortItem();
@@ -469,8 +473,8 @@ void CFriendListCtrl::OnLvnColumnclick(NMHDR *pNMHDR, LRESULT *pResult)
 
 int CFriendListCtrl::SortProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
-	CFriend* item1 = (CFriend*)lParam1;
-	CFriend* item2 = (CFriend*)lParam2; 
+	const CFriend *item1 = (CFriend *)lParam1;
+	const CFriend *item2 = (CFriend *)lParam2; 
 	if (item1 == NULL || item2 == NULL)
 		return 0;
 
@@ -480,6 +484,7 @@ int CFriendListCtrl::SortProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 		case 0:
 			iResult = CompareLocaleStringNoCase(item1->m_strName, item2->m_strName);
 			break;
+
 		default:
 			return 0;
 	}

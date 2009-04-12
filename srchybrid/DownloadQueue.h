@@ -60,6 +60,7 @@ private:
 };
 
 // ==> drop sources - Stulle
+#ifdef FILESETTINGS_SAVE_THREAD
 class CSaveSettingsThread : public CWinThread
 {
 public:
@@ -68,6 +69,7 @@ public:
 
     void EndThread();
     void Pause(bool paused);
+	void KeepWaiting() {m_dwLastWait = ::GetTickCount();}
 
 private:
     static UINT RunProc(LPVOID pParam);
@@ -76,8 +78,12 @@ private:
 	CSettingsSaver m_SettingsSaver;
     CEvent* threadEndedEvent;
     CEvent* pauseEvent;
+	CEvent* waitEvent;
 	volatile bool bDoRun;
+	volatile bool bDoWait;
+	DWORD m_dwLastWait;
 };
+#endif
 // <== drop sources - Stulle
 
 class CDownloadQueue
@@ -289,12 +295,15 @@ public:
 	void RemoveSourceAndDontAsk(CUpDownClient* toremove, bool bDoStatsUpdate = true);
 	void InitTempVariables(CPartFile* file);
 	void UpdateFileSettings(CPartFile* file);
+	CSettingsSaver m_SettingsSaver;
+
+#ifdef FILESETTINGS_SAVE_THREAD
 	void SaveFileSettings(bool bStart = true);
 protected:
-	CSettingsSaver m_SettingsSaver;
 	CSaveSettingsThread* m_SaveSettingsThread;
 	bool m_bSaveAgain;
 	DWORD m_dwLastSave;
+#endif
 	// <== drop sources - Stulle
 
 	DWORD m_dwResTimer; // CPU/MEM usage [$ick$/Stulle] - Stulle

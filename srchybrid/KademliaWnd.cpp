@@ -106,20 +106,24 @@ BOOL CKademliaWnd::OnInitDialog()
 	m_contactListCtrl->Init();
 	searchList->Init();
 
-	OnBackcolor(); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	OnBackcolor();
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 
 	SetAllIcons();
 	Localize();
 
 	AddAnchor(IDC_KADICO1, TOP_LEFT);
-	AddAnchor(IDC_CONTACTLIST,TOP_LEFT, CSize(100,50));
-	AddAnchor(IDC_KAD_HISTOGRAM,TOP_RIGHT, CSize(100,50));
-	AddAnchor(IDC_KADICO2, CSize(0,50));
-	AddAnchor(IDC_SEARCHLIST,CSize(0,50),CSize(100,100));
-	AddAnchor(IDC_KADCONTACTLAB,TOP_LEFT);
+	AddAnchor(IDC_CONTACTLIST, TOP_LEFT, MIDDLE_RIGHT);
+	AddAnchor(IDC_KAD_HISTOGRAM, TOP_RIGHT, MIDDLE_RIGHT);
+	AddAnchor(IDC_KADICO2, MIDDLE_LEFT);
+	AddAnchor(IDC_SEARCHLIST, MIDDLE_LEFT, BOTTOM_RIGHT);
+	AddAnchor(IDC_KADCONTACTLAB, TOP_LEFT);
 	AddAnchor(IDC_FIREWALLCHECKBUTTON, TOP_RIGHT);
 	AddAnchor(IDC_KADCONNECT, TOP_RIGHT);
-	AddAnchor(IDC_KADSEARCHLAB,CSize(0,50));
+	AddAnchor(IDC_KADSEARCHLAB, MIDDLE_LEFT);
 	AddAnchor(IDC_BSSTATIC, TOP_RIGHT);
 	AddAnchor(IDC_BOOTSTRAPBUTTON, TOP_RIGHT);
 	AddAnchor(IDC_BOOTSTRAPPORT, TOP_RIGHT);
@@ -153,8 +157,6 @@ void CKademliaWnd::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CONTACTLIST, *m_contactListCtrl);
 	DDX_Control(pDX, IDC_KAD_HISTOGRAM, *m_contactHistogramCtrl);
 	DDX_Control(pDX, IDC_SEARCHLIST, *searchList);
-	DDX_Control(pDX, IDC_KADCONTACTLAB, kadContactLab);
-	DDX_Control(pDX, IDC_KADSEARCHLAB, kadSearchLab);
 	DDX_Control(pDX, IDC_BSSTATIC, m_ctrlBootstrap);
 }
 
@@ -340,7 +342,7 @@ void CKademliaWnd::UpdateKadContactCount()
 void CKademliaWnd::ShowContacts()
 {
 	m_contactHistogramCtrl->ShowWindow(SW_SHOW);
-	m_contactListCtrl->Visable();
+	m_contactListCtrl->Visible();
 }
 
 void CKademliaWnd::HideContacts()
@@ -396,7 +398,7 @@ BOOL CKademliaWnd::OnHelpInfo(HELPINFO* /*pHelpInfo*/)
 }
 
 // ==> Design Settings [eWombat/Stulle] - Stulle
-/*
+#ifndef DESIGN_SETTINGS
 HBRUSH CKademliaWnd::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = theApp.emuledlg->GetCtlColor(pDC, pWnd, nCtlColor);
@@ -404,7 +406,7 @@ HBRUSH CKademliaWnd::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		return hbr;
 	return __super::OnCtlColor(pDC, pWnd, nCtlColor);
 }
-*/
+#else
 HBRUSH CKademliaWnd::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
@@ -436,5 +438,5 @@ void CKademliaWnd::OnBackcolor()
 	else
 		m_brMyBrush.CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
 }
-
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle

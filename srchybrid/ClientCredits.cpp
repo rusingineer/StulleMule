@@ -162,7 +162,6 @@ uint64	CClientCredits::GetDownloadedTotal() const{
 
 float CClientCredits::GetScoreRatio(uint32 dwForIP) /*const*/
 {
-
 // ==> moved into switch for new credit systems - Stulle
 //	// check the client ident status
 //	//MORPH START - Changed by SIRoB, Code Optimization 

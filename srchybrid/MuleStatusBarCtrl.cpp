@@ -197,6 +197,7 @@ void CMuleStatusBarCtrl::OnToolTipNotify( UINT /*id*/, NMHDR * pNotifyStruct, LR
 //MORPH END    - Added by SiRoB, Show zz ratio activation reason
 
 // ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 void CMuleStatusBarCtrl::UpdateColor()
 {
 	COLORREF crTempColor_stb = thePrefs.GetStyleBackColor(window_styles, style_w_statusbar);
@@ -206,4 +207,5 @@ void CMuleStatusBarCtrl::UpdateColor()
 
 	SetBkColor(crTempColor_stb);
 };
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle

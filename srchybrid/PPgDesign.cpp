@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#ifdef DESIGN_SETTINGS
 #include "emule.h"
 #include "PPgDesign.h"
 #include "Preferences.h"
@@ -268,6 +269,7 @@ void CPPgDesign::InitSubStyleCombo()
 			m_SubCombo.AddString(GetResString(IDS_COLOR_PERM) + _T(": ") + GetResString(IDS_FSTATUS_FRIENDSONLY));
 			m_SubCombo.AddString(GetResString(IDS_COLOR_PERM) + _T(": ") + GetResString(IDS_COMMUNITY));
 			m_SubCombo.AddString(GetResString(IDS_COLOR_PERM) + _T(": ") + GetResString(IDS_PW_EVER));
+			m_SubCombo.AddString(GetResString(IDS_COLOR_S3));
 		}break;
 		case server_styles: // server styles
 		{
@@ -320,9 +322,9 @@ void CPPgDesign::UpdateStyles()
 
 	// set default for background
 	if(iMasterValue == window_styles)
-		m_BackColor.SetDefaultColor(GetSysColor(COLOR_BTNFACE));
+		m_BackColor.SetDefaultColor(::GetSysColor(COLOR_BTNFACE));
 	else
-		m_BackColor.SetDefaultColor(COLORREF(RGB(255,255,255)));
+		m_BackColor.SetDefaultColor(::GetSysColor(COLOR_WINDOW));
 
 	m_BackColor.SetColor(styles.nBackColor);
 	if(iMasterValue < background_styles)
@@ -565,3 +567,4 @@ void CPPgDesign::OnEnKillfocusSubCombo()
 {
 	m_bFocusWasOnCombo = true;
 }
+#endif

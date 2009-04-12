@@ -106,15 +106,12 @@ void CDirectDownloadDlg::OnOK()
 					//MORPH START - Changed by SiRoB, Selection category support khaos::categorymod+
 					/*
 					theApp.downloadqueue->AddFileLinkToDownload(pLink->GetFileLink(), (thePrefs.GetCatCount() == 0) ? 0 : m_cattabs.GetCurSel());
-					/*/
+					*/
 					CED2KFileLink* pFileLink = (CED2KFileLink*)CED2KLink::CreateLinkFromUrl(strTok.Trim());
-//EastShare START - Modified by Pretender, [MoNKi: -Check already downloaded files-]
-if(theApp.knownfiles->CheckAlreadyDownloadedFileQuestion(pLink->GetFileLink()->GetHashKey(),pLink->GetFileLink()->GetName()))
-{
-					theApp.downloadqueue->AddFileLinkToDownload(pFileLink, (thePrefs.GetCatCount()==0)?-1 : m_cattabs.GetCurSel(), true);
-}
-//EastShare END
-					/**/
+					//EastShare START - Modified by Pretender, [MoNKi: -Check already downloaded files-]
+					if(theApp.knownfiles->CheckAlreadyDownloadedFileQuestion(pLink->GetFileLink()->GetHashKey(),pLink->GetFileLink()->GetName()))
+					//EastShare END
+						theApp.downloadqueue->AddFileLinkToDownload(pFileLink, (thePrefs.GetCatCount()==0)?-1 : m_cattabs.GetCurSel(), true);
 					//MORPH END   - Changed by SiRoB, Selection category support khaos::categorymod-
 				}
 				else
@@ -161,16 +158,21 @@ BOOL CDirectDownloadDlg::OnInitDialog()
 
 	SetWindowText(GetResString(IDS_SW_DIRECTDOWNLOAD));
 	m_ctrlDirectDlFrm.SetIcon(_T("Download"));
-    m_ctrlDirectDlFrm.SetWindowText(GetResString(IDS_SW_DIRECTDOWNLOAD));
-	GetDlgItem(IDOK)->SetWindowText(GetResString(IDS_DOWNLOAD));
-    GetDlgItem(IDC_FSTATIC2)->SetWindowText(GetResString(IDS_SW_LINK));
+	m_ctrlDirectDlFrm.SetWindowText(GetResString(IDS_SW_DIRECTDOWNLOAD));
+    GetDlgItem(IDOK)->SetWindowText(GetResString(IDS_DOWNLOAD));
+	GetDlgItem(IDC_FSTATIC2)->SetWindowText(GetResString(IDS_SW_LINK));
 	GetDlgItem(IDC_CATLABEL)->SetWindowText(GetResString(IDS_CAT)+_T(":"));
 
 	GetDlgItem(IDOK)->SetWindowText(GetResString(IDS_DOWNLOAD));
 	GetDlgItem(IDCANCEL)->SetWindowText(GetResString(IDS_CANCEL));
 	
 
+	//khaos::categorymod+
+	/*
 	if (thePrefs.GetCatCount()==0) {
+	*/
+	if (thePrefs.GetCatCount()==1) {
+	//khaos::categorymod-
 		GetDlgItem(IDC_CATLABEL)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_CATS)->ShowWindow(SW_HIDE);
 	}
@@ -200,15 +202,16 @@ void CDirectDownloadDlg::UpdateCatTabs() {
 		m_cattabs.InsertItem(ix,label);
 	}
 	if (oldsel>=m_cattabs.GetItemCount() || oldsel==-1)
-		oldsel=0; 
+		oldsel=0;
 	*/
 		CString label=thePrefs.GetCategory(ix)->strTitle;
 		label.Replace(_T("&"),_T("&&"));
 		m_cattabs.InsertItem(ix,label);
 	}
 	if (oldsel>=m_cattabs.GetItemCount())
-		oldsel=-1; 
+		oldsel=-1;
 	//MORPH END   - Changed by SiRoB, Selection category support
+
 	m_cattabs.SetCurSel(oldsel);
 }
 

@@ -74,8 +74,13 @@ private:
 	HTREEITEM	hconn_sg, conn_sg[5], hconn_su, conn_su[4], hconn_sd, conn_sd[4]; // Connection Session Section Headers and Items
 	HTREEITEM	hconn_tg, conn_tg[4], hconn_tu, conn_tu[3], hconn_td, conn_td[3]; // Connection Total Section Headers and Items
 
-//	HTREEITEM	h_clients, cligen[7/* 6*Official +1*Leecher*/], hclisoft, clisoft[8];
-	HTREEITEM	h_clients, cligen[8/* 6*Official +1*Leecher +1* PureMods */], hclisoft, clisoft[8]; // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+	// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifndef GLOBAL_MOD_STATS
+	HTREEITEM	h_clients, cligen[7/* 6*Official +1*Leecher*/], hclisoft, clisoft[8];
+#else
+	HTREEITEM	h_clients, cligen[8/* 6*Official +1*Leecher +1* PureMods */], hclisoft, clisoft[8];
+#endif
+	// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 
 	HTREEITEM	cli_versions[MAX_CLIENTS_WITH_SUB_VERSION*MAX_SUB_CLIENT_VERSIONS];
 	HTREEITEM	cli_other[MAX_SUB_CLIENT_VERSIONS/2];
@@ -148,11 +153,13 @@ protected:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
 	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 protected:
 	CBrush m_brMyBrush;
 	HBRUSH hbr;	
 	COLORREF crStatsColor;
 public:
 	void OnBackcolor(); 
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 };

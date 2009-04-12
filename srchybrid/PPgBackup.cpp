@@ -438,7 +438,7 @@ void CPPgBackup::Backup3()
 		lstrcpy(szNewPath, szDirPath); 
 		lstrcat(szNewPath, FileData.cFileName); 
 
-		CopyFile(FileData.cFileName, szNewPath, FALSE);
+		MoveFileEx(FileData.cFileName, szNewPath, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
 
 		if (!FindNextFile(hSearch, &FileData)) 
 		{

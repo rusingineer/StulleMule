@@ -84,9 +84,11 @@ CDownloadQueue::CDownloadQueue()
 	// <== Quick start [TPT] - Stulle
 
 	// ==> drop sources - Stulle
+#ifdef FILESETTINGS_SAVE_THREAD
 	m_SaveSettingsThread = NULL;
 	m_bSaveAgain = false;
 	m_dwLastSave = 0;
+#endif
 	// <== drop sources - Stulle
 }
 
@@ -136,7 +138,22 @@ void CDownloadQueue::Init(){
 			//metsfound.AddTail(CString(ff.GetFileName()).MakeLower()); //MORPH - Moved Down, to allow checking for backup met files.
 		// SLUGFILLER: SafeHash
 			CPartFile* toadd = new CPartFile();
-			if (toadd->LoadPartFile(thePrefs.GetTempDir(i),ff.GetFileName())){
+			EPartFileLoadResult eResult = toadd->LoadPartFile(thePrefs.GetTempDir(i), ff.GetFileName());
+			if (eResult == PLR_FAILED_METFILE_CORRUPT)
+			{
+				// .met file is corrupted, try to load the latest backup of this file
+				delete toadd;
+				toadd = new CPartFile();
+				eResult = toadd->LoadPartFile(thePrefs.GetTempDir(i), ff.GetFileName() + PARTMET_BAK_EXT);
+				if (eResult == PLR_LOADSUCCESS)
+				{
+					toadd->SavePartFile(true); // don't override our just used .bak file yet
+					AddLogLine(false, GetResString(IDS_RECOVERED_PARTMET), toadd->GetFileName());
+				}
+			}
+
+			if (eResult == PLR_LOADSUCCESS)
+			{
 				metsfound.AddTail(CString(ff.GetFileName()).MakeLower()); //MORPH - Added, fix SafeHash
 				count++;
 				filelist.AddTail(toadd);			// to downloadqueue
@@ -152,8 +169,8 @@ void CDownloadQueue::Init(){
 		}
 		ff.Close();
 
-		//try recovering any part.met.bak files
-		searchPath += PARTMET_BAK_EXT; //MORPH - .bak files should be restore, not backup
+		//try recovering any part.met files
+		searchPath += _T(".backup");
 		end = !ff.FindFile(searchPath, 0);
 		while (!end){
 			end = !ff.FindNextFile();
@@ -165,9 +182,9 @@ void CDownloadQueue::Init(){
 			//metsfound.AddTail(RemoveFileExtension(CString(ff.GetFileName()).MakeLower())); //MORPH - Moved Down, to allow checking for backup met files.
 			// SLUGFILLER: SafeHash
 			CPartFile* toadd = new CPartFile();
-			if (toadd->LoadPartFile(thePrefs.GetTempDir(i),ff.GetFileName())){
+			if (toadd->LoadPartFile(thePrefs.GetTempDir(i), ff.GetFileName()) == PLR_LOADSUCCESS){
 				metsfound.AddTail(RemoveFileExtension(CString(ff.GetFileName()).MakeLower())); //MORPH - Added, fix SafeHash
-				toadd->SavePartFile(); // resave backup
+				toadd->SavePartFile(true); // resave backup, don't overwrite existing bak files yet
 				count++;
 				filelist.AddTail(toadd);			// to downloadqueue
 				// SLUGFILLER: SafeHash remove - part files are shared later
@@ -200,6 +217,7 @@ void CDownloadQueue::Init(){
 
 CDownloadQueue::~CDownloadQueue(){
 	// ==> drop sources - Stulle
+#ifdef FILESETTINGS_SAVE_THREAD
 	if (m_SaveSettingsThread) // we just saved something
 	{
 		m_SaveSettingsThread->EndThread();
@@ -207,6 +225,7 @@ CDownloadQueue::~CDownloadQueue(){
 		m_SaveSettingsThread = NULL;
 	}
 	else // we might have missed something
+#endif
 		(void)m_SettingsSaver.SaveSettings();
 	// <== drop sources - Stulle
 	for (POSITION pos = filelist.GetHeadPosition();pos != 0;)
@@ -484,7 +503,7 @@ bool CDownloadQueue::PurgeED2KLinkQueue()
 	int		addedFiles = 0;
 	bool	bCreatedNewCat = false;
 	bool	bCanceled = false; //MORPH - Added by SiRoB, WasCanceled
-	if (thePrefs.SelectCatForNewDL() || m_bClipboardLinkInQueue)
+	if ((thePrefs.SelectCatForNewDL() || m_bClipboardLinkInQueue) && thePrefs.GetCatCount()>1)
 	{
 		CSelCategoryDlg* getCatDlg = new CSelCategoryDlg((CWnd*)theApp.emuledlg,m_bClipboardLinkInQueue);
 		getCatDlg->DoModal();
@@ -855,7 +874,13 @@ void CDownloadQueue::AddDownload(CPartFile* newfile,bool paused) {
 	msgTemp.Format(GetResString(IDS_NEWDOWNLOAD) + _T("\n"), newfile->GetFileName());
 	theApp.emuledlg->ShowNotifier(msgTemp, TBN_DOWNLOADADDED);
 	ExportPartMetFilesOverview();
-	SaveFileSettings(); // drop sources - Stulle
+	// ==> drop sources - Stulle
+#ifndef FILESETTINGS_SAVE_THREAD
+	(void)m_SettingsSaver.SaveSettings();
+#else
+	SaveFileSettings();
+#endif
+	// <== drop sources - Stulle
 }
 
 bool CDownloadQueue::IsFileExisting(const uchar* fileid, bool bLogWarnings) const
@@ -1509,12 +1534,14 @@ bool CDownloadQueue::RemoveSource(CUpDownClient* toremove, bool bDoStatsUpdate)
 void CDownloadQueue::RemoveFile(CPartFile* toremove)
 {
 	// ==> drop sources - Stulle
+#ifdef FILESETTINGS_SAVE_THREAD
 	if (m_SaveSettingsThread) // we just started saving, we better wait
 	{
 		m_SaveSettingsThread->EndThread();
 		delete m_SaveSettingsThread;
 		m_SaveSettingsThread = NULL;
 	}
+#endif
 	// <== drop sources - Stulle
 	RemoveLocalServerRequest(toremove);
 
@@ -1527,8 +1554,6 @@ void CDownloadQueue::RemoveFile(CPartFile* toremove)
 	SortByPriority();
 	CheckDiskspace();
 	ExportPartMetFilesOverview();
-
-	m_SettingsSaver.SaveSettings(); // drop sources - Stulle
 }
 
 void CDownloadQueue::DeleteAll(){
@@ -2616,7 +2641,7 @@ void CDownloadQueue::KademliaSearchFile(uint32 searchID, const Kademlia::CUInt12
 
 void CDownloadQueue::ExportPartMetFilesOverview() const
 {
-	CString strFileListPath = thePrefs.GetMuleDirectory(EMULE_DATABASEDIR) + _T("downloads.txt");
+	CString strFileListPath = thePrefs.GetMuleDirectory(EMULE_CONFIGDIR) + _T("downloads.txt");
 	
 	CString strTmpFileListPath = strFileListPath;
 	PathRenameExtension(strTmpFileListPath.GetBuffer(MAX_PATH), _T(".tmp"));
@@ -3048,6 +3073,7 @@ void CDownloadQueue::RemoveSourceAndDontAsk(CUpDownClient* toremove, bool bDoSta
 	}
 }
 
+#ifdef FILESETTINGS_SAVE_THREAD
 #define SAVE_WAIT_TIME 5 // time we wait until we actually save
 void CDownloadQueue::SaveFileSettings(bool bStart)
 {
@@ -3058,13 +3084,21 @@ void CDownloadQueue::SaveFileSettings(bool bStart)
 			m_SaveSettingsThread = new CSaveSettingsThread();
 			m_dwLastSave = ::GetTickCount();
 		}
-		else if((::GetTickCount() - m_dwLastSave) < SEC2MS(SAVE_WAIT_TIME))
-			m_bSaveAgain = true;
+		else
+		{
+			if((m_dwLastSave + SEC2MS(SAVE_WAIT_TIME)) < ::GetTickCount())
+				m_bSaveAgain = true;
+			m_dwLastSave = ::GetTickCount();
+			m_SaveSettingsThread->KeepWaiting();
+		}
 	}
 	else
 	{
 		if(m_bSaveAgain)
+		{
 			m_bSaveAgain = false;
+			m_SaveSettingsThread->Pause(false);
+		}
 		else if (m_SaveSettingsThread) // just in case, should always be true at this point
 		{
 			m_SaveSettingsThread->EndThread();
@@ -3078,8 +3112,11 @@ void CDownloadQueue::SaveFileSettings(bool bStart)
 CSaveSettingsThread::CSaveSettingsThread(void) {
 	threadEndedEvent = new CEvent(0, 1);
 	pauseEvent = new CEvent(TRUE, TRUE);
+	waitEvent = new CEvent(TRUE, FALSE);
 
 	bDoRun = true;
+	bDoWait = true;
+	m_dwLastWait = 0;
 	AfxBeginThread(RunProc,(LPVOID)this,THREAD_PRIORITY_LOWEST);
 }
 
@@ -3087,13 +3124,19 @@ CSaveSettingsThread::~CSaveSettingsThread(void) {
 	EndThread();
 	delete threadEndedEvent;
 	delete pauseEvent;
+	delete waitEvent;
 }
 
 void CSaveSettingsThread::EndThread() {
+	if(!bDoRun) // we are trying to stop already
+		return;
+
 	// signal the thread to stop looping and exit.
 	bDoRun = false;
+	bDoWait = false;
 
 	Pause(false);
+	waitEvent->SetEvent();
 
 	// wait for the thread to signal that it has stopped looping.
 	threadEndedEvent->Lock();
@@ -3118,21 +3161,43 @@ UINT AFX_CDECL CSaveSettingsThread::RunProc(LPVOID pParam)
 
 UINT CSaveSettingsThread::RunInternal()
 {
-	bool bWait = true; // only wait on the first run
+	AddDebugLogLine(false,_T("CSaveSettingsThread started"));
+	while (bDoWait)
+	{
+		if(m_dwLastWait == 0) // initial wait
+			waitEvent->Lock(SEC2MS(SAVE_WAIT_TIME));
+		else if(m_dwLastWait + SEC2MS(SAVE_WAIT_TIME) > ::GetTickCount()) // we have not waited enough since last keep message
+			waitEvent->Lock(m_dwLastWait + SEC2MS(SAVE_WAIT_TIME) - ::GetTickCount()); // so wait until the time is up
+		else // we waited enough, do the actual run now
+		{
+			bDoWait = false;
+			if(bDoRun == false) // what? canceling this thread before saving
+				m_SettingsSaver.SaveSettings(); // save!
+		}
+	}
+	AddDebugLogLine(false,_T("CSaveSettingsThread finished waiting"));
+
 	while(bDoRun) 
 	{
-        pauseEvent->Lock();
-
+		/*
 		if(bWait)
 			Sleep(SEC2MS(SAVE_WAIT_TIME));
+
 		bWait = false; // no more waiting henceforth
+		*/
 
 		if(m_SettingsSaver.SaveSettings()) // if this fails we need to run again
+		{
+			Pause(true);
 			PostMessage(theApp.emuledlg->m_hWnd,TM_SAVEDONE,0,0);
+		}
+		pauseEvent->Lock();
 	}
 
 	threadEndedEvent->SetEvent();
+	AddDebugLogLine(false,_T("CSaveSettingsThread ended"));
 
 	return 0;
 }
+#endif
 // <== drop sources - Stulle

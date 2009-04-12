@@ -64,7 +64,7 @@ public:
 	void UpdateListCount(EWnd2 listindex, int iCount = -1);
 	void UpdateFilesCount(int iCount);
 	void Localize();
-	void UpdateCatTabTitles(bool force=true);
+	void UpdateCatTabTitles(bool force = true);
 	void VerifyCatTabSize(bool _forceverify=false);
 	//MOPRH - Moved by SiRoB, Due to Khaos Cat moved in public area
 	/*
@@ -87,16 +87,16 @@ public:
 
 	// Dialog Data
 	enum { IDD = IDD_TRANSFER };
-	CUploadListCtrl		uploadlistctrl;
-	CDownloadListCtrl	downloadlistctrl;
-	CQueueListCtrl		queuelistctrl;
-	CClientListCtrl		clientlistctrl;
+	CUploadListCtrl			uploadlistctrl;
+	CDownloadListCtrl		downloadlistctrl;
+	CQueueListCtrl			queuelistctrl;
+	CClientListCtrl			clientlistctrl;
 	CDownloadClientsCtrl	downloadclientsctrl;
 
 protected:
 	CSplitterControl m_wndSplitter;
 	EWnd2		m_uWnd2;
-	bool downloadlistactive;
+	bool		downloadlistactive;
 	CDropDownButton* m_btnWnd1;
 	CDropDownButton* m_btnWnd2;
 	TabControl	m_dlTab;
@@ -130,18 +130,19 @@ protected:
 	int		GetItemUnderMouse(CListCtrl* ctrl);
 	//MOPRH - Removed by SiRoB, Due to Khaos Cat
 	/*
-	CString GetCatTitle(int catid);
+	CString	GetCatTitle(int catid);
 	*/
-	void EditCatTabLabel(int index,CString newlabel);
-	void EditCatTabLabel(int index);
+	void	EditCatTabLabel(int index,CString newlabel);
+	void	EditCatTabLabel(int index);
 	void	ShowList(uint32 dwListIDC);
 	void	SetWnd1Icon(EWnd1Icon iIcon);
 	void	SetWnd2Icon(EWnd2Icon iIcon);
 	// ==> Advanced Transfer Window Layout - Stulle
-	/*
+#ifndef ATWL
 	void	ShowSplitWindow(bool bReDraw = false);
-	*/
-	void	ShowSplitWindow(bool bReDraw, uint32 dwListIDC);
+#else
+	void	ShowSplitWindow(bool bReDraw, uint32 dwListIDC, bool bInitSplitted = false);
+#endif
 	// <== Advanced Transfer Window Layout - Stulle
 	void	LocalizeToolbars();
 
@@ -152,26 +153,25 @@ protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	
 	DECLARE_MESSAGE_MAP()
-	afx_msg void OnHoverUploadList(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnHoverDownloadList(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnTcnSelchangeDltab(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnNMRclickDltab(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnLvnBegindrag(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnTabMovement(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnLvnKeydownDownloadlist(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnSysColorChange();
-	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
-	afx_msg void OnDblclickDltab();
-	afx_msg void OnBnClickedQueueRefreshButton();
-	afx_msg void OnBnClickedChangeView();
-	afx_msg void OnWnd1BtnDropDown(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnWnd2BtnDropDown(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnSplitterMoved(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnBnClickedChangeView();
+	afx_msg void OnBnClickedQueueRefreshButton();
+	afx_msg void OnDblClickDltab();
+	afx_msg void OnHoverDownloadList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnHoverUploadList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnLvnBeginDragDownloadList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnKeydownDownloadList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnNmRClickDltab(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
+	afx_msg void OnSplitterMoved(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnSysColorChange();
+	afx_msg void OnTabMovement(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnTcnSelchangeDltab(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnWnd1BtnDropDown(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnWnd2BtnDropDown(NMHDR *pNMHDR, LRESULT *pResult);
 	// ==> XP Style Menu [Xanatos] - Stulle
 	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	// <== XP Style Menu [Xanatos] - Stulle
@@ -187,17 +187,21 @@ public:
 	int AddCategory(CString newtitle,CString newincoming,CString newcomment,CString newautocat,bool addTab=true);	
 
 	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 protected:
 	CBrush m_brMyBrush;
 	HBRUSH hbr;
 public:
 	void SetBackgroundColor(int nStyle);
 	void OnBackcolor();
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 
 	// ==> Advanced Transfer Window Layout - Stulle
+#ifdef ATWL
 	void UpdateListCountTop(EWnd2 listindex);
 protected:
 	uint32		m_dwTopListIDC;
+#endif
 	// <== Advanced Transfer Window Layout - Stulle
 };

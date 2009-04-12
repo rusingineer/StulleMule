@@ -16,12 +16,15 @@
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #pragma once
 #include "MapKey.h"
+#include "SHAHashset.h"
 
 class CKnownFile;
 typedef CMap<CCKey,const CCKey&,CKnownFile*,CKnownFile*> CKnownFilesMap;
 typedef CMap<CSKey,const CSKey&,int,int> CancelledFilesMap;
+typedef CMap<CAICHHash, const CAICHHash&, const CKnownFile*, const CKnownFile*> KnonwFilesByAICHMap;
 
 // ==> Threaded Known Files Saving - Stulle
+#ifdef KNOWNFILES_SAVE_THREAD
 class CSaveKnownThread : public CWinThread
 {
 public:
@@ -39,6 +42,7 @@ private:
     CEvent* pauseEvent;
 	volatile bool bDoRun;
 };
+#endif
 // <== Threaded Known Files Saving - Stulle
 
 class CKnownFileList 
@@ -68,6 +72,9 @@ public:
 	const CKnownFilesMap& GetKnownFiles() const { return m_Files_map; }
 	void	CopyKnownFileMap(CMap<CCKey,const CCKey&,CKnownFile*,CKnownFile*> &Files_Map);
 
+	bool	ShouldPurgeAICHHashset(const CAICHHash& rAICHHash) const;
+	void	AICHHashChanged(const CAICHHash* pOldAICHHash, const CAICHHash& rNewAICHHash, CKnownFile* pFile);
+
 	//MORPH START - Added, Downloaded History [Monki/Xman]
 #ifndef NO_HISTORY
 	CKnownFilesMap* GetDownloadedFiles();
@@ -91,17 +98,22 @@ private:
 	uint16 	accepted;
 	uint64 	transferred;
 	uint32 	m_nLastSaved;
-	CKnownFilesMap m_Files_map;
+	CKnownFilesMap		m_Files_map;
 	CancelledFilesMap	m_mapCancelledFiles;
+	// for faster access, map of files indexed by AICH-hash, not garantueed to be complete at this point (!)
+	// (files which got AICH hashed later will not be added yet, because we don't need them, make sure to change this if needed)
+	KnonwFilesByAICHMap m_mapKnownFilesByAICH;
 	uint32	m_dwCancelledFilesSeed;
 
 public:
 	uint32	GetTotalRequested() {return requested;} // push rare file - Stulle
 
 	// ==> Threaded Known Files Saving - Stulle
+#ifdef KNOWNFILES_SAVE_THREAD
 	void SaveKnown(bool bStart = true);
 	CSaveKnownThread* m_SaveKnownThread;
 protected:
 	bool m_bSaveAgain;
+#endif
 	// <== Threaded Known Files Saving - Stulle
 };

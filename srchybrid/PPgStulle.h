@@ -159,7 +159,17 @@ protected:
 	int m_iReleaseBonusDays;
 	// <== Release Bonus [sivka] - Stulle
 	bool m_bReleaseScoreAssurance; // Release Score Assurance - Stulle
-	bool m_bAutoSharedUpdater; // Automatic shared files updater [MoNKi] - Stulle
+	// ==> Adjustable NT Service Strings - Stulle
+	CString m_strServiceName;
+	CString m_strServiceDispName;
+	CString m_strServiceDescr;
+	// <== Adjustable NT Service Strings - Stulle
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+	bool m_bAutoSharedUpdater;
+	bool m_bSingleSharedDirUpdater;
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 
 	CTreeOptionsCtrlEx m_ctrlTreeOptions;
 	bool m_bInitializedTreeOpts;
@@ -340,11 +350,24 @@ protected:
 	HTREEITEM m_htiReleaseBonusDaysEdit;
 	// <== Release Bonus [sivka] - Stulle
 	HTREEITEM m_htiReleaseScoreAssurance; // Release Score Assurance - Stulle
-	HTREEITEM m_htiAutoSharedUpdater; // Automatic shared files updater [MoNKi] - Stulle
+	// ==> Adjustable NT Service Strings - Stulle
+	HTREEITEM m_htiServiceStrGrp;
+	HTREEITEM m_htiServiceName;
+	HTREEITEM m_htiServiceDispName;
+	HTREEITEM m_htiServiceDescr;
+	// <== Adjustable NT Service Strings - Stulle
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+	HTREEITEM m_htiAutoSharedGroup;
+	HTREEITEM m_htiAutoSharedUpdater;
+	HTREEITEM m_htiSingleSharedDirUpdater;
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 
 	// ==> push small files [sivka] - Stulle
 	uint32 m_iPushSmallFiles;
 	void ShowPushSmallFileValues();
+	CSliderCtrl m_ctlPushSmallSize;
 	// <== push small files [sivka] - Stulle
 
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -363,5 +386,5 @@ protected:
 	afx_msg void OnEnChangeModified() { SetModified();}
 public:
 	void Localize(void);	
-	void LoadSettings(void);
+//	void LoadSettings(void);
 };

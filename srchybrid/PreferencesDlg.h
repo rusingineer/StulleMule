@@ -33,7 +33,11 @@
 #include "PPgEastShare.h" //EastShare - Added by Pretender
 #include "PPgEmulEspana.h" //MORPH - Added by SiRoB, eMulEspana Preferency
 #include "PPgStulle.h" // StulleMule Preferences window - Stulle
-#include "PPgDesign.h" // Design Settings [eWombat/Stulle] - Stulle
+// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+#include "PPgDesign.h"
+#endif
+// <== Design Settings [eWombat/Stulle] - Stulle
 #include "KCSideBannerWnd.h" //Commander - Added: Preferences Banner [TPT]
 #include "SlideBar.h" //MORPH - Added by SiRoB, ePLus Group
 #include "PPGNTServer.h" //MORPH leuk_he:run as ntservice v1.. 
@@ -88,7 +92,11 @@ public:
 	CPPgEastShare	m_wndEastShare; //EastShare - Added by Pretender, ES Prefs
 	CPPgEmulespana	m_wndEmulespana; //MORPH - Added by SiRoB, emulEspaña preferency
 	CPPgStulle		m_wndStulle; // StulleMule Preferences window - Stulle
-	CPPgDesign		m_wndDesign; // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	CPPgDesign		m_wndDesign;
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 	
 	void Localize();
 	void SetStartPage(UINT uStartPageID);

@@ -39,16 +39,16 @@ static char THIS_FILE[]=__FILE__;
 IMPLEMENT_DYNAMIC(CPPgScheduler, CPropertyPage)
 
 BEGIN_MESSAGE_MAP(CPPgScheduler, CPropertyPage)
-	ON_NOTIFY(NM_CLICK, IDC_SCHEDLIST, OnNMDblclkList)
-	ON_NOTIFY(NM_DBLCLK, IDC_SCHEDACTION, OnNMDblclkActionlist)
-	ON_NOTIFY(NM_RCLICK, IDC_SCHEDACTION, OnNMRclickActionlist)
-	ON_BN_CLICKED(IDC_NEW, OnBnClickedAdd)
 /* MORPH START  leuk_he: Remove 2nd apply in scheduler
 	ON_BN_CLICKED(IDC_APPLY, OnBnClickedApply)
 	 MORPH END leuk_he: Remove 2nd apply in scheduler */
-	ON_BN_CLICKED(IDC_REMOVE, OnBnClickedRemove)
-	ON_BN_CLICKED(IDC_ENABLE, OnEnableChange)
 	ON_BN_CLICKED(IDC_CHECKNOENDTIME, OnDisableTime2)
+	ON_BN_CLICKED(IDC_ENABLE, OnEnableChange)
+	ON_BN_CLICKED(IDC_NEW, OnBnClickedAdd)
+	ON_BN_CLICKED(IDC_REMOVE, OnBnClickedRemove)
+	ON_NOTIFY(NM_CLICK, IDC_SCHEDLIST, OnNmClickList)
+	ON_NOTIFY(NM_DBLCLK, IDC_SCHEDACTION, OnNmDblClkActionlist)
+	ON_NOTIFY(NM_RCLICK, IDC_SCHEDACTION, OnNmRClickActionlist)
 // MORPH START  leuk_he: Remove 2nd apply in scheduler
 	ON_NOTIFY(LVN_ITEMCHANGING, IDC_SCHEDLIST, OnListItemChanging)
 	ON_EN_CHANGE(IDC_ENABLE, OnSettingsChange)
@@ -100,16 +100,16 @@ BOOL CPPgScheduler::OnInitDialog()
 
 	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 	ASSERT( (m_list.GetStyle() & LVS_SINGLESEL) == 0);
-	m_list.InsertColumn(0, GetResString(IDS_TITLE) ,LVCFMT_LEFT,150,0);
-	m_list.InsertColumn(1,GetResString(IDS_S_DAYS),LVCFMT_LEFT,80,1);
-	m_list.InsertColumn(2,GetResString(IDS_STARTTIME),LVCFMT_LEFT,80,2);
+	m_list.InsertColumn(0, GetResString(IDS_TITLE),		LVCFMT_LEFT, 150);
+	m_list.InsertColumn(1, GetResString(IDS_S_DAYS),	LVCFMT_LEFT,  80);
+	m_list.InsertColumn(2, GetResString(IDS_STARTTIME), LVCFMT_LEFT,  80);
 	m_time.SetFormat(_T("H:mm"));
 	m_timeTo.SetFormat(_T("H:mm"));
 
 	m_actions.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 	ASSERT( (m_actions.GetStyle() & LVS_SINGLESEL) == 0 );
-	m_actions.InsertColumn(0, GetResString(IDS_ACTION) ,LVCFMT_LEFT,150,0);
-	m_actions.InsertColumn(1,GetResString(IDS_VALUE),LVCFMT_LEFT,80,1);
+	m_actions.InsertColumn(0, GetResString(IDS_ACTION), LVCFMT_LEFT, 150);
+	m_actions.InsertColumn(1, GetResString(IDS_VALUE),  LVCFMT_LEFT,  80);
 
 	InitTooltips(); //leuk_he tooltipped
 	Localize();
@@ -167,7 +167,7 @@ void CPPgScheduler::Localize(void)
 
 // MORPH START  leuk_he: Remove 2nd apply in scheduler
 /*  old code:
-void CPPgScheduler::OnNMDblclkList(NMHDR*  pNMHDR , LRESULT*  pResult )
+void CPPgScheduler::OnNmClickList(NMHDR*  pNMHDR , LRESULT*  pResult )
 {
 	if (m_list.GetSelectionMark()>-1) LoadSchedule(m_list.GetSelectionMark());
 }
@@ -177,11 +177,11 @@ void CPPgScheduler::OnNMDblclkList(NMHDR*  pNMHDR , LRESULT*  pResult )
 void CPPgScheduler::OnListItemChanging(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if(((NM_LISTVIEW*)pNMHDR)->uNewState & LVIS_SELECTED && !(((NM_LISTVIEW*)pNMHDR)->uOldState & LVIS_SELECTED))
-		OnNMDblclkList(pNMHDR,pResult)	;
+		OnNmClickList(pNMHDR,pResult)	;
 }
 
 // MORPH START  leuk_he: Remove 2nd apply in scheduler continue:
-void CPPgScheduler::OnNMDblclkList(NMHDR* /*pNMHDR*/, LRESULT* pResult)
+void CPPgScheduler::OnNmClickList(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {  
 	// If there are modifications you first need to appy before 
 	// an other schedule can be select. 
@@ -243,6 +243,7 @@ void CPPgScheduler::LoadSchedule(int index) {
 void CPPgScheduler::FillScheduleList() {
 
 	m_list.DeleteAllItems();
+	
 // MORPH START  leuk_he: Remove 2nd apply in scheduler
     bSuppressModifications=true;
 	m_actions.DeleteAllItems(); // clear
@@ -287,16 +288,15 @@ void CPPgScheduler::OnBnClickedAdd()
 
 	index=theApp.scheduler->AddSchedule(newschedule);
 	m_list.InsertItem(index , newschedule->title );
-	miActiveSelection  =index;
 // MORPH START  leuk_he: Remove 2nd apply in scheduler
+	miActiveSelection  =index;
 	GetDlgItem(IDC_S_TITLE)->SetWindowText(newschedule->title);
   miActiveSelection  =index;
 	SetModified();
 // MORPH END leuk_he: Remove 2nd apply in scheduler
-	m_list.SetSelectionMark(index);
+ 	m_list.SetSelectionMark(index);
 
 	RecheckSchedules();
-
 }
 
 // MORPH START  leuk_he: Remove 2nd apply in scheduler
@@ -387,6 +387,8 @@ void CPPgScheduler::OnBnClickedRemove()
 
 /* MORPH START  leuk_he: Remove 2nd apply in scheduler
 BOOL CPPgScheduler::OnApply(){
+	SetModified(FALSE);
+	return CPropertyPage::OnApply();
 }
    MORPH END leuk_he: Remove 2nd apply in scheduler*/
 
@@ -413,7 +415,12 @@ CString CPPgScheduler::GetActionLabel(int index) {
 		case ACTION_RELOAD		: return GetResString(IDS_SF_RELOAD); // MORPH add teload on schedule
 		// [end] MIghty Knife
 	}
-	return _T(""); //MORPH - Modified by IceCream, return a CString
+	//MORPH - Modified by IceCream, return a CString
+	/*
+	return NULL;
+	*/
+	return _T("");
+	//MORPH - Modified by IceCream, return a CString
 }
 
 CString CPPgScheduler::GetDayLabel(int index) {
@@ -430,10 +437,15 @@ CString CPPgScheduler::GetDayLabel(int index) {
 		case DAY_MO_SA	: return GetResString(IDS_DAY_MO_SA);
 		case DAY_SA_SO	: return GetResString(IDS_DAY_SA_SO);
 	}
-	return _T(""); //MORPH - Modified by IceCream, return a CString
+	//MORPH - Modified by IceCream, return a CString
+	/*
+	return NULL;
+	*/
+	return _T("");
+	//MORPH - Modified by IceCream, return a CString
 }
 
-void CPPgScheduler::OnNMDblclkActionlist(NMHDR* /*pNMHDR*/, LRESULT* pResult)
+void CPPgScheduler::OnNmDblClkActionlist(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
 	if (m_actions.GetSelectionMark()!=-1) {
 		int ac=m_actions.GetItemData(m_actions.GetSelectionMark());
@@ -447,7 +459,7 @@ void CPPgScheduler::OnNMDblclkActionlist(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CPPgScheduler::OnNMRclickActionlist(NMHDR* /*pNMHDR*/, LRESULT* pResult)
+void CPPgScheduler::OnNmRClickActionlist(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
 	POINT point;
 	::GetCursorPos(&point);
@@ -523,10 +535,11 @@ void CPPgScheduler::OnNMRclickActionlist(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 	// Mighty Knife: actions without parameters
 	if (!isParameterless) {
 		if (isCatAction) {
-			if (thePrefs.GetCatCount()>1) m_CatActionSel.AppendMenu(MF_STRING,MP_SCHACTIONS+20,GetResString(IDS_ALLUNASSIGNED));
+			if (thePrefs.GetCatCount()>1)
+				m_CatActionSel.AppendMenu(MF_STRING,MP_SCHACTIONS+20,GetResString(IDS_ALLUNASSIGNED));
 			m_CatActionSel.AppendMenu(MF_STRING,MP_SCHACTIONS+21,GetResString(IDS_ALL));
 			for (int i=1;i<thePrefs.GetCatCount();i++)
-			m_CatActionSel.AppendMenu(MF_STRING,MP_SCHACTIONS+22+i,thePrefs.GetCategory(i)->strTitle);
+				m_CatActionSel.AppendMenu(MF_STRING,MP_SCHACTIONS+22+i,thePrefs.GetCategory(i)->strTitle);
 			// ==> more icons - Stulle
 			/*
 			m_ActionMenu.AppendMenu(MF_POPUP,(UINT_PTR)m_CatActionSel.m_hMenu,	GetResString(IDS_SELECTCAT));
@@ -539,6 +552,7 @@ void CPPgScheduler::OnNMRclickActionlist(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 			// <== more icons - Stulle
 	}
 	// [end] Mighty Knife
+
 
 	// ==> more icons - Stulle
 	/*
@@ -656,7 +670,7 @@ void CPPgScheduler::OnEnableChange() {
 	RecheckSchedules();
 	theApp.emuledlg->preferenceswnd->m_wndConnection.LoadSettings();	
   /* MORPH START  leuk_he: Remove 2nd apply in scheduler
-	SetModified(); // MORPH (RE)MOVED
+	SetModified();
    MORPH END leuk_he: Remove 2nd apply in scheduler   */ 
 }
 

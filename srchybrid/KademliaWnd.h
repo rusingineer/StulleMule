@@ -37,8 +37,6 @@ public:
 	BOOL SaveAllSettings();
 
 protected:
-	CStatic kadContactLab;
-	CStatic kadSearchLab;
 	CIconStatic m_ctrlBootstrap;
 	CKadContactListCtrl* m_contactListCtrl;
 	CKadContactHistogramCtrl* m_contactHistogramCtrl;
@@ -63,10 +61,12 @@ protected:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
 	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 	CBrush m_brMyBrush;
 	HBRUSH hbr;	
 	COLORREF crKadColor;
 public:
 	void OnBackcolor(); 
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 };

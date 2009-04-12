@@ -105,6 +105,7 @@ public:
 	//MORPH START - Added by SiRoB, New Version check
 	void DoMVersioncheck(bool manual);
 	//MORPH END   - Added by SiRoB, New Version check
+	void DoIPFilterVersioncheck(); //MORPH - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
 	// ==> StulleMule Version Check - Stulle
 	void DoSVersioncheck(bool manual);
 	// <== StulleMule Version Check - Stulle
@@ -118,6 +119,7 @@ public:
 	void SetToolTipsDelay(UINT uDelay);
 #ifdef USE_OFFICIAL_UPNP
 	void StartUPnP(bool bReset = true, uint16 nForceTCPPort = 0, uint16 nForceUDPPort = 0);
+	void RefreshUPnP(bool bRequestAnswer = false);
 #endif
 	HBRUSH GetCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
@@ -184,6 +186,9 @@ protected:
 	//MORPH START - Added by SiRoB, Version check
 	char			m_acMVCDNSBuffer[MAXGETHOSTSTRUCT];
 	//MORPH END   - Added by SiRoB, Version check
+	//MORPH START - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
+	char			m_acIPFilterAutoBuffer[MAXGETHOSTSTRUCT];
+	//MORPH END   - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
 	// ==> StulleMule Version Check - Stulle
 	char			m_acSVCDNSBuffer[MAXGETHOSTSTRUCT];
 	// <== StulleMule Version Check - Stulle
@@ -257,6 +262,7 @@ protected:
 	afx_msg void OnSysColorChange();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
+	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
 	afx_msg BOOL OnQueryEndSession();
 	afx_msg void OnEndSession(BOOL bEnding);
 	afx_msg LRESULT OnUserChanged(WPARAM wParam, LPARAM lParam);
@@ -290,14 +296,21 @@ protected:
 	//MORPH START - Added by SiRoB, Import Part
 	afx_msg LRESULT OnImportPart(WPARAM wParam,LPARAM lParam);
 	//MORPH END   - Added by SiRoB, Import Part
-	afx_msg LRESULT OnSaveDone(WPARAM wParam,LPARAM lParam); // drop sources - Stulle
-	afx_msg LRESULT OnSaveKnownDone(WPARAM wParam,LPARAM lParam); // Threaded Known Files Saving - Stulle
+	// ==> drop sources - Stulle
+#ifdef FILESETTINGS_SAVE_THREAD
+	afx_msg LRESULT OnSaveDone(WPARAM wParam,LPARAM lParam);
+#endif
+	// <== drop sources - Stulle
+	// ==> Threaded Known Files Saving - Stulle
+#ifdef KNOWNFILES_SAVE_THREAD
+	afx_msg LRESULT OnSaveKnownDone(WPARAM wParam,LPARAM lParam);
+#endif
+	// <== Threaded Known Files Saving - Stulle
 	afx_msg LRESULT OnFileAllocExc(WPARAM wParam,LPARAM lParam);
 	afx_msg LRESULT OnFileCompleted(WPARAM wParam,LPARAM lParam);
 	afx_msg LRESULT OnFileOpProgress(WPARAM wParam,LPARAM lParam);
 	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct); // XP Style Menu [Xanatos] - Stulle
 	afx_msg LRESULT OnConChecker(WPARAM wParam, LPARAM lParam); // Connection Checker [eWombat/WiZaRd] - Stulle
-	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData); // Automatic shared files updater [MoNKi] - Stulle
 
 	//Framegrabbing
 	afx_msg LRESULT OnFrameGrabFinished(WPARAM wParam,LPARAM lParam);
@@ -319,6 +332,9 @@ protected:
 
 	//MORPH - Added by SiRoB, New Version check
 	afx_msg LRESULT OnMVersionCheckResponse(WPARAM wParam, LPARAM lParam);
+
+	//MORPH - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
+	afx_msg LRESULT OnIPFilterAutoVerCheckResponse(WPARAM wParam, LPARAM lParam);
 
 	// StulleMule Version Check - Stulle
 	afx_msg	LRESULT	OnSVersionCheckResponse(WPARAM wParam, LPARAM lParam);
@@ -375,6 +391,8 @@ public:
 	afx_msg void OnChangeCbChain(HWND hWndRemove, HWND hWndAfter);
 	// MORPH END leuk_he clipboard chain instead of timer
 
+	void	CheckIPFilter(); //MORPH - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
+
 // ==> Show in MSN7 [TPT] - Stulle
 protected:
 	DWORD m_dwMSNtime;
@@ -397,10 +415,12 @@ public:
 // <== High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
 
 	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 private:
 	HBRUSH	m_hbrWndClr;
 public:
 	HBRUSH	GetWndClr()	{return m_hbrWndClr;}
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 };
 
@@ -419,8 +439,16 @@ enum EEMuleAppMsgs
 	TM_READBLOCKFROMFILEDONE, //MORPH - Added by SiRoB, ReadBlockFromFileThread
 	TM_FLUSHDONE, //MORPH - Added by SiRoB, Flush Thread
 	TM_IMPORTPART, //MORPH START - Added by SiRoB, Import Part
-	TM_SAVEDONE, // drop sources - Stulle
-	TM_SAVEKNOWNDONE, // Threaded Known Files Saving - Stulle
+	// ==> drop sources - Stulle
+#ifdef FILESETTINGS_SAVE_THREAD
+	TM_SAVEDONE,
+#endif
+	// <== drop sources - Stulle
+	// ==> Threaded Known Files Saving - Stulle
+#ifdef KNOWNFILES_SAVE_THREAD
+	TM_SAVEKNOWNDONE,
+#endif
+	// <== Threaded Known Files Saving - Stulle
 	TM_FRAMEGRABFINISHED,
 	TM_FILEALLOCEXC,
 	TM_FILECOMPLETED,

@@ -66,7 +66,7 @@ class CPPgBackup; //EastShare - Added by Pretender, TBH-AutoBackup
 class CSystemInfo;  // CPU/MEM usage [$ick$/Stulle] - Stulle 
 
 enum AppState{
-	APP_STATE_RUNNING=0,
+	APP_STATE_RUNNING = 0,
    	APP_STATE_SHUTTINGDOWN,
 	APP_STATE_DONE
 };
@@ -79,10 +79,10 @@ public:
 	CemuleApp(LPCTSTR lpszAppName = NULL);
 
 	// ZZ:UploadSpeedSense -->
-	UploadBandwidthThrottler* uploadBandwidthThrottler; 
-	LastCommonRouteFinder*    lastCommonRouteFinder; 
+    UploadBandwidthThrottler* uploadBandwidthThrottler;
+    LastCommonRouteFinder* lastCommonRouteFinder;
 	// ZZ:UploadSpeedSense <--
-	CemuleDlg*		emuledlg;
+	CemuleDlg*			emuledlg;
 	CClientList*		clientlist;
 	CKnownFileList*		knownfiles;
 	CServerConnect*		serverconnect;
@@ -102,7 +102,7 @@ public:
 	CPeerCacheFinder*	m_pPeerCache;
 	CFirewallOpener*	m_pFirewallOpener;
 #ifdef USE_OFFICIAL_UPNP
-	CUPnPImplWrapper*		m_pUPnPFinder;
+	CUPnPImplWrapper*	m_pUPnPFinder;
 #endif
 	// ==> TBH: minimule - Stulle/ leuk_he
 	CTBHMM*				minimule;
@@ -134,7 +134,12 @@ public:
 	UINT				m_uCurVersionShort;
 	UINT				m_uCurVersionCheck;
 	ULONGLONG			m_ullComCtrlVer;
-	volatile AppState	m_app_state; // defines application state for shutdown 
+	//MORPH
+	/*
+	AppState			m_app_state; // defines application state for shutdown 
+	*/
+	volatile AppState		m_app_state; // defines application state for shutdown 
+	//MORPH END
 	CMutex				hashing_mut;
 	CReadWriteLock		m_threadlock;	// SLUGFILLER: SafeHash - This will ensure eMule goes last
 	CString*			pstrPendingLink;
@@ -167,7 +172,7 @@ public:
 	virtual BOOL InitInstance();
 	virtual int ExitInstance();
 	virtual BOOL IsIdleMessage(MSG *pMsg);
-	virtual BOOL OnIdle(LONG lCount);
+	virtual BOOL OnIdle(LONG lCount); // MORPH
 
 	// ed2k link functions
 //EastShare START - Modified by Pretender, [MoNKi: -Check already downloaded files-]
@@ -230,6 +235,7 @@ public:
 	void		DisableRTLWindowsLayout();
 	void		UpdateDesktopColorDepth();
 	void		UpdateLargeIconSize();
+	bool		IsXPThemeActive() const;
 	bool		IsVistaThemeActive() const;
 
 	bool		GetLangHelpFilePath(CString& strResult);
@@ -282,6 +288,7 @@ protected:
 	uint32 m_dwPublicIP;
 	bool m_bAutoStart;
 	WSADATA				m_wsaData; //MORPH - Added by SiRoB, eWombat [WINSOCK2]
+
 private:
     UINT     m_wTimerRes;
 
@@ -309,14 +316,16 @@ public:
 	bool IsWaitingForCryptPingConnect();  
 // Morph end lh: lh require obfuscated server connection 
 // MORPH START - Added by Commander, Friendlinks [emulEspaña]
-	public:
-		bool	IsEd2kFriendLinkInClipboard();
+public:
+	bool	IsEd2kFriendLinkInClipboard();
 // MORPH END - Added by Commander, Friendlinks [emulEspaña]
-		#define  SVC_NO_OPT 0
-		#define	 SVC_LIST_OPT 4
-		#define  SVC_SVR_OPT 6
-		#define SVC_FULL_OPT 10
-				bool	IsRunningAsService(int OptimizeLevel = SVC_NO_OPT );// MORPH leuk_he:run as ntservice v1..
+#define  SVC_NO_OPT 0
+#define	 SVC_LIST_OPT 4
+#define  SVC_SVR_OPT 6
+#define SVC_FULL_OPT 10
+	bool	IsRunningAsService(int OptimizeLevel = SVC_NO_OPT );// MORPH leuk_he:run as ntservice v1..
+
+	void RebindUPnP(); //emulEspaa: Added by MoNKi [MoNKi: -UPnPNAT Support-]
 
 	// ==> auto drop immunity - Stulle
 	DWORD	GetReAskTick()	{return m_dwReAskTick;}
@@ -342,6 +351,7 @@ private:
 	// <== Inform Clients after IP Change - Stulle
 
 	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 public:
 	void	CreateExtraFonts(CFont *font);
 	void	DestroyExtraFonts();
@@ -351,9 +361,11 @@ public:
 	CFont *GetFontByStyle(DWORD nStyle);
 protected:
 	CFont			m_ExtraFonts[7];
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 
 	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
 private:
 	static CEvent*				m_directoryWatcherCloseEvent;
 	static CEvent*				m_directoryWatcherReloadEvent;
@@ -363,6 +375,7 @@ public:
 	void ResetDirectoryWatcher();
 	void EndDirectoryWatcher();
 	void DirectoryWatcherExternalReload();
+#endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 };
 

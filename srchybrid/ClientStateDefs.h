@@ -83,29 +83,34 @@ enum EClientSoftware{
 	SO_AMULE			= 3,	// ET_COMPATIBLECLIENT
 	SO_SHAREAZA			= 4,	// ET_COMPATIBLECLIENT
 	// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifdef ENHANCED_CLIENTS_RECOG
 	SO_EMULEPLUS		= 5,
 	SO_HYDRANODE		= 6,
+#endif
 	// <== Enhanced Client Recognition [Spike] - Stulle
 	SO_MLDONKEY			= 10,	// ET_COMPATIBLECLIENT
 	SO_LPHANT			= 20,	// ET_COMPATIBLECLIENT
 	// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifdef ENHANCED_CLIENTS_RECOG
 	SO_SHAREAZA2		= 28,
 	SO_TRUSTYFILES		= 30,
 	SO_SHAREAZA3		= 40,
+#endif
 	// <== Enhanced Client Recognition [Spike] - Stulle
 	// other client types which are not identified with ET_COMPATIBLECLIENT
 	SO_EDONKEYHYBRID	= 50,
 	// ==> Enhanced Client Recognition [Spike] - Stulle
-	/*
+#ifndef ENHANCED_CLIENTS_RECOG
 	SO_EDONKEY,
 	SO_OLDEMULE,
-	*/
+#else
 	SO_EDONKEY			= 51,
 	SO_MLDONKEY2		= 52,
 	SO_OLDEMULE			= 53,
 	SO_SHAREAZA4		= 68,
 	SO_MLDONKEY3		= 152,
 	SO_OLD_MLDONKEY,
+#endif
 	// <== Enhanced Client Recognition [Spike] - Stulle
 	SO_URL,
 	SO_UNKNOWN

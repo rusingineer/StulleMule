@@ -176,9 +176,6 @@ namespace WombatAgent
 			return FALSE;
 		}
 
-		//For correct operation of the T2A macro, see TN059
-		USES_CONVERSION;
-
 		//Make sure everything is initialised
 		if (!Initialise2())
 			return FALSE;
@@ -186,7 +183,7 @@ namespace WombatAgent
 		//Resolve the address of the host to connect to
 		sockaddr_in dest;
 		memset(&dest,0,sizeof(dest));
-		LPSTR lpszAscii = T2A((LPTSTR) pszHostName);
+		LPSTR lpszAscii = CT2A((LPTSTR) pszHostName);
 		unsigned long addr = inet_addr(lpszAscii);
 		if (addr == INADDR_NONE)
 		{
@@ -349,16 +346,13 @@ namespace WombatAgent
 	//#ifdef CPING_USE_ICMP
 	BOOL CPing::Ping1(LPCTSTR pszHostName, CPingReply& pr, UCHAR nTTL, DWORD dwTimeout, UCHAR nPacketSize) const
 	{
-		//For correct operation of the T2A macro, see TN059
-		USES_CONVERSION;
-
 		//Make sure everything is initialised
 		if (!Initialise1())
 			return FALSE;
 
 		ASSERT(_cpingData.sm_hIcmp); //ICMP dll must be open
 
-		LPSTR lpszAscii = T2A((LPTSTR) pszHostName);
+		LPSTR lpszAscii = CT2A((LPTSTR) pszHostName);
 		//Convert from dotted notation if required
 		unsigned long	addr = inet_addr(lpszAscii);
 		if (addr == INADDR_NONE)

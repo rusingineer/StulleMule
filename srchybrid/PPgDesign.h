@@ -1,4 +1,5 @@
 #pragma once
+#ifdef DESIGN_SETTINGS
 #include "ColorButton.h"
 #include "BtnST.h"
 
@@ -68,3 +69,4 @@ public:
 	afx_msg void OnEnKillfocusSubCombo();
 	afx_msg void OnHelp();
 };
+#endif

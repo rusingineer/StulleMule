@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="emule80"
 	ProjectGUID="{584EA69D-3443-4197-8994-364880FC1B9B}"
 	RootNamespace="emule"
@@ -13,12 +13,15 @@
 		/>
 	</Platforms>
 	<ToolFiles>
+		<DefaultToolFile
+			FileName="masm.rules"
+		/>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory=".\debug"
-			IntermediateDirectory=".\debug"
+			Name="debug80|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="1"
@@ -30,6 +33,11 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+				CommandLine=""
+				AdditionalDependencies=""
+			/>
+			<Tool
+				Name="MASM"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -45,9 +53,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\site_config;.;..;..\id3lib\include;upnplib\ixml\src\inc;upnplib\upnp\src\inc;upnplib\upnp\inc;upnplib\build\inc;upnplib\threadutil\inc;upnplib\ixml\inc;pthreads\pthreads\inc;DirectX\Include;DirectX\Extras\DirectShow\Include"
+				AdditionalIncludeDirectories=".;..;..\id3lib\include;upnplib\ixml\src\inc;upnplib\upnp\src\inc;upnplib\upnp\inc;upnplib\build\inc;upnplib\threadutil\inc;upnplib\ixml\inc;pthreads\pthreads\inc;DirectX\Include;DirectX\Extras\DirectShow\Include;WMSDK\include;WMSDK\lib"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;ID3LIB_LINKOPTION=1;SUPPORT_LARGE_FILES;UPNP_STATIC_LIB;_WIN32;PTW32_STATIC_LIB;PNG_DEBUG=1;PNG_USE_PNGVCRD;PNG_LIBPNG_SPECIALBUILD"
 				MinimalRebuild="true"
+				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="true"
@@ -56,7 +65,7 @@
 				ForceConformanceInForLoopScope="false"
 				UsePrecompiledHeader="2"
 				WarningLevel="4"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -72,7 +81,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib ws2_32.lib gdiplus.lib ADSIId.lib crypt32.lib"
+				AdditionalOptions="/nxcompat"
+				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib ws2_32.lib gdiplus.lib ADSIId.lib crypt32.lib wmvcore.lib"
 				OutputFile="$(OutDir)\eMule.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -89,6 +99,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AssemblyIdentity="Microsoft.Windows.emule, processorArchitecture=X86, version=1.0.0.0, type=win32"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -107,6 +118,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -128,6 +140,10 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
+				Name="MASM"
+				UseSafeExceptionHandlers="true"
+			/>
+			<Tool
 				Name="VCXMLDataGeneratorTool"
 			/>
 			<Tool
@@ -146,7 +162,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
-				AdditionalIncludeDirectories="..\site_config;.;..;..\id3lib\include;upnplib\ixml\src\inc;upnplib\upnp\src\inc;upnplib\upnp\inc;upnplib\build\inc;upnplib\threadutil\inc;upnplib\ixml\inc;pthreads\pthreads\inc;DirectX\Include;DirectX\Extras\DirectShow\Include"
+				AdditionalIncludeDirectories="..\site_config;.;..;..\id3lib\include;upnplib\ixml\src\inc;upnplib\upnp\src\inc;upnplib\upnp\inc;upnplib\build\inc;upnplib\threadutil\inc;upnplib\ixml\inc;pthreads\pthreads\inc;DirectX\Include;DirectX\Extras\DirectShow\Include;WMSDK\include;WMSDK\lib"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;ID3LIB_LINKOPTION=1;_RELEASE;SUPPORT_LARGE_FILES;UPNP_STATIC_LIB;_WIN32;PTW32_STATIC_LIB"
 				StringPooling="true"
 				ExceptionHandling="2"
@@ -173,8 +189,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib ws2_32.lib gdiplus.lib ADSIId.lib crypt32.lib"
+				AdditionalOptions="/nxcompat /safeseh /dynamicbase"
+				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib ws2_32.lib gdiplus.lib ADSIId.lib crypt32.lib wmvcore.lib"
 				OutputFile="$(OutDir)\eMule.exe"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="kernel32.lib;advapi32.lib;user32.lib;gdi32.lib;shell32.lib;comdlg32.lib;version.lib;mpr.lib;rasapi32.lib;winmm.lib;winspool.lib;vfw32.lib;secur32.lib;oleacc.lib;oledlg.lib;sensapi.lib"
 				DelayLoadDLLs="oleacc.dll;gdiplus.dll"
@@ -183,12 +201,14 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
+				FixedBaseAddress="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AssemblyIdentity="Microsoft.Windows.emule, processorArchitecture=X86, version=1.0.0.0, type=win32"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -207,6 +227,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Inserting Vista application icon..."
+				CommandLine="..\ReplaceVistaIcon\release\ReplaceVistaIcon &quot;$(TargetPath)&quot; &quot;$(ProjectDir)res\MOD\Stulle_Vista.ico&quot; AAAEMULEAPP"
 			/>
 		</Configuration>
 		<Configuration
@@ -222,9 +244,14 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="MASM"
+				UseSafeExceptionHandlers="true"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -245,7 +272,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
-				AdditionalIncludeDirectories="..\site_config;.;..;..\id3lib\include;upnplib\ixml\src\inc;upnplib\upnp\src\inc;upnplib\upnp\inc;upnplib\build\inc;upnplib\threadutil\inc;upnplib\ixml\inc;pthreads\pthreads\inc;DirectX\Include;DirectX\Extras\DirectShow\Include"
+				AdditionalIncludeDirectories="..\site_config;.;..;..\id3lib\include;upnplib\ixml\src\inc;upnplib\upnp\src\inc;upnplib\upnp\inc;upnplib\build\inc;upnplib\threadutil\inc;upnplib\ixml\inc;pthreads\pthreads\inc;DirectX\Include;DirectX\Extras\DirectShow\Include;WMSDK\include;WMSDK\lib"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;ID3LIB_LINKOPTION=1;_BETA;SUPPORT_LARGE_FILES;UPNP_STATIC_LIB;_WIN32;PTW32_STATIC_LIB"
 				StringPooling="true"
 				ExceptionHandling="2"
@@ -272,8 +299,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib ws2_32.lib gdiplus.lib ADSIId.lib crypt32.lib"
+				AdditionalOptions="/nxcompat /safeseh /dynamicbase"
+				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib ws2_32.lib gdiplus.lib ADSIId.lib crypt32.lib wmvcore.lib"
 				OutputFile="$(OutDir)\eMule.exe"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="kernel32.lib;advapi32.lib;user32.lib;gdi32.lib;shell32.lib;comdlg32.lib;version.lib;mpr.lib;rasapi32.lib;winmm.lib;winspool.lib;vfw32.lib;secur32.lib;oleacc.lib;oledlg.lib;sensapi.lib"
 				DelayLoadDLLs="oleacc.dll;gdiplus.dll"
@@ -283,12 +312,14 @@
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
 				TargetMachine="1"
+				FixedBaseAddress="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AssemblyIdentity="Microsoft.Windows.emule, processorArchitecture=X86, version=1.0.0.0, type=win32"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -307,101 +338,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="debug80|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			UseOfMFC="1"
-			CharacterSet="1"
-			DeleteExtensionsOnClean="*.obj;*.ilk;*.pdb;*.tlb;*.tli;*.tlh;*.tmp;*.rsp;*.bat;*.asm;$(TargetPath)"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories=".;..;..\id3lib\include;upnplib\ixml\src\inc;upnplib\upnp\src\inc;upnplib\upnp\inc;upnplib\build\inc;upnplib\threadutil\inc;upnplib\ixml\inc;pthreads\pthreads\inc;DirectX\Include;DirectX\Extras\DirectShow\Include"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;ID3LIB_LINKOPTION=1;SUPPORT_LARGE_FILES;UPNP_STATIC_LIB;_WIN32;PTW32_STATIC_LIB;PNG_DEBUG=1;PNG_USE_PNGVCRD;PNG_LIBPNG_SPECIALBUILD"
-				MinimalRebuild="true"
-				ExceptionHandling="2"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				BufferSecurityCheck="true"
-				EnableFunctionLevelLinking="true"
-				TreatWChar_tAsBuiltInType="true"
-				ForceConformanceInForLoopScope="false"
-				UsePrecompiledHeader="2"
-				WarningLevel="4"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib ws2_32.lib gdiplus.lib ADSIId.lib crypt32.lib"
-				OutputFile="$(OutDir)\eMule.exe"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
-				IgnoreDefaultLibraryNames=""
-				DelayLoadDLLs="oleacc.dll;gdiplus.dll"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				OptimizeReferences="0"
-				OptimizeForWindows98="0"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
+				Description="Inserting Vista application icon..."
+				CommandLine="..\ReplaceVistaIcon\release\ReplaceVistaIcon &quot;$(TargetPath)&quot; &quot;$(ProjectDir)res\MOD\Stulle_Vista.ico&quot; AAAEMULEAPP&#x0D;&#x0A;del $(IntDir)\emule.obj"
 			/>
 		</Configuration>
 	</Configurations>
@@ -592,7 +530,7 @@
 				RelativePath="MD4.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="debug80|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -609,14 +547,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Beta|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="debug80|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -625,42 +555,30 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="MD4_asm.asm"
+				RelativePath=".\MD4_asm.asm"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="debug80|Win32"
 					>
 					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml.exe /c /Cx /coff /Fo $(IntDir)\ &quot;$(InputPath)&quot;&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
+						Name="MASM"
+						WarningLevel="2"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml.exe /c /Cx /coff /Fo $(IntDir)\ &quot;$(InputPath)&quot;&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
+						Name="MASM"
+						WarningLevel="2"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Beta|Win32"
 					>
 					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml.exe /c /Cx /coff /Fo $(IntDir)\ &quot;$(InputPath)&quot;&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="debug80|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml.exe /c /Cx /coff /Fo $(IntDir)\ &quot;$(InputPath)&quot;&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
+						Name="MASM"
+						WarningLevel="2"
 					/>
 				</FileConfiguration>
 			</File>
@@ -684,7 +602,7 @@
 				RelativePath="MfcStaticBinaryCompatible.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="debug80|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -701,14 +619,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Beta|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="debug80|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -748,7 +658,7 @@
 				RelativePath="Parser.y"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="debug80|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -771,16 +681,6 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Performing Custom Build Step"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="debug80|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						Outputs=""
 					/>
 				</FileConfiguration>
 			</File>
@@ -844,7 +744,7 @@
 				RelativePath="Scanner.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="debug80|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -867,28 +767,10 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
-				<FileConfiguration
-					Name="debug80|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Scanner.l"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						Outputs=""
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="debug80|Win32"
 					>
@@ -948,44 +830,36 @@
 				RelativePath="SHA_asm.asm"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="debug80|Win32"
 					>
 					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml.exe /c /Cx /coff /Fo $(IntDir)\ &quot;$(InputPath)&quot;&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
+						Name="MASM"
+						WarningLevel="2"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml.exe /c /Cx /coff /Fo $(IntDir)\ &quot;$(InputPath)&quot;&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
+						Name="MASM"
+						WarningLevel="2"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Beta|Win32"
 					>
 					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml.exe /c /Cx /coff /Fo $(IntDir)\ &quot;$(InputPath)&quot;&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="debug80|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml.exe /c /Cx /coff /Fo $(IntDir)\ &quot;$(InputPath)&quot;&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
+						Name="MASM"
+						WarningLevel="2"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="SHAHashSet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ShareableFile.cpp"
 				>
 			</File>
 			<File
@@ -1020,7 +894,7 @@
 				RelativePath="Stdafx.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="debug80|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1037,14 +911,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Beta|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="debug80|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1326,7 +1192,7 @@
 				>
 			</File>
 			<File
-				RelativePath="fileformat.h"
+				RelativePath=".\FeatureDefines.h"
 				>
 			</File>
 			<File
@@ -1547,6 +1413,10 @@
 			</File>
 			<File
 				RelativePath="SHAHashSet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ShareableFile.h"
 				>
 			</File>
 			<File
@@ -1799,6 +1669,10 @@
 			</File>
 			<File
 				RelativePath="BtnST.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\BuddyButton.cpp"
 				>
 			</File>
 			<File
@@ -3458,7 +3332,7 @@
 				RelativePath="res\emule.manifest"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="debug80|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3475,14 +3349,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Beta|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="debug80|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool

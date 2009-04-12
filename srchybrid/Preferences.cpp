@@ -44,10 +44,21 @@
 #include "friendlist.h" //MORPH - Added by SiRoB, There is one slot friend or more
 #include "ClientCredits.h" // new credit system - Stulle
 
+#pragma warning(disable:4516) // access-declarations are deprecated; member using-declarations provide a better alternative
+#pragma warning(disable:4244) // conversion from 'type1' to 'type2', possible loss of data
+#pragma warning(disable:4100) // unreferenced formal parameter
+#pragma warning(disable:4702) // unreachable code
+#include <cryptopp/osrng.h>
+#pragma warning(default:4702) // unreachable code
+#pragma warning(default:4100) // unreferenced formal parameter
+#pragma warning(default:4244) // conversion from 'type1' to 'type2', possible loss of data
+#pragma warning(default:4516) // access-declarations are deprecated; member using-declarations provide a better alternative
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 CPreferences thePrefs;
@@ -59,7 +70,9 @@ CString CPreferences::m_astrDefaultDirs[13];
 bool	CPreferences::m_abDefaultDirsCreated[13] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 */
 CString CPreferences::m_astrDefaultDirs[EMULE_FEEDSDIR+1];
-bool	CPreferences::m_abDefaultDirsCreated[EMULE_FEEDSDIR+1] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+// note, the following needs to be updated to the total number of dirs when changing that number
+// currently it's 15
+bool	CPreferences::m_abDefaultDirsCreated[EMULE_FEEDSDIR+1] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 // MORPH END : more dirs
 int		CPreferences::m_nCurrentUserDirMode = -1;
 int		CPreferences::m_iDbgHeap;
@@ -357,6 +370,7 @@ int		CPreferences::m_iPreviewSmallBlocks;
 bool	CPreferences::m_bPreviewCopiedArchives;
 int		CPreferences::m_iInspectAllFileTypes;
 bool	CPreferences::m_bPreviewOnIconDblClk;
+bool	CPreferences::m_bCheckFileOpen;
 bool	CPreferences::indicateratings;
 bool	CPreferences::watchclipboard;
 bool	CPreferences::filterserverbyip;
@@ -375,6 +389,7 @@ bool	CPreferences::msgsecure;
 bool	CPreferences::m_bUseChatCaptchas;
 UINT	CPreferences::filterlevel;
 UINT	CPreferences::m_iFileBufferSize;
+UINT	CPreferences::m_uFileBufferTimeLimit;
 UINT	CPreferences::m_iQueueSize;
 int		CPreferences::m_iCommitFiles;
 UINT	CPreferences::maxmsgsessions;
@@ -387,6 +402,7 @@ CString	CPreferences::commentFilter;
 CString	CPreferences::filenameCleanups;
 CString	CPreferences::m_strDateTimeFormat;
 CString	CPreferences::m_strDateTimeFormat4Log;
+CString	CPreferences::m_strDateTimeFormat4Lists;
 LOGFONT CPreferences::m_lfHyperText;
 LOGFONT CPreferences::m_lfLogText;
 COLORREF CPreferences::m_crLogError = RGB(255, 0, 0);
@@ -398,6 +414,7 @@ COLORREF CPreferences::m_crLogUSC = RGB(10,180,50);
 	
 int		CPreferences::m_iExtractMetaData;
 bool	CPreferences::m_bAdjustNTFSDaylightFileTime = true;
+bool	CPreferences::m_bRearrangeKadSearchKeywords;
 //>>> [ionix] - iONiX::Advanced WebInterface Account Management
 bool	CPreferences::m_bIonixWebsrv;
 //<<< [ionix] - iONiX::Advanced WebInterface Account Management
@@ -405,6 +422,9 @@ CString	CPreferences::m_strWebPassword;
 CString	CPreferences::m_strWebLowPassword;
 CUIntArray CPreferences::m_aAllowedRemoteAccessIPs;
 uint16	CPreferences::m_nWebPort;
+#ifdef USE_OFFICIAL_UPNP
+bool	CPreferences::m_bWebUseUPnP;
+#endif
 bool	CPreferences::m_bWebEnabled;
 bool	CPreferences::m_bWebUseGzip;
 int		CPreferences::m_nWebPageRefresh;
@@ -424,9 +444,9 @@ bool    CPreferences::m_bShowClientPercentage;  //Commander - Added: Client Perc
 bool	CPreferences::m_bRemoveFinishedDownloads;
 UINT	CPreferences::m_iMaxChatHistory;
 // ==> Design Settings [eWombat/Stulle] - Stulle
-/*
+#ifndef DESIGN_SETTINGS
 bool	CPreferences::m_bShowActiveDownloadsBold;
-*/
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle
 int		CPreferences::m_iSearchMethod;
 bool	CPreferences::m_bAdvancedSpamfilter;
@@ -445,10 +465,10 @@ CSize	CPreferences::m_sizToolbarIconSize;
 bool	CPreferences::m_bPreviewEnabled;
 bool	CPreferences::m_bAutomaticArcPreviewStart;
 bool	CPreferences::m_bDynUpEnabled;
-int	CPreferences::m_iDynUpPingTolerance;
-int	CPreferences::m_iDynUpGoingUpDivider;
-int	CPreferences::m_iDynUpGoingDownDivider;
-int	CPreferences::m_iDynUpNumberOfPings;
+int		CPreferences::m_iDynUpPingTolerance;
+int		CPreferences::m_iDynUpGoingUpDivider;
+int		CPreferences::m_iDynUpGoingDownDivider;
+int		CPreferences::m_iDynUpNumberOfPings;
 int		CPreferences::m_iDynUpPingToleranceMilliseconds;
 bool	CPreferences::m_bDynUpUseMillisecondPingTolerance;
 //MORPH START - Added by SiRoB, USSLog
@@ -472,9 +492,9 @@ uint8	CPreferences::m_iSlotLimitNum;
 
 bool	CPreferences::enableHighProcess;//MORPH - Added by IceCream, high process priority
 // ==> Design Settings [eWombat/Stulle] - Stulle
-/*
+#ifndef DESIGN_SETTINGS
 bool	CPreferences::enableDownloadInRed; //MORPH - Added by IceCream, show download in red
-*/
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle
 bool	CPreferences::enableAntiLeecher; //MORPH - Added by IceCream, enableAntiLeecher
 bool	CPreferences::enableAntiCreditHack; //MORPH - Added by IceCream, enableAntiCreditHack
@@ -541,7 +561,11 @@ bool	CPreferences::m_bPayBackFirst;//EastShare - added by AndCycle, Pay Back Fir
 uint8	CPreferences::m_iPayBackFirstLimit;//MORPH - Added by SiRoB, Pay Back First Tweak
 bool	CPreferences::m_bOnlyDownloadCompleteFiles;//EastShare - Added by AndCycle, Only download complete files v2.1 (shadow)
 bool	CPreferences::m_bSaveUploadQueueWaitTime;//Morph - added by AndCycle, Save Upload Queue Wait Time (MSUQWT)
-int	CPreferences::m_iKnownMetDays; // EastShare - Added by TAHO, .met file control
+// EastShare START - Added by TAHO, .met file control
+int		CPreferences::m_iKnownMetDays;
+bool	CPreferences::m_bCompletlyPurgeOldKnownFiles;
+bool	CPreferences::m_bRemoveAichImmediatly;
+// EastShare END   - Added by TAHO, .met file control
 bool	CPreferences::m_bDateFileNameLog;//Morph - added by AndCycle, Date File Name Log
 bool	CPreferences::m_bDontRemoveSpareTrickleSlot;//Morph - added by AndCycle, Dont Remove Spare Trickle Slot
 bool	CPreferences::m_bUseDownloadOverhead;//Morph - leuk_he use download overhead in upload
@@ -554,6 +578,7 @@ bool	CPreferences::UpdateFakeStartup;
 //MORPH START added by Yun.SF3: Ipfilter.dat update
 bool	CPreferences::AutoUpdateIPFilter; //added by milobac: Ipfilter.dat update
 SYSTEMTIME	CPreferences::m_IPfilterVersion; //added by milobac: Ipfilter.dat update
+uint32	CPreferences::m_uIPFilterVersionNum; //MORPH - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
 //MORPH END added by Yun.SF3: Ipfilter.dat update
 
 //Commander - Added: IP2Country Auto-updating - Start
@@ -642,6 +667,7 @@ bool    CPreferences::m_bAllocFull;
 bool    CPreferences::m_bA4AFSaveCpu;
 // ZZ:DownloadManager <--
 bool    CPreferences::m_bHighresTimer;
+bool	CPreferences::m_bResolveSharedShellLinks;
 CStringList CPreferences::shareddir_list;
 CStringList CPreferences::sharedsubdir_list;	// SLUGFILLER: shareSubdir
 CStringList CPreferences::inactive_shareddir_list;	  // inactive sharesubdier
@@ -667,6 +693,7 @@ int		CPreferences::m_byLogLevel;
 bool	CPreferences::m_bTrustEveryHash;
 bool	CPreferences::m_bRememberCancelledFiles;
 bool	CPreferences::m_bRememberDownloadedFiles;
+bool	CPreferences::m_bPartiallyPurgeOldKnownFiles;
 
 bool	CPreferences::m_bNotifierSendMail;
 CString	CPreferences::m_strNotifierMailServer;
@@ -973,9 +1000,14 @@ int		CPreferences::PsAmountLimit; // Limit PS by amount of data uploaded - Stull
 
 bool	CPreferences::m_bNoBadPushing; // Disable PS/PBF for leechers [Stulle/idea by sfrqlxert] - Stulle
 
-int	CPreferences::m_uMinModAmount; // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+	// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifdef GLOBAL_MOD_STATS
+int	CPreferences::m_uMinModAmount;
+#endif
+	// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 
 // ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 // client styles
 DWORD		CPreferences::nClientStyleFlags[style_c_count]; 
 COLORREF	CPreferences::nClientStyleFontColor[style_c_count];
@@ -1013,12 +1045,16 @@ COLORREF	CPreferences::nWindowStyleBackColor[style_w_count];
 short		CPreferences::nWindowStyleOnOff[style_w_count];
 
 bool	CPreferences::m_bAutoTextColors;
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle
 
 // ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
 bool	CPreferences::m_bDirectoryWatcher;
+bool	CPreferences::m_bSingleSharedDirWatcher;
 CStringList CPreferences::allsharedsubdir_list;
 CStringList CPreferences::tempsharedsubdir_list;
+#endif
 // <== Automatic shared files updater [MoNKi] - Stulle
 
 // ==> Control download priority [tommy_gun/iONiX] - Stulle
@@ -1035,8 +1071,16 @@ bool	CPreferences::m_bOnlyEnforce;
 // <== Enforce Ratio - Stulle
 
 // ==> Advanced Transfer Window Layout - Stulle
+#ifdef ATWL
 bool	CPreferences::m_bSplitWindow;
+#endif
 // <== Advanced Transfer Window Layout - Stulle
+
+// ==> Adjustable NT Service Strings - Stulle
+CString	CPreferences::m_strServiceName;
+CString	CPreferences::m_strServiceDispName;
+CString	CPreferences::m_strServiceDescr;
+// <== Adjustable NT Service Strings - Stulle
 
 bool	CPreferences::m_bImport60Friends; // Import 0x66 FriendSlots - Stulle
 
@@ -1064,7 +1108,7 @@ void CPreferences::Init()
 	InitRandGen();
 	// khaos::kmod-
 
-	prefsExt=new Preferences_Ext_Struct;
+	prefsExt = new Preferences_Ext_Struct;
 	memset(prefsExt, 0, sizeof *prefsExt);
 
 	m_strFileCommentsFilePath = GetMuleDirectory(EMULE_CONFIGDIR) + L"fileinfo.ini";
@@ -1074,7 +1118,7 @@ void CPreferences::Init()
 	//MORPH END   - Added by SiRoB, XML News [O²]
 
 	///////////////////////////////////////////////////////////////////////////
-	// Create 'logs' directory (and optionally move files from application directory)
+	// Move *.log files from application directory into 'log' directory
 	//
 	CFileFind ff;
 	BOOL bFoundFile = ff.FindFile(GetMuleDirectory(EMULE_EXECUTEABLEDIR) + L"eMule*.log", 0);
@@ -1087,6 +1131,19 @@ void CPreferences::Init()
 	}
 	ff.Close();
 
+	///////////////////////////////////////////////////////////////////////////
+	// Move 'downloads.txt/bak' files from application and/or data-base directory
+	// into 'config' directory
+	//
+	if (PathFileExists(GetMuleDirectory(EMULE_DATABASEDIR) + L"downloads.txt"))
+		MoveFile(GetMuleDirectory(EMULE_DATABASEDIR) + L"downloads.txt", GetMuleDirectory(EMULE_CONFIGDIR) + L"downloads.txt");
+	if (PathFileExists(GetMuleDirectory(EMULE_DATABASEDIR) + L"downloads.bak"))
+		MoveFile(GetMuleDirectory(EMULE_DATABASEDIR) + L"downloads.bak", GetMuleDirectory(EMULE_CONFIGDIR) + L"downloads.bak");
+	if (PathFileExists(GetMuleDirectory(EMULE_EXECUTEABLEDIR) + L"downloads.txt"))
+		MoveFile(GetMuleDirectory(EMULE_EXECUTEABLEDIR) + L"downloads.txt", GetMuleDirectory(EMULE_CONFIGDIR) + L"downloads.txt");
+	if (PathFileExists(GetMuleDirectory(EMULE_EXECUTEABLEDIR) + L"downloads.bak"))
+		MoveFile(GetMuleDirectory(EMULE_EXECUTEABLEDIR) + L"downloads.bak", GetMuleDirectory(EMULE_CONFIGDIR) + L"downloads.bak");
+
 	CreateUserHash();
 
 	// load preferences.dat or set standart values
@@ -1094,7 +1151,11 @@ void CPreferences::Init()
 	strFullPath = GetMuleDirectory(EMULE_CONFIGDIR) + L"preferences.dat";
 	FILE* preffile = _tfsopen(strFullPath, L"rb", _SH_DENYWR);
 
-	InitStyles(); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	InitStyles();
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 
 	LoadPreferences();
 
@@ -1124,35 +1185,43 @@ void CPreferences::Init()
 			if (bIsUnicodeFile)
 				sdirfile->Seek(sizeof(WORD), SEEK_CUR); // skip BOM
 
-		CString toadd;
-		while (sdirfile->ReadString(toadd))
-		{
+			CString toadd;
+			while (sdirfile->ReadString(toadd))
+			{
 				toadd.Trim(L" \t\r\n"); // need to trim '\r' in binary mode
 				if (toadd.IsEmpty())
 					continue;
 
-			TCHAR szFullPath[MAX_PATH];
-			if (PathCanonicalize(szFullPath, toadd))
-				toadd = szFullPath;
+				TCHAR szFullPath[MAX_PATH];
+				if (PathCanonicalize(szFullPath, toadd))
+					toadd = szFullPath;
 
 				// SLUGFILLER: SafeHash remove - removed installation dir unsharing
 				/*
-				if (!IsShareableDirectory(toadd) )
+				if (!IsShareableDirectory(toadd))
 					continue;
 				*/
 
-			if (_taccess(toadd, 0) == 0){ // only add directories which still exist
-					if (toadd.Right(1) != L'\\')
-						toadd.Append(L"\\");
-				shareddir_list.AddHead(toadd);
-			}
-      // MORPH START sharesubdir 
-			else
-			{   theApp.QueueLogLine(false,_T("Dir %s Added to inaccesable directories") , toadd);  // Note thate queue need to be used because logwindow is not initialized (logged time is wrong)
-				inactive_shareddir_list.AddHead(toadd); // sharedsubdir inactive
-			}
-      // MORPH END sharesubdir 
+				// Skip non-existing directories from fixed disks only
+				int iDrive = PathGetDriveNumber(toadd);
+				if (iDrive >= 0 && iDrive <= 25) {
+					WCHAR szRootPath[4] = L" :\\";
+					szRootPath[0] = (WCHAR)(L'A' + iDrive);
+					if (GetDriveType(szRootPath) == DRIVE_FIXED) {
+						if (_taccess(toadd, 0) != 0)
+						// MORPH START sharesubdir 
+						{
+							theApp.QueueLogLine(false,_T("Dir %s Added to inaccesable directories") , toadd);  // Note thate queue need to be used because logwindow is not initialized (logged time is wrong)
+							inactive_shareddir_list.AddHead(toadd); // sharedsubdir inactive
+						// MORPH END sharesubdir 
+							continue;
+						} // MORPH sharesubdir 
+					}
+				}
 
+				if (toadd.Right(1) != L'\\')
+					toadd.Append(L"\\");
+				shareddir_list.AddHead(toadd);
 			}
 			sdirfile->Close();
 		}
@@ -1162,7 +1231,7 @@ void CPreferences::Init()
 		}
 	}
 	delete sdirfile;
-	
+
 	// SLUGFILLER START: shareSubdir
 	// shared directories with subdirectories
     TCHAR * fullpath = new TCHAR[_tcslen(GetMuleDirectory(EMULE_CONFIGDIR) ) + MAX_PATH];
@@ -1225,8 +1294,8 @@ void CPreferences::Init()
 			if (bIsUnicodeFile)
 				sdirfile->Seek(sizeof(WORD), SEEK_CUR); // skip BOM
 
-		CString toadd;
-		while (sdirfile->ReadString(toadd))
+			CString toadd;
+			while (sdirfile->ReadString(toadd))
 			{
 				toadd.Trim(L" \t\r\n"); // need to trim '\r' in binary mode
 				if (toadd.IsEmpty())
@@ -1261,7 +1330,7 @@ void CPreferences::Init()
 		CString strError;
 		strError.Format(GetResString(IDS_ERR_CREATE_DIR), GetResString(IDS_PW_TEMP), GetTempDir(), GetErrorMessage(GetLastError()));
 		AfxMessageBox(strError, MB_ICONERROR);
-		
+
 		tempdir.SetAt(0, GetDefaultDirectory(EMULE_TEMPDIR, true)); // will also try to create it if needed);
 		if (!PathFileExists(GetTempDir())){
 			strError.Format(GetResString(IDS_ERR_CREATE_DIR), GetResString(IDS_PW_TEMP), GetTempDir(), GetErrorMessage(GetLastError()));
@@ -1333,7 +1402,7 @@ bool CPreferences::IsTempFile(const CString& rstrDirectory, const CString& rstrN
 			bFound = true; //ok, found a directory
 	
 	if(!bFound) //found nowhere - not a tempfile...
-			return false;
+		return false;
 
 	// do not share a file from the temp directory, if it matches one of the following patterns
 	CString strNameLower(rstrName);
@@ -1356,53 +1425,6 @@ bool CPreferences::IsTempFile(const CString& rstrDirectory, const CString& rstrN
 	return false;
 }
 */
-
-// SLUGFILLER: SafeHash
-bool CPreferences::IsConfigFile(const CString& rstrDirectory, const CString& rstrName)
-{
-	if (CompareDirectories(rstrDirectory, GetMuleDirectory(EMULE_CONFIGDIR)))
-		return false;
-
-	// do not share a file from the config directory, if it contains one of the following extensions
-	static const LPCTSTR _apszNotSharedExts[] = { L".met.bak", L".ini.old" };
-	for (int i = 0; i < _countof(_apszNotSharedExts); i++){
-		int iLen = _tcslen(_apszNotSharedExts[i]);
-		if (rstrName.GetLength()>=iLen && rstrName.Right(iLen).CompareNoCase(_apszNotSharedExts[i])==0)
-			return true;
-	}
-
-	// do not share following files from the config directory
-	static const LPCTSTR _apszNotSharedFiles[] = 
-	{
-		L"AC_SearchStrings.dat",
-		L"AC_ServerMetURLs.dat",
-		L"addresses.dat",
-		L"category.ini",
-		L"clients.met",
-		L"cryptkey.dat",
-		L"emfriends.met",
-		L"fileinfo.ini",
-		L"ipfilter.dat",
-		L"known.met",
-		L"preferences.dat",
-		L"preferences.ini",
-		L"server.met",
-		L"server.met.new",
-		L"server_met.download",
-		L"server_met.old",
-		L"shareddir.dat",
-		L"sharedsubdir.dat",
-		L"staticservers.dat",
-		L"webservices.dat"
-	};
-	for (int i = 0; i < _countof(_apszNotSharedFiles); i++){
-		if (rstrName.CompareNoCase(_apszNotSharedFiles[i])==0)
-			return true;
-	}
-
-	return false;
-}
-// SLUGFILLER: SafeHash
 
 //MORPH - Added by SiRoB, ZZ Ratio
 uint8 CPreferences::IsZZRatioDoesWork(){
@@ -1477,7 +1499,7 @@ uint64 CPreferences::GetMaxDownloadInBytesPerSec(bool dynamic){
         maxup = GetMaxUpload()*1024;
     }
 
-	if( maxup < 4*1024 )
+	if (maxup < 4*1024)
 		return (((maxup < 10*1024) && ((uint64)maxup*3 < maxdownload*1024)) ? (uint64)maxup*3 : maxdownload*1024);
 	return (((maxup < 10*1024) && ((uint64)maxup*4 < maxdownload*1024)) ? (uint64)maxup*4 : maxdownload*1024);
 }
@@ -1534,7 +1556,7 @@ void CPreferences::SaveStats(int bBackUp){
 	// We do NOT SET the values in prefs struct here.
 
     // Save Cum Down Data
-		ini.WriteUInt64(L"TotalDownloadedBytes", theStats.sessionReceivedBytes + GetTotalDownloaded());
+	ini.WriteUInt64(L"TotalDownloadedBytes", theStats.sessionReceivedBytes + GetTotalDownloaded());
 	ini.WriteInt(L"DownSuccessfulSessions", cumDownSuccessfulSessions);
 	ini.WriteInt(L"DownFailedSessions", cumDownFailedSessions);
 	ini.WriteInt(L"DownAvgTime", (GetDownC_AvgTime() + GetDownS_AvgTime()) / 2);
@@ -1553,7 +1575,7 @@ void CPreferences::SaveStats(int bBackUp){
 	ini.WriteUInt64(L"DownDataPort_4662", GetCumDownDataPort_4662());
 	ini.WriteUInt64(L"DownDataPort_OTHER", GetCumDownDataPort_OTHER());
 	ini.WriteUInt64(L"DownDataPort_PeerCache", GetCumDownDataPort_PeerCache());
-	
+
 	ini.WriteUInt64(L"DownOverheadTotal",theStats.GetDownDataOverheadFileRequest() +
 										theStats.GetDownDataOverheadSourceExchange() +
 										theStats.GetDownDataOverheadServer() +
@@ -1790,9 +1812,11 @@ void CPreferences::Add2SessionTransferData(UINT uClientID, UINT uClientPort, BOO
 				case SO_AMULE:			sesUpData_AMULE+=bytes;			break;
 				case SO_SHAREAZA:		sesUpData_SHAREAZA+=bytes;		break;
 				// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifdef ENHANCED_CLIENTS_RECOG
 				case SO_HYDRANODE:
 				case SO_EMULEPLUS:
 				case SO_TRUSTYFILES:
+#endif
 				// <== Enhanced Client Recognition [Spike] - Stulle
 				case SO_CDONKEY:
 				case SO_LPHANT:
@@ -1827,9 +1851,11 @@ void CPreferences::Add2SessionTransferData(UINT uClientID, UINT uClientPort, BOO
 				case SO_AMULE:			sesDownData_AMULE+=bytes;		break;
 				case SO_SHAREAZA:		sesDownData_SHAREAZA+=bytes;	break;
 				// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifdef ENHANCED_CLIENTS_RECOG
 				case SO_HYDRANODE:
 				case SO_EMULEPLUS:
 				case SO_TRUSTYFILES:
+#endif
 				// <== Enhanced Client Recognition [Spike] - Stulle
 				case SO_CDONKEY:
 				case SO_LPHANT:
@@ -1961,15 +1987,13 @@ bool CPreferences::LoadStats(int loadBackUp)
 	CFileFind findBackUp;
 
 	switch (loadBackUp) {
-		case 0:{
+		case 0:
 			// for transition...
-			if(PathFileExists(GetMuleDirectory(EMULE_CONFIGDIR) + L"statistics.ini"))
+			if (PathFileExists(GetMuleDirectory(EMULE_CONFIGDIR) + L"statistics.ini"))
 				sINI.Format(L"%sstatistics.ini", GetMuleDirectory(EMULE_CONFIGDIR));
 			else
 				sINI.Format(L"%spreferences.ini", GetMuleDirectory(EMULE_CONFIGDIR));
-
 			break;
-			   }
 		case 1:
 			sINI.Format(L"%sstatbkup.ini", GetMuleDirectory(EMULE_CONFIGDIR));
 			if (!findBackUp.FindFile(sINI))
@@ -2146,7 +2170,7 @@ bool CPreferences::LoadStats(int loadBackUp)
 		sesUpDataPort_4662			= 0;
 		sesUpDataPort_OTHER			= 0;
 		sesUpDataPort_PeerCache		= 0;
-		
+
 		sesDownData_EDONKEY			= 0;
 		sesDownData_EDONKEYHYBRID	= 0;
 		sesDownData_EMULE			= 0;
@@ -2158,7 +2182,7 @@ bool CPreferences::LoadStats(int loadBackUp)
 		sesDownDataPort_4662		= 0;
 		sesDownDataPort_OTHER		= 0;
 		sesDownDataPort_PeerCache	= 0;
-		
+
 		sesDownSuccessfulSessions	= 0;
 		sesDownFailedSessions		= 0;
 		sesPartsSavedByICH			= 0;
@@ -2224,7 +2248,7 @@ bool CPreferences::Save(){
 		error = true;
 
 	SavePreferences();
-		SaveStats();
+	SaveStats();
 	// khaos::categorymod+ We need to SaveCats() each time we exit eMule.
 	SaveCats();
 	// khaos::categorymod-
@@ -2308,18 +2332,14 @@ bool CPreferences::Save(){
 	fullpath=NULL;
 	// SLUGFILLER END: shareSubdir
 	::CreateDirectory(GetMuleDirectory(EMULE_INCOMINGDIR), 0);
-	::CreateDirectory(GetTempDir(),0);
+	::CreateDirectory(GetTempDir(), 0);
 	return error;
 }
 
 void CPreferences::CreateUserHash()
 {
-	for (int i = 0; i < 8; i++)
-	{
-		uint16 random = GetRandomUInt16();
-		memcpy(&userhash[i*2], &random, 2);
-	}
-
+	CryptoPP::AutoSeededRandomPool rng;
+	rng.GenerateBlock(userhash, 16);
 	// mark as emule client. that will be need in later version
 	userhash[5] = 14;
 	userhash[14] = 111;
@@ -2396,11 +2416,10 @@ void CPreferences::SavePreferences()
 	ini.WriteString(L"UpnpBindAddr", ipstr(htonl(GetUpnpBindAddr())));
 	ini.WriteBool(L"UpnpBindAddrDhcp",GetUpnpBindDhcp());
     // MORPH END leuk_he upnp bindaddr
-	ini.WriteInt(L"SplitterbarPosition",splitterbarPosition+2);
 	// Mighty Knife: What's the reason for this line ?!?!?
 	// Why is 2 added here ?!?
-	// ini.WriteInt(L"SplitterbarPosition",splitterbarPosition+2);
-	ini.WriteInt(L"SplitterbarPosition",splitterbarPosition);
+	 ini.WriteInt(L"SplitterbarPosition",splitterbarPosition+2);
+	//ini.WriteInt(L"SplitterbarPosition",splitterbarPosition);
 	// [end] Mighty Knife
 	ini.WriteInt(L"SplitterbarPositionServer",splitterbarPositionSvr);
 	ini.WriteInt(L"SplitterbarPositionStat",splitterbarPositionStat+1);
@@ -2410,10 +2429,10 @@ void CPreferences::SavePreferences()
 	ini.WriteInt(L"SplitterbarPositionIRC",splitterbarPositionIRC);
 	ini.WriteInt(L"SplitterbarPositionShared",splitterbarPositionShared);
 	// ==> Advanced Transfer Window Layout - Stulle
-	/*
+#ifndef ATWL
 	ini.WriteInt(L"TransferWnd1",m_uTransferWnd1);
 	ini.WriteInt(L"TransferWnd2",m_uTransferWnd2);
-	*/
+#endif
 	// <== Advanced Transfer Window Layout - Stulle
 	ini.WriteInt(L"VariousStatisticsMaxValue",statsMax);
 	ini.WriteInt(L"StatsAverageMinutes",statsAverageMinutes);
@@ -2427,7 +2446,7 @@ void CPreferences::SavePreferences()
 	if (IsRunningAeroGlassTheme())
 		ini.WriteBool(L"MinToTray_Aero",mintotray);
 	else
-	ini.WriteBool(L"MinToTray",mintotray);
+		ini.WriteBool(L"MinToTray",mintotray);
 	ini.WriteBool(L"PreventStandby", m_bPreventStandby);
 	ini.WriteBool(L"StoreSearches", m_bStoreSearches);
 	ini.WriteBool(L"AddServersFromServer",m_bAddServersFromServer);
@@ -2454,13 +2473,15 @@ void CPreferences::SavePreferences()
 	ini.WriteBool(L"CheckDiskspace",checkDiskspace);
 	ini.WriteInt(L"MinFreeDiskSpace",m_uMinFreeDiskSpace);
 	ini.WriteBool(L"SparsePartFiles",m_bSparsePartFiles);
+	ini.WriteBool(L"ResolveSharedShellLinks",m_bResolveSharedShellLinks);
 	ini.WriteString(L"YourHostname",m_strYourHostname);
+	ini.WriteBool(L"CheckFileOpen",m_bCheckFileOpen);
 
 	// Barry - New properties...
     ini.WriteBool(L"AutoConnectStaticOnly", m_bAutoConnectToStaticServersOnly);
 	ini.WriteBool(L"AutoTakeED2KLinks", autotakeed2klinks);
     ini.WriteBool(L"AddNewFilesPaused", addnewfilespaused);
-    ini.WriteInt (L"3DDepth", depth3D);  
+    ini.WriteInt (L"3DDepth", depth3D);
 	ini.WriteBool(L"MiniMule", m_bEnableMiniMule);
 
 	ini.WriteString(L"NotifierConfiguration", notifierConfiguration);
@@ -2481,6 +2502,7 @@ void CPreferences::SavePreferences()
 	ini.WriteString(L"CommentFilter",commentFilter);
 	ini.WriteString(L"DateTimeFormat",GetDateTimeFormat());
 	ini.WriteString(L"DateTimeFormat4Log",GetDateTimeFormat4Log());
+	ini.WriteString(L"DateTimeFormat4Lists",GetDateTimeFormat4Lists());
 	ini.WriteString(L"WebTemplateFile",m_strTemplateFile);
 	ini.WriteString(L"FilenameCleanups",filenameCleanups);
 	ini.WriteInt(L"ExtractMetaData",m_iExtractMetaData);
@@ -2678,6 +2700,8 @@ void CPreferences::SavePreferences()
     ini.WriteBool(L"IconflashOnNewMessage",m_bIconflashOnNewMessage);
     ini.WriteBool(L"ReBarToolbar",m_bReBarToolbar);
 	ini.WriteBool(L"ICH",IsICHEnabled());	// 10.5
+	ini.WriteInt(L"FileBufferTimeLimit", m_uFileBufferTimeLimit/1000);
+	ini.WriteBool(L"RearrangeKadSearchKeywords",m_bRearrangeKadSearchKeywords);
 
 	ini.WriteInt(L"MaxFileUploadSizeMB",m_iWebFileUploadSizeLimitMB, L"WebServer" );//section WEBSERVER start
 	CString WriteAllowedIPs ;
@@ -2686,7 +2710,6 @@ void CPreferences::SavePreferences()
            WriteAllowedIPs = WriteAllowedIPs  + _T(";") + ipstr(GetAllowedRemoteAccessIPs()[i]);
     ini.WriteString(L"AllowedIPs",WriteAllowedIPs);  // End Seciotn Webserver
     ini.WriteBool(L"ShowVerticalHourMarkers",m_bShowVerticalHourMarkers,L"Statistics");
-
 	// MORPH END  leuk_he Advanced official preferences. 
 
 
@@ -2721,6 +2744,9 @@ void CPreferences::SavePreferences()
 	ini.WriteString(L"Password", GetWSPass(), L"WebServer");
 	ini.WriteString(L"PasswordLow", GetWSLowPass());
 	ini.WriteInt(L"Port", m_nWebPort);
+#ifdef USE_OFFICIAL_UPNP
+	ini.WriteBool(L"WebUseUPnP", m_bWebUseUPnP);
+#endif
 	ini.WriteBool(L"Enabled", m_bWebEnabled);
 	ini.WriteBool(L"UseGzip", m_bWebUseGzip);
 	ini.WriteInt(L"PageRefreshTime", m_nWebPageRefresh);
@@ -2748,7 +2774,7 @@ void CPreferences::SavePreferences()
 	ini.WriteBool(L"Found", m_bPeerCacheWasFound);
 	ini.WriteBool(L"EnabledDeprecated", m_bPeerCacheEnabled);
 	ini.WriteInt(L"PCPort", m_nPeerCachePort);
-        
+
 #ifdef USE_OFFICIAL_UPNP
 	///////////////////////////////////////////////////////////////////////////
 	// Section: "UPnP"
@@ -2824,10 +2850,10 @@ void CPreferences::SavePreferences()
 	ini.WriteBool(_T("EnableHighProcess"), enableHighProcess,_T("eMule")); //MORPH - Added by IceCream, high process priority
 
 	// ==> Design Settings [eWombat/Stulle] - Stulle
-	/*
+#ifndef DESIGN_SETTINGS
 	ini.WriteBool(_T("EnableDownloadInRed"), enableDownloadInRed,_T("eMule")); //MORPH - Added by IceCream, show download in red
 	ini.WriteBool(_T("EnableDownloadInBold"), m_bShowActiveDownloadsBold,_T("eMule")); //MORPH - Added by SiRoB, show download in Bold
-	*/
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 	ini.WriteBool(_T("EnableAntiLeecher"), enableAntiLeecher,_T("eMule")); //MORPH - Added by IceCream, enable AntiLeecher
 	ini.WriteBool(_T("EnableAntiCreditHack"), enableAntiCreditHack,_T("eMule")); //MORPH - Added by IceCream, enable AntiCreditHack
@@ -2878,6 +2904,7 @@ void CPreferences::SavePreferences()
     //MORPH START added by Yun.SF3: Ipfilter.dat update
 	ini.WriteBinary(_T("IPfilterVersion"), (LPBYTE)&m_IPfilterVersion, sizeof(m_IPfilterVersion),_T("eMule")); 
 	ini.WriteBool(_T("AutoUPdateIPFilter"),AutoUpdateIPFilter,_T("eMule"));
+	ini.WriteInt(_T("IPFilterVersionNum"), m_uIPFilterVersionNum,_T("eMule"));
     //MORPH END added by Yun.SF3: Ipfilter.dat update
 
 	//Commander - Added: IP2Country Auto-updating - Start
@@ -2899,6 +2926,9 @@ void CPreferences::SavePreferences()
 	//EastShare END - PreferShareAll by AndCycle
 	// EastShare START - Added by TAHO, .met file control
 	ini.WriteInt(_T("KnownMetDays"), m_iKnownMetDays,_T("eMule"));
+	ini.WriteBool(_T("PartiallyPurgeOldKnownFiles"),m_bPartiallyPurgeOldKnownFiles,_T("eMule"));
+	ini.WriteBool(_T("CompletlyPurgeOldKnownFiles"),m_bCompletlyPurgeOldKnownFiles,_T("eMule"));
+	ini.WriteBool(_T("RemoveAichImmediatly"),m_bRemoveAichImmediatly,_T("eMule"));
 	// EastShare END - Added by TAHO, .met file control
 	//EastShare - Added by Pretender, Option for ChunkDots
 	ini.WriteInt(_T("EnableChunkDots"), m_bEnableChunkDots,_T("eMule"));
@@ -3017,202 +3047,217 @@ void CPreferences::SavePreferences()
 	//MORPH END   - Added, Downloaded History [Monki/Xman]
 	ini.WriteInt(_T("ServiceStartupMode"),m_iServiceStartupMode); // MORPH leuk_he:run as ntservice v1..
 	ini.WriteBool(_T("StaticIcon"),m_bStaticIcon); //MORPH - Added, Static Tray Icon
-// ==> [MoNKi: -USS initial TTL-] - Stulle
+	// ==> [MoNKi: -USS initial TTL-] - Stulle
 	ini.WriteInt(_T("USSInitialTTL"), m_iUSSinitialTTL, _T("StulleMule"));
 	// <== [MoNKi: -USS initial TTL-] - Stulle
 
 
 	// ==> push small files [sivka] - Stulle
-    ini.WriteBool(_T("EnablePushSmallFile"), enablePushSmallFile, _T("StulleMule"));
-	ini.WriteInt(_T("PushSmallFiles"), m_iPushSmallFiles);
-	ini.WriteInt(_T("PushSmallBoost"), m_iPushSmallBoost);
+    ini.WriteBool(L"EnablePushSmallFile", enablePushSmallFile, _T("StulleMule"));
+	ini.WriteInt(L"PushSmallFiles", m_iPushSmallFiles);
+	ini.WriteInt(L"PushSmallBoost", m_iPushSmallBoost);
     // <== push small files [sivka] - Stulle
-	ini.WriteBool(_T("EnablePushRareFile"), enablePushRareFile); // push rare file - Stulle
+	ini.WriteBool(L"EnablePushRareFile", enablePushRareFile); // push rare file - Stulle
 
-	ini.WriteBool(_T("ShowSrcOnTitle"),showSrcInTitle); // Show sources on title - Stulle
-	ini.WriteBool(_T("ShowOverheadOnTitle"),showOverheadInTitle); // show overhead on title - Stulle
-	ini.WriteBool(_T("ShowGlobalHL"),ShowGlobalHL); // show global HL - Stulle
-	ini.WriteBool(_T("ShowFileHLconst"),ShowFileHLconst); // show HL per file constantly
-	ini.WriteBool(_T("ShowInMSN7"), m_bShowInMSN7); //Show in MSN7 [TPT] - Stulle
-	ini.WriteBool(_T("TrayComplete"), m_bTrayComplete); // Completed in Tray - Stulle
+	ini.WriteBool(L"ShowSrcOnTitle",showSrcInTitle); // Show sources on title - Stulle
+	ini.WriteBool(L"ShowOverheadOnTitle",showOverheadInTitle); // show overhead on title - Stulle
+	ini.WriteBool(L"ShowGlobalHL",ShowGlobalHL); // show global HL - Stulle
+	ini.WriteBool(L"ShowFileHLconst",ShowFileHLconst); // show HL per file constantly
+	ini.WriteBool(L"ShowInMSN7", m_bShowInMSN7); //Show in MSN7 [TPT] - Stulle
+	ini.WriteBool(L"TrayComplete", m_bTrayComplete); // Completed in Tray - Stulle
 	// ==> CPU/MEM usage [$ick$/Stulle] - Stulle
-	ini.WriteBool(_T("SysInfos"),m_bSysInfo);
-	ini.WriteBool(_T("SysInfosGlobal"),m_bSysInfoGlobal);
+	ini.WriteBool(L"SysInfos",m_bSysInfo);
+	ini.WriteBool(L"SysInfosGlobal",m_bSysInfoGlobal);
 	// <== CPU/MEM usage [$ick$/Stulle] - Stulle
-	ini.WriteBool(_T("ShowSpeedMeter"),m_bShowSpeedMeter); // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
+	ini.WriteBool(L"ShowSpeedMeter",m_bShowSpeedMeter); // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
 
 	// ==> Sivka-Ban [cyrex2001] - Stulle
-	ini.WriteBool(_T("EnableSivkaBan"), enableSivkaBan);
-	ini.WriteInt(_T("SivkaAskTime"), m_iSivkaAskTime);
-	ini.WriteInt(_T("SivkaAskCounter"), m_iSivkaAskCounter);
-	ini.WriteBool(_T("SivkaAskLog"), SivkaAskLog);
+	ini.WriteBool(L"EnableSivkaBan", enableSivkaBan);
+	ini.WriteInt(L"SivkaAskTime", m_iSivkaAskTime);
+	ini.WriteInt(L"SivkaAskCounter", m_iSivkaAskCounter);
+	ini.WriteBool(L"SivkaAskLog", SivkaAskLog);
 	// <== Sivka-Ban [cyrex2001] - Stulle
 
 	// ==> ban systems optional - Stulle
- 	ini.WriteBool(_T("BadModString"),m_bBadModString);
- 	ini.WriteBool(_T("BadNickBan"),m_bBadNickBan);
- 	ini.WriteBool(_T("GhostMod"),m_bGhostMod);
-	ini.WriteBool(_T("AntiModIDFaker"),m_bAntiModIdFaker);
-	ini.WriteBool(_T("AntiNickThief"),m_bAntiNickThief); // [ionix] WiZaRd - AntiNickThief - Stulle
- 	ini.WriteBool(_T("EmptyNick"),m_bEmptyNick);
- 	ini.WriteBool(_T("FakeEmule"),m_bFakeEmule);
-	ini.WriteBool(_T("LeecherName"),m_bLeecherName);
-	ini.WriteBool(_T("CommunityCheck"),m_bCommunityCheck);
-	ini.WriteBool(_T("HexCheck"),m_bHexCheck);
-	ini.WriteBool(_T("Emcrypt"),m_bEmcrypt);
-	ini.WriteBool(_T("BadInfo"),m_bBadInfo);
-	ini.WriteBool(_T("BadHello"),m_bBadHello);
-	ini.WriteBool(_T("Snafu"),m_bSnafu);
-	ini.WriteBool(_T("ExtraBytes"),m_bExtraBytes);
-	ini.WriteBool(_T("NickChanger"),m_bNickChanger);
-	ini.WriteBool(_T("FileFaker"),m_bFileFaker);
-	ini.WriteBool(_T("Vagaa"),m_bVagaa);
+ 	ini.WriteBool(L"BadModString",m_bBadModString);
+ 	ini.WriteBool(L"BadNickBan",m_bBadNickBan);
+ 	ini.WriteBool(L"GhostMod",m_bGhostMod);
+	ini.WriteBool(L"AntiModIDFaker",m_bAntiModIdFaker);
+	ini.WriteBool(L"AntiNickThief",m_bAntiNickThief); // [ionix] WiZaRd - AntiNickThief - Stulle
+ 	ini.WriteBool(L"EmptyNick",m_bEmptyNick);
+ 	ini.WriteBool(L"FakeEmule",m_bFakeEmule);
+	ini.WriteBool(L"LeecherName",m_bLeecherName);
+	ini.WriteBool(L"CommunityCheck",m_bCommunityCheck);
+	ini.WriteBool(L"HexCheck",m_bHexCheck);
+	ini.WriteBool(L"Emcrypt",m_bEmcrypt);
+	ini.WriteBool(L"BadInfo",m_bBadInfo);
+	ini.WriteBool(L"BadHello",m_bBadHello);
+	ini.WriteBool(L"Snafu",m_bSnafu);
+	ini.WriteBool(L"ExtraBytes",m_bExtraBytes);
+	ini.WriteBool(L"NickChanger",m_bNickChanger);
+	ini.WriteBool(L"FileFaker",m_bFileFaker);
+	ini.WriteBool(L"Vagaa",m_bVagaa);
 	// <== ban systems optional - Stulle
 
 	// ==> Reduce Score for leecher - Stulle
-	ini.WriteBool(_T("ReduceScore"),m_bReduceScore);
-	ini.WriteFloat(_T("ReduceFactor"),m_fReduceFactor);
+	ini.WriteBool(L"ReduceScore",m_bReduceScore);
+	ini.WriteFloat(L"ReduceFactor",m_fReduceFactor);
 	// <== Reduce Score for leecher - Stulle
 
-	ini.WriteBool(_T("AntiXsExploiter"),m_bAntiXsExploiter); // Anti-XS-Exploit [Xman] - Stulle
-	ini.WriteBool(_T("SpamBan"),m_bSpamBan); // Spam Ban [Xman] - Stulle
+	ini.WriteBool(L"AntiXsExploiter",m_bAntiXsExploiter); // Anti-XS-Exploit [Xman] - Stulle
+	ini.WriteBool(L"SpamBan",m_bSpamBan); // Spam Ban [Xman] - Stulle
 
 	// ==> Inform Clients after IP Change - Stulle
-	ini.WriteBool(_T("ReaskSourcesAfterIPChange"),m_breaskSourceAfterIPChange);
-	ini.WriteBool(_T("InformQueuedClientsAfterIPChange"),m_bInformQueuedClientsAfterIPChange);
+	ini.WriteBool(L"ReaskSourcesAfterIPChange",m_breaskSourceAfterIPChange);
+	ini.WriteBool(L"InformQueuedClientsAfterIPChange",m_bInformQueuedClientsAfterIPChange);
 	// <== Inform Clients after IP Change - Stulle
 
 	// ==> Timer for ReAsk File Sources - Stulle
 	uint8 m_uTemp = (uint8)((m_uReAskTimeDif+FILEREASKTIME)/60000);
-	ini.WriteInt(_T("ReAskTime"),m_uTemp);
+	ini.WriteInt(L"ReAskTime",m_uTemp);
 	// <== Timer for ReAsk File Sources - Stulle
 
 	// ==> Quick start [TPT] - Stulle
-	ini.WriteBool(_T("QuickStart"), m_bQuickStart);
-	ini.WriteInt(_T("QuickStartMaxTime"), m_iQuickStartMaxTime);
-	ini.WriteInt(_T("QuickStartMaxConn"), m_iQuickStartMaxConn);
-	ini.WriteInt(_T("QuickStartMaxConnPerFive"), m_iQuickStartMaxConnPerFive);
-	ini.WriteInt(_T("QuickStartMaxConnBack"), m_iQuickStartMaxConnBack);
-	ini.WriteInt(_T("QuickStartMaxConnPerFiveBack"), m_iQuickStartMaxConnPerFiveBack);
-	ini.WriteBool(_T("QuickStartAfterIPChange"), m_bQuickStartAfterIPChange);
+	ini.WriteBool(L"QuickStart", m_bQuickStart);
+	ini.WriteInt(L"QuickStartMaxTime", m_iQuickStartMaxTime);
+	ini.WriteInt(L"QuickStartMaxConn", m_iQuickStartMaxConn);
+	ini.WriteInt(L"QuickStartMaxConnPerFive", m_iQuickStartMaxConnPerFive);
+	ini.WriteInt(L"QuickStartMaxConnBack", m_iQuickStartMaxConnBack);
+	ini.WriteInt(L"QuickStartMaxConnPerFiveBack", m_iQuickStartMaxConnPerFiveBack);
+	ini.WriteBool(L"QuickStartAfterIPChange", m_bQuickStartAfterIPChange);
 	// <== Quick start [TPT] - Stulle
 
 	// ==> FunnyNick Tag - Stulle
-	ini.WriteInt(_T("FnTagMode"), FnTagMode);
-	ini.WriteString(_T("FnCustomTag"), m_sFnCustomTag);
-	ini.WriteBool(_T("FnTagAtEnd"), m_bFnTagAtEnd);
+	ini.WriteInt(L"FnTagMode", FnTagMode);
+	ini.WriteString(L"FnCustomTag", m_sFnCustomTag);
+	ini.WriteBool(L"FnTagAtEnd", m_bFnTagAtEnd);
 	// <== FunnyNick Tag - Stulle
 
 	// ==> Pay Back First for insecure clients - Stulle
-	ini.WriteBool(_T("IsPayBackFirst2"),m_bPayBackFirst2);
-	ini.WriteInt(_T("PayBackFirstLimit2"),m_iPayBackFirstLimit2);
+	ini.WriteBool(L"IsPayBackFirst2",m_bPayBackFirst2);
+	ini.WriteInt(L"PayBackFirstLimit2",m_iPayBackFirstLimit2);
 	// <== Pay Back First for insecure clients - Stulle
 
 	// ==> adjust ClientBanTime - Stulle
 	m_uTemp = (uint8)(m_dwClientBanTime/3600000);
-	ini.WriteInt(_T("ClientBanTime"), m_uTemp);
+	ini.WriteInt(L"ClientBanTime", m_uTemp);
 	// <== adjust ClientBanTime - Stulle
 
 	// ==> drop sources - Stulle
-	ini.WriteBool(_T("EnableAutoDropNNS"), m_EnableAutoDropNNSDefault );
-	ini.WriteInt(_T("AutoNNS_Timer"), m_AutoNNS_TimerDefault );
-	ini.WriteInt(_T("MaxRemoveNNSLimit"), m_MaxRemoveNNSLimitDefault );
-	ini.WriteBool(_T("EnableAutoDropFQS"), m_EnableAutoDropFQSDefault );
-	ini.WriteInt(_T("AutoFQS_Timer"), m_AutoFQS_TimerDefault );
-	ini.WriteInt(_T("MaxRemoveFQSLimit"), m_MaxRemoveFQSLimitDefault );
-	ini.WriteBool(_T("EnableAutoDropQRS"), m_EnableAutoDropQRSDefault );
-	ini.WriteInt(_T("AutoHQRS_Timer"), m_AutoHQRS_TimerDefault );
-	ini.WriteInt(_T("MaxRemoveQRS"), m_MaxRemoveQRSDefault );
-	ini.WriteInt(_T("MaxRemoveQRSLimit"), m_MaxRemoveQRSLimitDefault );
+	ini.WriteBool(L"EnableAutoDropNNS", m_EnableAutoDropNNSDefault );
+	ini.WriteInt(L"AutoNNS_Timer", m_AutoNNS_TimerDefault );
+	ini.WriteInt(L"MaxRemoveNNSLimit", m_MaxRemoveNNSLimitDefault );
+	ini.WriteBool(L"EnableAutoDropFQS", m_EnableAutoDropFQSDefault );
+	ini.WriteInt(L"AutoFQS_Timer", m_AutoFQS_TimerDefault );
+	ini.WriteInt(L"MaxRemoveFQSLimit", m_MaxRemoveFQSLimitDefault );
+	ini.WriteBool(L"EnableAutoDropQRS", m_EnableAutoDropQRSDefault );
+	ini.WriteInt(L"AutoHQRS_Timer", m_AutoHQRS_TimerDefault );
+	ini.WriteInt(L"MaxRemoveQRS", m_MaxRemoveQRSDefault );
+	ini.WriteInt(L"MaxRemoveQRSLimit", m_MaxRemoveQRSLimitDefault );
 	// <== drop sources - Stulle
 
 	// ==> TBH: minimule - Stulle
-	ini.WriteInt(_T("SpeedMeterMin"), speedmetermin);
-	ini.WriteInt(_T("SpeedMeterMax"), speedmetermax);	
-	ini.WriteBool(_T("ShowMiniMule"),m_bMiniMule);
-	ini.WriteInt(_T("MiniMuleUpdate"),m_iMiniMuleUpdate);
-	ini.WriteBool(_T("MiniMuleLives"),m_bMiniMuleLives);
-	ini.WriteInt(_T("MiniMuleTransparency"),m_iMiniMuleTransparency);
-	ini.WriteBool(_T("MiniMuleCompl"),m_bMMCompl);
-	ini.WriteBool(_T("MiniMuleOpen"),m_bMMOpen);
+	ini.WriteInt(L"SpeedMeterMin", speedmetermin);
+	ini.WriteInt(L"SpeedMeterMax", speedmetermax);	
+	ini.WriteBool(L"ShowMiniMule",m_bMiniMule);
+	ini.WriteInt(L"MiniMuleUpdate",m_iMiniMuleUpdate);
+	ini.WriteBool(L"MiniMuleLives",m_bMiniMuleLives);
+	ini.WriteInt(L"MiniMuleTransparency",m_iMiniMuleTransparency);
+	ini.WriteBool(L"MiniMuleCompl",m_bMMCompl);
+	ini.WriteBool(L"MiniMuleOpen",m_bMMOpen);
 	// <== TBH: minimule - Stulle
 
 	// ==> Anti Uploader Ban - Stulle
-	ini.WriteInt(_T("AntiUploaderBanLimit"), m_iAntiUploaderBanLimit);
-	ini.WriteInt(_T("AntiUploaderBanCaseMode"), AntiUploaderBanCaseMode);
+	ini.WriteInt(L"AntiUploaderBanLimit", m_iAntiUploaderBanLimit);
+	ini.WriteInt(L"AntiUploaderBanCaseMode", AntiUploaderBanCaseMode);
 	// <== Anti Uploader Ban - Stulle
 
 	// ==> Spread Credits Slot - Stulle
-	ini.WriteBool(_T("SpreadCreditsSlot"), SpreadCreditsSlot);
-	ini.WriteInt(_T("SpreadCreditsSlotCounter"), SpreadCreditsSlotCounter);
-	ini.WriteBool(_T("SpreadCreditsSlotPS"),m_bSpreadCreditsSlotPS);
+	ini.WriteBool(L"SpreadCreditsSlot", SpreadCreditsSlot);
+	ini.WriteInt(L"SpreadCreditsSlotCounter", SpreadCreditsSlotCounter);
+	ini.WriteBool(L"SpreadCreditsSlotPS",m_bSpreadCreditsSlotPS);
 	// <== Spread Credits Slot - Stulle
 
 	// ==> Source Graph - Stulle
-	ini.WriteBool(_T("SrcGraph"), m_bSrcGraph);
-	ini.WriteInt(_T("StatsHLMin"), m_iStatsHLMin);
-	ini.WriteInt(_T("StatsHLMax"), m_iStatsHLMax);
+	ini.WriteBool(L"SrcGraph", m_bSrcGraph);
+	ini.WriteInt(L"StatsHLMin", m_iStatsHLMin);
+	ini.WriteInt(L"StatsHLMax", m_iStatsHLMax);
 	// <== Source Graph - Stulle
 
 	// ==> Global Source Limit (customize for files) - Stulle
-	ini.WriteBool(_T("GlobalHlAll"),m_bGlobalHlAll);
-	ini.WriteBool(_T("GlobalHlDefault"), m_bGlobalHlDefault);
+	ini.WriteBool(L"GlobalHlAll",m_bGlobalHlAll);
+	ini.WriteBool(L"GlobalHlDefault", m_bGlobalHlDefault);
 	// <== Global Source Limit (customize for files) - Stulle
 
-	ini.WriteInt(_T("StulleVerCheckLastAutomatic"), m_uStulleVerCheckLastAutomatic); // StulleMule Version Check - Stulle
+	ini.WriteInt(L"StulleVerCheckLastAutomatic", m_uStulleVerCheckLastAutomatic); // StulleMule Version Check - Stulle
 
 	// ==> Emulate others [WiZaRd/Spike/shadow2004] - Stulle
-	ini.WriteBool(_T("EmuMLDonkey"), m_bEmuMLDonkey);
-	ini.WriteBool(_T("EmueDonkey"), m_bEmueDonkey);
-	ini.WriteBool(_T("EmueDonkeyHybrid"), m_bEmueDonkeyHybrid);
-	ini.WriteBool(_T("EmuShareaza"), m_bEmuShareaza);
-	ini.WriteBool(_T("EmuLphant"), m_bEmuLphant);
-	ini.WriteBool(_T("LogEmulator"), m_bLogEmulator);
+	ini.WriteBool(L"EmuMLDonkey", m_bEmuMLDonkey);
+	ini.WriteBool(L"EmueDonkey", m_bEmueDonkey);
+	ini.WriteBool(L"EmueDonkeyHybrid", m_bEmueDonkeyHybrid);
+	ini.WriteBool(L"EmuShareaza", m_bEmuShareaza);
+	ini.WriteBool(L"EmuLphant", m_bEmuLphant);
+	ini.WriteBool(L"LogEmulator", m_bLogEmulator);
 	// <== Emulate others [WiZaRd/Spike/shadow2004] - Stulle
 
-	ini.WriteInt(_T("ReleaseBonus"),m_uReleaseBonus); // Release Bonus [sivka] - Stulle
-	ini.WriteBool(_T("ReleaseScoreAssurance"),m_bReleaseScoreAssurance); // Release Score Assurance - Stulle
+	ini.WriteInt(L"ReleaseBonus",m_uReleaseBonus); // Release Bonus [sivka] - Stulle
+	ini.WriteBool(L"ReleaseScoreAssurance",m_bReleaseScoreAssurance); // Release Score Assurance - Stulle
 
 	// ==> Connection Checker [eWombat/WiZaRd] - Stulle
-	ini.WriteBool(_T("CheckConnection"), m_bCheckCon); 
-	ini.WriteBool(_T("UseICMP"), m_bICMP);  
-	ini.WriteInt(_T("PingTimeOut"), m_uiPingTimeOut); 
-	ini.WriteInt(_T("PingTTL"), m_uiPingTTL);
+	ini.WriteBool(L"CheckConnection", m_bCheckCon); 
+	ini.WriteBool(L"UseICMP", m_bICMP);  
+	ini.WriteInt(L"PingTimeOut", m_uiPingTimeOut); 
+	ini.WriteInt(L"PingTTL", m_uiPingTTL);
 	// <== Connection Checker [eWombat/WiZaRd] - Stulle
 
-	ini.WriteInt(_T("PsAmountLimit"),PsAmountLimit); // Limit PS by amount of data uploaded - Stulle
+	ini.WriteInt(L"PsAmountLimit",PsAmountLimit); // Limit PS by amount of data uploaded - Stulle
 
-	ini.WriteBool(_T("NoBadPushing"),m_bNoBadPushing); // Disable PS/PBF for leechers [Stulle/idea by sfrqlxert] - Stulle
+	ini.WriteBool(L"NoBadPushing",m_bNoBadPushing); // Disable PS/PBF for leechers [Stulle/idea by sfrqlxert] - Stulle
 
-	ini.WriteInt(_T("ServiceStartupMode"),m_iServiceStartupMode); // Stullemule leuk_he:run as ntservice v1.
+	ini.WriteInt(L"ServiceStartupMode",m_iServiceStartupMode); // Stullemule leuk_he:run as ntservice v1.
 
 	// ==> new credit system - Stulle
-	ini.WriteInt(_T("CreditSystemMode"), creditSystemMode);
+	ini.WriteInt(L"CreditSystemMode", creditSystemMode);
 	// <== new credit system - Stulle
 
-	ini.WriteBool(_T("AutoReloadSharedFiles"), GetDirectoryWatcher()); // Automatic shared files updater [MoNKi] - Stulle
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+	ini.WriteBool(L"AutoReloadSharedFiles", GetDirectoryWatcher());
+	ini.WriteBool(L"SingleSharedDirWatcher", GetSingleSharedDirWatcher());
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 
 	// ==> Control download priority [tommy_gun/iONiX] - Stulle
-	ini.WriteInt(_T("BownfishMode"), m_uiBowlfishMode);
-	ini.WriteInt(_T("AutoBowlfishPrioPercentValue"), m_nBowlfishPrioPercentValue);
-	ini.WriteInt(_T("AutoBowlfishPrioSizeValue"), m_nBowlfishPrioSizeValue);
-	ini.WriteInt(_T("AutoBowlfishPrioNewValue"), m_nBowlfishPrioNewValue);
+	ini.WriteInt(L"BownfishMode", m_uiBowlfishMode);
+	ini.WriteInt(L"AutoBowlfishPrioPercentValue", m_nBowlfishPrioPercentValue);
+	ini.WriteInt(L"AutoBowlfishPrioSizeValue", m_nBowlfishPrioSizeValue);
+	ini.WriteInt(L"AutoBowlfishPrioNewValue", m_nBowlfishPrioNewValue);
 	// <== Control download priority [tommy_gun/iONiX] - Stulle
 
 	// ==> Enforce Ratio - Stulle
-	ini.WriteBool(_T("EnforceRatio"), m_bEnforceRatio);
-	ini.WriteInt(_T("RatioValue"), m_uRatioValue);
+	ini.WriteBool(L"EnforceRatio", m_bEnforceRatio);
+	ini.WriteInt(L"RatioValue", m_uRatioValue);
 	// <== Enforce Ratio - Stulle
 
 	// ==> Advanced Transfer Window Layout - Stulle
+#ifdef ATWL
 	ini.WriteInt(L"TransferWnd1",m_uTransferWnd1);
 	ini.WriteInt(L"TransferWnd2",m_uTransferWnd2);
-	ini.WriteBool(_T("SplitWindow"), m_bSplitWindow);
+	ini.WriteBool(L"SplitWindow", m_bSplitWindow);
+#endif
 	// <== Advanced Transfer Window Layout - Stulle
 
+	// ==> Adjustable NT Service Strings - Stulle
+	ini.WriteString(L"ServiceName", m_strServiceName);
+	ini.WriteString(L"ServiceDispName", m_strServiceDispName);
+	ini.WriteString(L"ServiceDescr", m_strServiceDescr);
+	// <== Adjustable NT Service Strings - Stulle
+
 	// ==> Design Settings [eWombat/Stulle] - Stulle
-	ini.WriteBool(_T("AutoTextColors"), m_bAutoTextColors);
+#ifdef DESIGN_SETTINGS
+	ini.WriteBool(L"AutoTextColors", m_bAutoTextColors);
 	SaveStylePrefs(ini);
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 }
 
@@ -3236,7 +3281,7 @@ void CPreferences::ResetStatsColor(int index)
 		case 13 : m_adwStatsColors[13]=RGB(128, 128, 255);break; //MORPH - Added by Yun.SF3, ZZ Upload System
 		case 14 : m_adwStatsColors[14]=RGB(192, 192, 0);break;
 		case 15 : m_adwStatsColors[15]=RGB(255, 0, 255);break; //MORPH - Added by SiRoB, Powershare display
-		case 16 : m_adwStatsColors[15]=RGB(192,192,255);break; // Source Graph - Stulle
+		case 16 : m_adwStatsColors[16]=RGB(192,192,255);break; // Source Graph - Stulle
 	}
 }
 
@@ -3264,7 +3309,7 @@ bool CPreferences::SetAllStatsColors(int iCount, const DWORD* pdwColors)
 void CPreferences::IniCopy(CString si, CString di)
 {
 	CIni ini(GetConfigFile(), L"eMule");
-	CString s=ini.GetString(si);
+	CString s = ini.GetString(si);
 	// Do NOT write empty settings, this will mess up reading of default settings in case
 	// there were no settings (fresh emule install) at all available!
 	if (!s.IsEmpty())
@@ -3274,89 +3319,9 @@ void CPreferences::IniCopy(CString si, CString di)
 	}
 }
 
-// Imports the tablesetups of emuleversions (.ini) <0.46b		- temporary
-void CPreferences::ImportOldTableSetup() {
-
-	IniCopy(L"DownloadColumnHidden" ,	L"DownloadListCtrlColumnHidden" );
-	IniCopy(L"DownloadColumnWidths" ,	L"DownloadListCtrlColumnWidths" );
-	IniCopy(L"DownloadColumnOrder" ,		L"DownloadListCtrlColumnOrders" );
-	IniCopy(L"TableSortItemDownload" ,	L"DownloadListCtrlTableSortItem" );
-	IniCopy(L"TableSortAscendingDownload" , L"DownloadListCtrlTableSortAscending" );
-
-	IniCopy(L"ONContactListCtrlColumnHidden" ,	L"ONContactListCtrlColumnHidden" );
-	IniCopy(L"ONContactListCtrlColumnWidths" ,	L"ONContactListCtrlColumnWidths" );
-	IniCopy(L"ONContactListCtrlColumnOrders" ,		L"ONContactListCtrlColumnOrders" );
-
-	IniCopy(L"KadSearchListCtrlColumnHidden" ,	L"KadSearchListCtrlColumnHidden" );
-	IniCopy(L"KadSearchListCtrlColumnWidths" ,	L"KadSearchListCtrlColumnWidths" );
-	IniCopy(L"KadSearchListCtrlColumnOrders" ,		L"KadSearchListCtrlColumnOrders" );
-	
-	IniCopy(L"UploadColumnHidden" ,		L"UploadListCtrlColumnHidden" );
-	IniCopy(L"UploadColumnWidths" ,		L"UploadListCtrlColumnWidths" );
-	IniCopy(L"UploadColumnOrder" ,		L"UploadListCtrlColumnOrders" );
-	IniCopy(L"TableSortItemUpload" ,		L"UploadListCtrlTableSortItem" );
-	IniCopy(L"TableSortAscendingUpload", L"UploadListCtrlTableSortAscending" );
-
-	IniCopy(L"QueueColumnHidden" ,		L"QueueListCtrlColumnHidden" );
-	IniCopy(L"QueueColumnWidths" ,		L"QueueListCtrlColumnWidths" );
-	IniCopy(L"QueueColumnOrder" ,		L"QueueListCtrlColumnOrders" );
-	IniCopy(L"TableSortItemQueue" ,		L"QueueListCtrlTableSortItem" );
-	IniCopy(L"TableSortAscendingQueue" , L"QueueListCtrlTableSortAscending" );
-
-	IniCopy(L"SearchColumnHidden" ,		L"SearchListCtrlColumnHidden" );
-	IniCopy(L"SearchColumnWidths" ,		L"SearchListCtrlColumnWidths" );
-	IniCopy(L"SearchColumnOrder" ,		L"SearchListCtrlColumnOrders" );
-	IniCopy(L"TableSortItemSearch" ,		L"SearchListCtrlTableSortItem" );
-	IniCopy(L"TableSortAscendingSearch", L"SearchListCtrlTableSortAscending" );
-
-	IniCopy(L"SharedColumnHidden" ,		L"SharedFilesCtrlColumnHidden" );
-	IniCopy(L"SharedColumnWidths" ,		L"SharedFilesCtrlColumnWidths" );
-	IniCopy(L"SharedColumnOrder" ,		L"SharedFilesCtrlColumnOrders" );
-	IniCopy(L"TableSortItemShared" ,		L"SharedFilesCtrlTableSortItem" );
-	IniCopy(L"TableSortAscendingShared", L"SharedFilesCtrlTableSortAscending" );
-
-	IniCopy(L"ServerColumnHidden" ,		L"ServerListCtrlColumnHidden" );
-	IniCopy(L"ServerColumnWidths" ,		L"ServerListCtrlColumnWidths" );
-	IniCopy(L"ServerColumnOrder" ,		L"ServerListCtrlColumnOrders" );
-	IniCopy(L"TableSortItemServer" ,		L"ServerListCtrlTableSortItem" );
-	IniCopy(L"TableSortAscendingServer", L"ServerListCtrlTableSortAscending" );
-
-	IniCopy(L"ClientListColumnHidden" ,		L"ClientListCtrlColumnHidden" );
-	IniCopy(L"ClientListColumnWidths" ,		L"ClientListCtrlColumnWidths" );
-	IniCopy(L"ClientListColumnOrder" ,		L"ClientListCtrlColumnOrders" );
-	IniCopy(L"TableSortItemClientList" ,		L"ClientListCtrlTableSortItem" );
-	IniCopy(L"TableSortAscendingClientList", L"ClientListCtrlTableSortAscending" );
-
-	IniCopy(L"FilenamesListColumnHidden" ,	L"FileDetailDlgNameColumnHidden" );
-	IniCopy(L"FilenamesListColumnWidths" ,	L"FileDetailDlgNameColumnWidths" );
-	IniCopy(L"FilenamesListColumnOrder" ,	L"FileDetailDlgNameColumnOrders" );
-	IniCopy(L"TableSortItemFilenames" ,		L"FileDetailDlgNameTableSortItem" );
-	IniCopy(L"TableSortAscendingFilenames",  L"FileDetailDlgNameTableSortAscending" );
-
-	IniCopy(L"IrcMainColumnHidden" ,		L"IrcNickListCtrlColumnHidden" );
-	IniCopy(L"IrcMainColumnWidths" ,		L"IrcNickListCtrlColumnWidths" );
-	IniCopy(L"IrcMainColumnOrder" ,		L"IrcNickListCtrlColumnOrders" );
-	IniCopy(L"TableSortItemIrcMain" ,	L"IrcNickListCtrlTableSortItem" );
-	IniCopy(L"TableSortAscendingIrcMain",L"IrcNickListCtrlTableSortAscending" );
-
-	IniCopy(L"IrcChannelsColumnHidden" ,		L"IrcChannelListCtrlColumnHidden" );
-	IniCopy(L"IrcChannelsColumnWidths" ,		L"IrcChannelListCtrlColumnWidths" );
-	IniCopy(L"IrcChannelsColumnOrder" ,		L"IrcChannelListCtrlColumnOrders" );
-	IniCopy(L"TableSortItemIrcChannels" ,	L"IrcChannelListCtrlTableSortItem" );
-	IniCopy(L"TableSortAscendingIrcChannels",L"IrcChannelListCtrlTableSortAscending" );
-
-	IniCopy(L"DownloadClientsColumnHidden" ,		L"DownloadClientsCtrlColumnHidden" );
-	IniCopy(L"DownloadClientsColumnWidths" ,		L"DownloadClientsCtrlColumnWidths" );
-	IniCopy(L"DownloadClientsColumnOrder" ,		L"DownloadClientsCtrlColumnOrders" );
-}
-
 void CPreferences::LoadPreferences()
 {
 	CIni ini(GetConfigFile(), L"eMule");
-
-	// import old (<0.46b) table setups - temporary
-	if (ini.GetInt(L"SearchListCtrlTableSortItem",-1,L"ListControlSetup")==-1)
-		ImportOldTableSetup();
 	ini.SetSection(L"eMule");
 
 	CString strCurrVersion, strPrefsVersion;
@@ -3406,7 +3371,7 @@ void CPreferences::LoadPreferences()
 	tempdirs = ini.GetString(L"TempDir", _T(""));
 	if (tempdirs.IsEmpty()) // We want GetDefaultDirectory to also create the folder, so we have to know if we use the default or not
 		tempdirs = GetDefaultDirectory(EMULE_TEMPDIR, true);
-	tempdirs+= L"|" + ini.GetString(L"TempDirs");
+	tempdirs += L"|" + ini.GetString(L"TempDirs");
 
 	int curPos=0;
 	bool doubled;
@@ -3543,10 +3508,10 @@ void CPreferences::LoadPreferences()
 		splitterbarPositionSvr=75;
 
 	// ==> Advanced Transfer Window Layout - Stulle
-	/*
+#ifndef ATWL
 	m_uTransferWnd1 = ini.GetInt(L"TransferWnd1",0);
 	m_uTransferWnd2 = ini.GetInt(L"TransferWnd2",1);
-	*/
+#endif
 	// <== Advanced Transfer Window Layout - Stulle
 
 	statsMax=ini.GetInt(L"VariousStatisticsMaxValue",100);
@@ -3558,13 +3523,13 @@ void CPreferences::LoadPreferences()
 	m_bUseUserSortedServerList = ini.GetBool(L"UserSortedServerList", false);
 	ICH = ini.GetBool(L"ICH", true);
 	m_bAutoUpdateServerList = ini.GetBool(L"Serverlist", false);
-
+	
 	// since the minimize to tray button is not working under Aero (at least not at this point),
 	// we enable map the minimize to tray on the minimize button by default if Aero is running
 	if (IsRunningAeroGlassTheme())
 		mintotray=ini.GetBool(L"MinToTray_Aero", true);
 	else
-	mintotray=ini.GetBool(L"MinToTray",false);
+		mintotray=ini.GetBool(L"MinToTray", false);
 
 	m_bPreventStandby = ini.GetBool(L"PreventStandby", false);
 	m_bStoreSearches = ini.GetBool(L"StoreSearches", true);
@@ -3581,7 +3546,7 @@ void CPreferences::LoadPreferences()
 	m_bAllocLocalHostIP=ini.GetBool(L"AllowLocalHostIP",false);
 	autoconnect=ini.GetBool(L"Autoconnect",false);
 	showRatesInTitle=ini.GetBool(L"ShowRatesOnTitle",false);
-	m_bIconflashOnNewMessage=ini.GetBool(L"IconflashOnNewMessage",true);
+	m_bIconflashOnNewMessage=ini.GetBool(L"IconflashOnNewMessage",true); //MORPH
 
 	onlineSig=ini.GetBool(L"OnlineSignature",false);
 	startMinimized=ini.GetBool(L"StartupMinimized",false);
@@ -3598,6 +3563,7 @@ void CPreferences::LoadPreferences()
 	checkDiskspace=ini.GetBool(L"CheckDiskspace",false);
 	m_uMinFreeDiskSpace=ini.GetInt(L"MinFreeDiskSpace",20*1024*1024);
 	m_bSparsePartFiles=ini.GetBool(L"SparsePartFiles",false);
+	m_bResolveSharedShellLinks=ini.GetBool(L"ResolveSharedShellLinks",false);
 	m_strYourHostname=ini.GetString(L"YourHostname", L"");
 
 	// Barry - New properties...
@@ -3621,12 +3587,13 @@ void CPreferences::LoadPreferences()
 
 	m_strDateTimeFormat = ini.GetString(L"DateTimeFormat", L"%A, %c");
 	m_strDateTimeFormat4Log = ini.GetString(L"DateTimeFormat4Log", L"%c");
+	m_strDateTimeFormat4Lists = ini.GetString(L"DateTimeFormat4Lists", L"%c");
 
 	m_strIRCServer = ini.GetString(L"DefaultIRCServerNew", L"ircchat.emule-project.net");
 	m_strIRCNick = ini.GetString(L"IRCNick");
 	m_bIRCAddTimeStamp = ini.GetBool(L"IRCAddTimestamp", true);
 	m_bIRCUseChannelFilter = ini.GetBool(L"IRCUseFilter", true);
-	m_strIRCChannelFilter = ini.GetString(L"IRCFilterName", L"#emule-*");
+	m_strIRCChannelFilter = ini.GetString(L"IRCFilterName", L"");
 	if (m_strIRCChannelFilter.IsEmpty())
 		m_bIRCUseChannelFilter = false;
 	m_uIRCChannelUserFilter = ini.GetInt(L"IRCFilterUser", 0);
@@ -3647,7 +3614,7 @@ void CPreferences::LoadPreferences()
 	m_bIRCEnableSmileys = ini.GetBool(L"IRCEnableSmileys", true);
 	m_bMessageEnableSmileys = ini.GetBool(L"MessageEnableSmileys", true);
 
-	m_bSmartServerIdCheck=ini.GetBool(L"SmartIdCheck",true);
+	m_bSmartServerIdCheck = ini.GetBool(L"SmartIdCheck",true);
 	log2disk = ini.GetBool(L"SaveLogToDisk",false);
 	uMaxLogFileSize = ini.GetInt(L"MaxLogFileSize", 1024*1024);
 	iMaxLogBuff = ini.GetInt(L"MaxLogBuff",64) * 1024;
@@ -3692,13 +3659,13 @@ void CPreferences::LoadPreferences()
 	m_iDebugSearchResultDetailLevel = ini.GetInt(L"DebugSearchResultDetailLevel", 0);
 #else
 	// for normal release builds ensure that those options are all turned off
-	m_iDebugServerTCPLevel=0;
-	m_iDebugServerUDPLevel=0;
-	m_iDebugServerSourcesLevel=0;
-	m_iDebugServerSearchesLevel=0;
-	m_iDebugClientTCPLevel=0;
-	m_iDebugClientUDPLevel=0;
-	m_iDebugClientKadUDPLevel=0;
+	m_iDebugServerTCPLevel = 0;
+	m_iDebugServerUDPLevel = 0;
+	m_iDebugServerSourcesLevel = 0;
+	m_iDebugServerSearchesLevel = 0;
+	m_iDebugClientTCPLevel = 0;
+	m_iDebugClientUDPLevel = 0;
+	m_iDebugClientKadUDPLevel = 0;
 	m_iDebugSearchResultDetailLevel = 0;
 #endif
 
@@ -3722,6 +3689,7 @@ void CPreferences::LoadPreferences()
 	else
 		m_iFileBufferSize = ((m_iFileBufferSize*15000 + 512)/1024)*1024;
 	m_iFileBufferSize=ini.GetInt(L"FileBufferSize",m_iFileBufferSize);
+	m_uFileBufferTimeLimit = SEC2MS(ini.GetInt(L"FileBufferTimeLimit", 60));
 
 	// read queue size (with backward compatibility)
 	m_iQueueSize=ini.GetInt(L"QueueSizePref",0); // old setting
@@ -3730,12 +3698,13 @@ void CPreferences::LoadPreferences()
 	else
 		m_iQueueSize = m_iQueueSize*100;
 	m_iQueueSize=ini.GetInt(L"QueueSize",m_iQueueSize);
-	
+
 	m_iCommitFiles=ini.GetInt(L"CommitFiles", 1); // 1 = "commit" on application shut down; 2 = "commit" on each file saveing
 	versioncheckdays=ini.GetInt(L"Check4NewVersionDelay",5);
 	m_bDAP=ini.GetBool(L"DAPPref",true);
 	m_bUAP=ini.GetBool(L"UAPPref",true);
 	m_bPreviewOnIconDblClk=ini.GetBool(L"PreviewOnIconDblClk",false);
+	m_bCheckFileOpen=ini.GetBool(L"CheckFileOpen",true);
 	indicateratings=ini.GetBool(L"IndicateRatings",true);
 	watchclipboard=ini.GetBool(L"WatchClipboard4ED2kFilelinks",false);
 	m_iSearchMethod=ini.GetInt(L"SearchMethod",0);
@@ -3770,16 +3739,17 @@ void CPreferences::LoadPreferences()
 	m_bShowCopyEd2kLinkCmd=ini.GetBool(L"ShowCopyEd2kLinkCmd",false);
 
 	m_iMaxChatHistory=ini.GetInt(L"MaxChatHistoryLines",100);
-	if (m_iMaxChatHistory < 1)  m_iMaxChatHistory = 100;
+	if (m_iMaxChatHistory < 1)
+		m_iMaxChatHistory = 100;
 	if (m_iMaxChatHistory > 2048)  m_iMaxChatHistory = 2048;// MORPH leuk_he Advanced official preferences.
 	maxmsgsessions=ini.GetInt(L"MaxMessageSessions",50);
 	if (maxmsgsessions > 6000)  maxmsgsessions = 6000;// MORPH leuk_he Advanced official preferences.
 	if (maxmsgsessions < 0 )  maxmsgsessions = 0;     // MORPH leuk_he Advanced official preferences.
 
 	// ==> Design Settings [eWombat/Stulle] - Stulle
-	/*
+#ifndef DESIGN_SETTINGS
 	m_bShowActiveDownloadsBold = ini.GetBool(L"ShowActiveDownloadsBold", false);
-	*/
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 
 	m_strTxtEditor = ini.GetString(L"TxtEditor", L"notepad.exe");
@@ -3809,6 +3779,7 @@ void CPreferences::LoadPreferences()
 	if (m_iExtractMetaData > 1)
 		m_iExtractMetaData = 1;
 	m_bAdjustNTFSDaylightFileTime=ini.GetBool(L"AdjustNTFSDaylightFileTime", true);
+	m_bRearrangeKadSearchKeywords = ini.GetBool(L"RearrangeKadSearchKeywords", true);
 
 	m_bUseSecureIdent=ini.GetBool(L"SecureIdent",true);
 	m_bAdvancedSpamfilter=ini.GetBool(L"AdvancedSpamFilter",true);
@@ -3849,10 +3820,10 @@ void CPreferences::LoadPreferences()
 
     m_bShowClientPercentage=ini.GetBool(_T("ShowClientPercentage"),false);  //Commander - Added: Client Percentage
 	// ==> Design Settings [eWombat/Stulle] - Stulle
-	/*
+#ifndef DESIGN_SETTINGS
 	enableDownloadInRed = ini.GetBool(_T("EnableDownloadInRed"), true); //MORPH - Added by IceCream, show download in red
 	m_bShowActiveDownloadsBold = ini.GetBool(_T("EnableDownloadInBold"), true); //MORPH - Added by SiRoB, show download in Bold
-	*/
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 	enableAntiLeecher = ini.GetBool(_T("EnableAntiLeecher"), true); //MORPH - Added by IceCream, enable AntiLeecher
 	enableAntiCreditHack = ini.GetBool(_T("EnableAntiCreditHack"), true); //MORPH - Added by IceCream, enable AntiCreditHack
@@ -3869,6 +3840,7 @@ void CPreferences::LoadPreferences()
 	m_iFairPlay = ini.GetInt(_T("FairPlay"), 0); //EastShare	- FairPlay by AndCycle
         
 	//MORPH START added by Yun.SF3: Ipfilter.dat update
+	m_uIPFilterVersionNum = ini.GetInt(_T("IPFilterVersionNum"),0); //MORPH - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
 	LPBYTE pst = NULL;
 	UINT usize = sizeof m_IPfilterVersion;
 	if (ini.GetBinary(_T("IPfilterVersion"), &pst, &usize) && usize == sizeof m_IPfilterVersion)
@@ -3979,8 +3951,11 @@ void CPreferences::LoadPreferences()
 	shareall=ini.GetBool(_T("ShareAll"),true);	// SLUGFILLER: preferShareAll
 	//EastShare END - PreferShareAll by AndCycle
 	// EastShare START - Added by TAHO, .met file control
-	m_iKnownMetDays = ini.GetInt(_T("KnownMetDays"), 90);
-	if (m_iKnownMetDays == 0) m_iKnownMetDays = 90;
+	m_iKnownMetDays = ini.GetInt(_T("KnownMetDays"), 0);
+	m_bCompletlyPurgeOldKnownFiles = ini.GetBool(_T("CompletlyPurgeOldKnownFiles"),false);
+	if(m_bPartiallyPurgeOldKnownFiles && m_bCompletlyPurgeOldKnownFiles)
+		m_bCompletlyPurgeOldKnownFiles = false;
+	m_bRemoveAichImmediatly = ini.GetBool(_T("RemoveAichImmediatly"),false);
 	// EastShare END - Added by TAHO, .met file control
 	//EastShare - Added by Pretender, Option for ChunkDots
 	m_bEnableChunkDots=ini.GetBool(_T("EnableChunkDots"),false); // Stulle
@@ -4005,12 +3980,8 @@ void CPreferences::LoadPreferences()
 	m_bUseDownloadOverhead= ini.GetBool(_T("UseDownloadOverhead"), true); //Morph - leuk_he use download overhead in upload
 	
 	m_bFunnyNick = ini.GetBool(_T("DisplayFunnyNick"), true);//MORPH - Added by SiRoB, Optionnal funnynick display
-	_stprintf(UpdateURLFakeList,_T("%s"),ini.GetString(_T("UpdateURLFakeList"),_T("http://emulepawcio.sourceforge.net/nieuwe_site/Ipfilter_fakes/fakes.zip")));		//MORPH START - Added by milobac and Yun.SF3, FakeCheck, FakeReport, Auto-updating
-	if (!_tcsicmp(UpdateURLFakeList, _T("http://emulepawcio.sourceforge.net/nieuwe_site/Ipfilter_fakes/fakes")))
-		_stprintf(UpdateURLFakeList ,_T("%s"), _T("http://emulepawcio.sourceforge.net/nieuwe_site/Ipfilter_fakes/fakes.zip"));
-	_stprintf(UpdateURLIPFilter,_T("%s"),ini.GetString(_T("UpdateURLIPFilter"),_T("http://emulepawcio.sourceforge.net/nieuwe_site/Ipfilter_fakes/ipfilter.zip")));//MORPH START added by Yun.SF3: Ipfilter.dat update
-	if (!_tcsicmp(UpdateURLIPFilter, _T("http://emulepawcio.sourceforge.net/nieuwe_site/Ipfilter_fakes/ipfilter")))
-		_stprintf(UpdateURLIPFilter ,_T("%s"), _T("http://emulepawcio.sourceforge.net/nieuwe_site/Ipfilter_fakes/ipfilter.zip"));
+	_stprintf(UpdateURLFakeList,_T("%s"),ini.GetString(_T("UpdateURLFakeList"),_T("http://emulepawcio.sourceforge.net/fakes.zip")));		//MORPH START - Added by milobac and Yun.SF3, FakeCheck, FakeReport, Auto-updating
+	_stprintf(UpdateURLIPFilter,_T("%s"),ini.GetString(_T("UpdateURLIPFilter"),_T("http://downloads.sourceforge.net/scarangel/ipfilter.rar")));//MORPH START added by Yun.SF3: Ipfilter.dat update
 	_stprintf(UpdateURLIP2Country,_T("%s"),ini.GetString(_T("UpdateURLIP2Country"),_T("http://ip-to-country.webhosting.info/downloads/ip-to-country.csv.zip")));//Commander - Added: IP2Country auto-updating
 
 	// khaos::categorymod+ Load Preferences
@@ -4096,6 +4067,7 @@ void CPreferences::LoadPreferences()
 	m_bTrustEveryHash = ini.GetBool(L"AICHTrustEveryHash", false);
 	m_bRememberCancelledFiles = ini.GetBool(L"RememberCancelledFiles", true);
 	m_bRememberDownloadedFiles = ini.GetBool(L"RememberDownloadedFiles", true);
+	m_bPartiallyPurgeOldKnownFiles = ini.GetBool(L"PartiallyPurgeOldKnownFiles", true);
 
 	m_bNotifierSendMail = ini.GetBool(L"NotifierSendMail", false);
 #if _ATL_VER >= 0x0710
@@ -4111,8 +4083,10 @@ void CPreferences::LoadPreferences()
 	m_bCryptLayerRequested = ini.GetBool(L"CryptLayerRequested", false);
 	m_bCryptLayerRequired = ini.GetBool(L"CryptLayerRequired", false);
 	m_bCryptLayerSupported = ini.GetBool(L"CryptLayerSupported", true);
- 	m_dwKadUDPKey = ini.GetInt(L"KadUDPKey", GetRandomUInt32());
-	m_byCryptTCPPaddingLength = (uint8)ini.GetInt(L"CryptTCPPaddingLength", 128);
+	m_dwKadUDPKey = ini.GetInt(L"KadUDPKey", GetRandomUInt32());
+
+	uint32 nTmp = ini.GetInt(L"CryptTCPPaddingLength", 128);
+	m_byCryptTCPPaddingLength = (uint8)min(nTmp, 254);
 
 	m_bEnableSearchResultFilter = ini.GetBool(L"EnableSearchResultSpamFilter", true);
 
@@ -4190,6 +4164,9 @@ void CPreferences::LoadPreferences()
 	m_strWebPassword = ini.GetString(L"Password", L"", L"WebServer");
 	m_strWebLowPassword = ini.GetString(L"PasswordLow", L"");
 	m_nWebPort=(uint16)ini.GetInt(L"Port", 4711);
+#ifdef USE_OFFICIAL_UPNP
+	m_bWebUseUPnP = ini.GetBool(L"WebUseUPnP", false);
+#endif
 	m_bWebEnabled=ini.GetBool(L"Enabled", false);
 	m_bWebUseGzip=ini.GetBool(L"UseGzip", true);
 	m_bWebLowEnabled=ini.GetBool(L"UseLowRightsUser", false);
@@ -4309,7 +4286,7 @@ void CPreferences::LoadPreferences()
 	//MORPH END - Added by SiRoB / Commander, Wapserver [emulEspaña]
 
 	//MORPH START - Added by Stulle, Global Source Limit
-	m_bGlobalHL = ini.GetBool(_T("GlobalHL"), false, _T("eMule"));
+	m_bGlobalHL = ini.GetBool(_T("GlobalHL"), true, _T("eMule"));
 	uint32 m_uGlobalHlStandard = 3500;
 	if (maxGraphUploadRate != UNLIMITED)
 	{
@@ -4370,7 +4347,7 @@ void CPreferences::LoadPreferences()
 	// ==> push small files [sivka] - Stulle
     enablePushSmallFile = ini.GetBool(_T("EnablePushSmallFile"), false, _T("StulleMule"));
 	m_uTemp = ini.GetInt(_T("PushSmallFiles"), 2097152);
-		m_iPushSmallFiles = (m_uTemp > 0 && m_uTemp <= PARTSIZE) ? m_uTemp : 2097152;
+		m_iPushSmallFiles = (m_uTemp > 1024 && m_uTemp <= PARTSIZE) ? m_uTemp : 2097152;
 	m_uTemp = ini.GetInt(_T("PushSmallBoost"), 100);
 		m_iPushSmallBoost = (uint16)((m_uTemp > 0 && m_uTemp <= 65536) ? m_uTemp : 100);
 	// <== push small files [sivka] - Stulle
@@ -4550,10 +4527,19 @@ void CPreferences::LoadPreferences()
 
 	m_bNoBadPushing = ini.GetBool(_T("NoBadPushing"),false); // Disable PS/PBF for leechers [Stulle/idea by sfrqlxert] - Stulle
 
-	m_uMinModAmount = ini.GetInt(_T("MinModAmount"),2); // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+	// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+#ifdef GLOBAL_MOD_STATS
+	m_uMinModAmount = ini.GetInt(_T("MinModAmount"),2);
+#endif
+	// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 	m_iServiceStartupMode = ini.GetInt(_T("ServiceStartupMode"),1); // Stullemule leuk_he:run as ntservice v1.
 
-	SetDirectoryWatcher(ini.GetBool(_T("AutoReloadSharedFiles"), true)); // Automatic shared files updater [MoNKi] - Stulle
+	// ==> Automatic shared files updater [MoNKi] - Stulle
+#ifdef ASFU
+	SetDirectoryWatcher(ini.GetBool(_T("AutoReloadSharedFiles"), true));
+	SetSingleSharedDirWatcher(ini.GetBool(_T("SingleSharedDirWatcher"), true));
+#endif
+	// <== Automatic shared files updater [MoNKi] - Stulle
 
 	// ==> Control download priority [tommy_gun/iONiX] - Stulle
 	m_uTemp = ini.GetInt(_T("BownfishMode"), 0);
@@ -4571,28 +4557,37 @@ void CPreferences::LoadPreferences()
 	// <== Enforce Ratio - Stulle
 
 	// ==> Advanced Transfer Window Layout - Stulle
+#ifdef ATWL
 	m_uTransferWnd1 = ini.GetInt(L"TransferWnd1",1);
 	m_uTransferWnd2 = ini.GetInt(L"TransferWnd2",1);
 	m_bSplitWindow = ini.GetBool(_T("SplitWindow"), true);
+#endif
 	// <== Advanced Transfer Window Layout - Stulle
 
+	// ==> Adjustable NT Service Strings - Stulle
+	m_strServiceName = ini.GetString(L"ServiceName",NULL);
+	m_strServiceDispName = ini.GetString(L"ServiceDispName",NULL);
+	m_strServiceDescr = ini.GetString(L"ServiceDescr",NULL);
+	// <== Adjustable NT Service Strings - Stulle
+
 	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 	m_bAutoTextColors = ini.GetBool(_T("AutoTextColors"),true);
 	LoadStylePrefs(ini);
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 
-   LoadCats();
+	LoadCats();
 	SetLanguage();
 }
-
 
 WORD CPreferences::GetWindowsVersion(){
 	static bool bWinVerAlreadyDetected = false;
 	if(!bWinVerAlreadyDetected)
-	{	
+	{
 		bWinVerAlreadyDetected = true;
-		m_wWinVer = DetectWinVersion();	
-	}	
+		m_wWinVer = DetectWinVersion();
+	}
 	return m_wWinVer;
 }
 
@@ -4624,19 +4619,19 @@ void CPreferences::SaveCats()
 	ini.WriteInt(L"Count", catMap.GetCount() - 1, L"General");
 	ini.WriteInt(_T("CategoryVersion"), 2, _T("General")); // khaos::categorymod+
 	for (int i = 0; i < catMap.GetCount(); i++)
-	 {
+	{
 		CString strSection;
 		strSection.Format(L"Cat#%i", i);
 		ini.SetSection(strSection);
 
-		ini.WriteStringUTF8(L"Title",catMap.GetAt(i)->strTitle);
+		ini.WriteStringUTF8(L"Title", catMap.GetAt(i)->strTitle);
 		ini.WriteStringUTF8(L"Incoming", catMap.GetAt(i)->strIncomingPath);
 		ini.WriteStringUTF8(L"Comment", catMap.GetAt(i)->strComment);
 		/*Removed by Stulle
 		ini.WriteStringUTF8(L"RegularExpression", catMap.GetAt(i)->regexp);
 		*/
 		ini.WriteInt(L"Color", catMap.GetAt(i)->color);
-		ini.WriteInt(L"a4afPriority",catMap.GetAt(i)->prio); // ZZ:DownloadManager
+		ini.WriteInt(L"a4afPriority", catMap.GetAt(i)->prio); // ZZ:DownloadManager
 		ini.WriteInt(_T("AdvancedA4AFMode"), catMap.GetAt(i)->iAdvA4AFMode);
 		/*Removed by SiRoB
 		ini.WriteStringUTF8(L"AutoCat", catMap.GetAt(i)->autocat);
@@ -4824,7 +4819,7 @@ void CPreferences::RemoveCat(int index)
 	if (index >= 0 && index < catMap.GetCount())
 	{
 		Category_Struct* delcat = catMap.GetAt(index); 
-		catMap.RemoveAt(index); 
+		catMap.RemoveAt(index);
 		delete delcat;
 	}
 }
@@ -4857,7 +4852,7 @@ bool CPreferences::GetCatFilterNeg(int index)
 void CPreferences::SetCatFilterNeg(int index, bool val)
 {
 	if (index >= 0 && index < catMap.GetCount())
-		catMap.GetAt(index)->filterNeg=val;
+		catMap.GetAt(index)->filterNeg = val;
 }
 */
 
@@ -4869,28 +4864,74 @@ bool CPreferences::MoveCat(UINT from, UINT to)
 	Category_Struct* tomove = catMap.GetAt(from);
 	if (from < to) {
 		catMap.RemoveAt(from);
-		catMap.InsertAt(to-1,tomove);
+		catMap.InsertAt(to - 1, tomove);
 	} else {
-		catMap.InsertAt(to,tomove);
-		catMap.RemoveAt(from+1);
+		catMap.InsertAt(to, tomove);
+		catMap.RemoveAt(from + 1);
 	}
 	SaveCats();
 	return true;
 }
 
 
-DWORD CPreferences::GetCatColor(int index) {
+DWORD CPreferences::GetCatColor(int index, int nDefault) {
 	if (index>=0 && index<catMap.GetCount()) {
 		DWORD c=catMap.GetAt(index)->color;
 		if (c!=(DWORD)-1)
 			return catMap.GetAt(index)->color; 
 	}
 
-	return GetSysColor(COLOR_BTNTEXT);
+	return GetSysColor(nDefault);
 }
 
 
 ///////////////////////////////////////////////////////
+
+// SLUGFILLER: SafeHash remove - global form of IsTempFile unnececery
+/*
+bool CPreferences::IsInstallationDirectory(const CString& rstrDir)
+{
+	CString strFullPath;
+	if (PathCanonicalize(strFullPath.GetBuffer(MAX_PATH), rstrDir))
+		strFullPath.ReleaseBuffer();
+	else
+		strFullPath = rstrDir;
+	
+	// skip sharing of several special eMule folders
+	if (!CompareDirectories(strFullPath, GetMuleDirectory(EMULE_EXECUTEABLEDIR)))
+		return true;
+	if (!CompareDirectories(strFullPath, GetMuleDirectory(EMULE_CONFIGDIR)))
+		return true;
+	if (!CompareDirectories(strFullPath, GetMuleDirectory(EMULE_WEBSERVERDIR)))
+		return true;
+	if (!CompareDirectories(strFullPath, GetMuleDirectory(EMULE_INSTLANGDIR)))
+		return true;
+	if (!CompareDirectories(strFullPath, GetMuleDirectory(EMULE_LOGDIR)))
+		return true;
+
+	return false;
+}
+
+bool CPreferences::IsShareableDirectory(const CString& rstrDir)
+{
+	if (IsInstallationDirectory(rstrDir))
+		return false;
+
+	CString strFullPath;
+	if (PathCanonicalize(strFullPath.GetBuffer(MAX_PATH), rstrDir))
+		strFullPath.ReleaseBuffer();
+	else
+		strFullPath = rstrDir;
+	
+	// skip sharing of several special eMule folders
+	for (int i=0;i<GetTempDirCount();i++)
+		if (!CompareDirectories(strFullPath, GetTempDir(i)))			// ".\eMule\temp"
+			return false;
+
+	return true;
+}
+*/
+// SLUGFILLER: SafeHash remove - global form of IsTempFile unnececery
 
 void CPreferences::UpdateLastVC()
 {
@@ -5192,12 +5233,10 @@ uint16 CPreferences::GetRandomUDPPort()
 	free(pUDPTab);
 	return nPort;
 }
+
 // General behavior:
-// WinVer = 95/NT4
-// Default: ApplicationDir
-// Default _not_ overwritten by Registry value
 //
-// WinVer < Vista && WinVer > Win95:
+// WinVer < Vista
 // Default: ApplicationDir if preference.ini exists there. If not: user specific dirs if preferences.ini exits there. If not: again ApplicationDir
 // Default overwritten by Registry value (see below)
 // Fallback: ApplicationDir
@@ -5211,8 +5250,9 @@ CString CPreferences::GetDefaultDirectory(EDefaultDirectory eDirectory, bool bCr
 	if (m_astrDefaultDirs[0].IsEmpty()){ // already have all directories fetched and stored?	
 		
 		// Get out exectuable starting directory which was our default till Vista
-		TCHAR tchBuffer[490];
-		::GetModuleFileName(0,tchBuffer, 490);
+		TCHAR tchBuffer[MAX_PATH];
+		::GetModuleFileName(NULL, tchBuffer, _countof(tchBuffer));
+		tchBuffer[_countof(tchBuffer) - 1] = _T('\0');
 		LPTSTR pszFileName = _tcsrchr(tchBuffer, L'\\') + 1;
 		*pszFileName = L'\0';
 		m_astrDefaultDirs[EMULE_EXECUTEABLEDIR] = tchBuffer;
@@ -5224,162 +5264,149 @@ CString CPreferences::GetDefaultDirectory(EDefaultDirectory eDirectory, bool bCr
 		CString strSelectedExpansionBaseDirectory = m_astrDefaultDirs[EMULE_EXECUTEABLEDIR];
 		m_nCurrentUserDirMode = 2; // To let us know which "mode" we are using in case we want to switch per options
 
-		// For Win95, 98 and NT we only support our old defaults due to missing functions (no point for multiuser on those OSs anyway)
-		if (GetWindowsVersion() != _WINVER_95_ && GetWindowsVersion() != _WINVER_NT4_){
-			// check if preferences.ini exists already in our default / fallback dir
-			CFileFind ff;
-			bool bConfigAvailableExecuteable = ff.FindFile(strSelectedConfigBaseDirectory + CONFIGFOLDER + _T("preferences.ini"), 0) != 0;
-			ff.Close();
-			
-			// check if our registry setting is present which forces the single or multiuser directories
-			// and lets us ignore other defaults
-			// 0 = Multiuser, 1 = Publicuser, 2 = ExecuteableDir. (on Winver < Vista 1 has the same effect as 2)
-			DWORD nRegistrySetting = (DWORD)-1;
-			CRegKey rkEMuleRegKey;
-			if (rkEMuleRegKey.Open(HKEY_CURRENT_USER, _T("Software\\eMule"), KEY_READ) == ERROR_SUCCESS){
-				rkEMuleRegKey.QueryDWORDValue(_T("UsePublicUserDirectories"), nRegistrySetting);
-				rkEMuleRegKey.Close();
-			}
-			if (nRegistrySetting != -1 && nRegistrySetting != 0 && nRegistrySetting != 1 && nRegistrySetting != 2)
-				nRegistrySetting = (DWORD)-1;
+		// check if preferences.ini exists already in our default / fallback dir
+		CFileFind ff;
+		bool bConfigAvailableExecuteable = ff.FindFile(strSelectedConfigBaseDirectory + CONFIGFOLDER + _T("preferences.ini"), 0) != 0;
+		ff.Close();
+		
+		// check if our registry setting is present which forces the single or multiuser directories
+		// and lets us ignore other defaults
+		// 0 = Multiuser, 1 = Publicuser, 2 = ExecuteableDir. (on Winver < Vista 1 has the same effect as 2)
+		DWORD nRegistrySetting = (DWORD)-1;
+		CRegKey rkEMuleRegKey;
+		if (rkEMuleRegKey.Open(HKEY_CURRENT_USER, _T("Software\\eMule"), KEY_READ) == ERROR_SUCCESS){
+			rkEMuleRegKey.QueryDWORDValue(_T("UsePublicUserDirectories"), nRegistrySetting);
+			rkEMuleRegKey.Close();
+		}
+		if (nRegistrySetting != -1 && nRegistrySetting != 0 && nRegistrySetting != 1 && nRegistrySetting != 2)
+			nRegistrySetting = (DWORD)-1;
 
-			// Do we need to get SystemFolders or do we use our old Default anyway? (Executable Dir)
-			if (nRegistrySetting == 0 || (nRegistrySetting == 1 && GetWindowsVersion() == _WINVER_VISTA_)
-				|| (nRegistrySetting == -1 && (!bConfigAvailableExecuteable || GetWindowsVersion() == _WINVER_VISTA_)))
-			{
-				HMODULE hShell32 = LoadLibrary(_T("shell32.dll"));
-				if (hShell32){
-					if (GetWindowsVersion() == _WINVER_VISTA_){
-						
-						PWSTR pszLocalAppData = NULL;
-						PWSTR pszPersonalDownloads = NULL;
-						PWSTR pszPublicDownloads = NULL;
-						PWSTR pszProgrammData = NULL;
+		// Do we need to get SystemFolders or do we use our old Default anyway? (Executable Dir)
+		if (   nRegistrySetting == 0
+			|| (nRegistrySetting == 1 && GetWindowsVersion() == _WINVER_VISTA_)
+			|| (nRegistrySetting == -1 && (!bConfigAvailableExecuteable || GetWindowsVersion() == _WINVER_VISTA_)))
+		{
+			HMODULE hShell32 = LoadLibrary(_T("shell32.dll"));
+			if (hShell32){
+				if (GetWindowsVersion() == _WINVER_VISTA_){
+					
+					PWSTR pszLocalAppData = NULL;
+					PWSTR pszPersonalDownloads = NULL;
+					PWSTR pszPublicDownloads = NULL;
+					PWSTR pszProgrammData = NULL;
 
-						// function not available on < WinVista
-						HRESULT (WINAPI *pfnSHGetKnownFolderPath)(REFKNOWNFOLDERID, DWORD, HANDLE, PWSTR*);
-						(FARPROC&)pfnSHGetKnownFolderPath = GetProcAddress(hShell32, "SHGetKnownFolderPath");
-						
-						if (pfnSHGetKnownFolderPath != NULL
-							&& (*pfnSHGetKnownFolderPath)(FOLDERID_LocalAppData, 0, NULL, &pszLocalAppData) == S_OK
-							&& (*pfnSHGetKnownFolderPath)(FOLDERID_Downloads, 0, NULL, &pszPersonalDownloads) == S_OK
-							&& (*pfnSHGetKnownFolderPath)(FOLDERID_PublicDownloads, 0, NULL, &pszPublicDownloads) == S_OK
-							&& (*pfnSHGetKnownFolderPath)(FOLDERID_ProgramData, 0, NULL, &pszProgrammData) == S_OK)
+					// function not available on < WinVista
+					HRESULT (WINAPI *pfnSHGetKnownFolderPath)(REFKNOWNFOLDERID, DWORD, HANDLE, PWSTR*);
+					(FARPROC&)pfnSHGetKnownFolderPath = GetProcAddress(hShell32, "SHGetKnownFolderPath");
+					
+					if (pfnSHGetKnownFolderPath != NULL
+						&& (*pfnSHGetKnownFolderPath)(FOLDERID_LocalAppData, 0, NULL, &pszLocalAppData) == S_OK
+						&& (*pfnSHGetKnownFolderPath)(FOLDERID_Downloads, 0, NULL, &pszPersonalDownloads) == S_OK
+						&& (*pfnSHGetKnownFolderPath)(FOLDERID_PublicDownloads, 0, NULL, &pszPublicDownloads) == S_OK
+						&& (*pfnSHGetKnownFolderPath)(FOLDERID_ProgramData, 0, NULL, &pszProgrammData) == S_OK)
+					{
+						if (_tcsclen(pszLocalAppData) < MAX_PATH - 30 && _tcsclen(pszPersonalDownloads) < MAX_PATH - 40
+							&& _tcsclen(pszProgrammData) < MAX_PATH - 30 && _tcsclen(pszPublicDownloads) < MAX_PATH - 40)
 						{
-							if (_tcsclen(pszLocalAppData) < MAX_PATH - 30 && _tcsclen(pszPersonalDownloads) < MAX_PATH - 40
-								&& _tcsclen(pszProgrammData) < MAX_PATH - 30 && _tcsclen(pszPublicDownloads) < MAX_PATH - 40)
-							{
-								CString strLocalAppData  = pszLocalAppData;
-								CString strPersonalDownloads = pszPersonalDownloads;
-								CString strPublicDownloads = pszPublicDownloads;
-								CString strProgrammData = pszProgrammData;
-								if (strLocalAppData.Right(1) != _T("\\"))
-									strLocalAppData += _T("\\");
-								if (strPersonalDownloads.Right(1) != _T("\\"))
-									strPersonalDownloads += _T("\\");
-								if (strPublicDownloads.Right(1) != _T("\\"))
-									strPublicDownloads += _T("\\");
-								if (strProgrammData.Right(1) != _T("\\"))
-									strProgrammData += _T("\\");
+							CString strLocalAppData  = pszLocalAppData;
+							CString strPersonalDownloads = pszPersonalDownloads;
+							CString strPublicDownloads = pszPublicDownloads;
+							CString strProgrammData = pszProgrammData;
+							if (strLocalAppData.Right(1) != _T("\\"))
+								strLocalAppData += _T("\\");
+							if (strPersonalDownloads.Right(1) != _T("\\"))
+								strPersonalDownloads += _T("\\");
+							if (strPublicDownloads.Right(1) != _T("\\"))
+								strPublicDownloads += _T("\\");
+							if (strProgrammData.Right(1) != _T("\\"))
+								strProgrammData += _T("\\");
 
-								if (nRegistrySetting == -1){
-									// no registry default, check if we find a preferences.ini to use
-									bool bRes =  ff.FindFile(strLocalAppData + _T("eMule\\") + CONFIGFOLDER + _T("preferences.ini"), 0) != 0;
+							if (nRegistrySetting == -1){
+								// no registry default, check if we find a preferences.ini to use
+								bool bRes =  ff.FindFile(strLocalAppData + _T("eMule\\") + CONFIGFOLDER + _T("preferences.ini"), 0) != 0;
+								ff.Close();
+								if (bRes)
+									m_nCurrentUserDirMode = 0;
+								else{
+									bRes =  ff.FindFile(strProgrammData + _T("eMule\\") + CONFIGFOLDER + _T("preferences.ini"), 0) != 0;
 									ff.Close();
 									if (bRes)
-										m_nCurrentUserDirMode = 0;
-									else{
-										bRes =  ff.FindFile(strProgrammData + _T("eMule\\") + CONFIGFOLDER + _T("preferences.ini"), 0) != 0;
-										ff.Close();
-										if (bRes)
-											m_nCurrentUserDirMode = 1;
-										else if (bConfigAvailableExecuteable)
-											m_nCurrentUserDirMode = 2;
-										else
-											m_nCurrentUserDirMode = 0; // no preferences.ini found, use the default
-									}
+										m_nCurrentUserDirMode = 1;
+									else if (bConfigAvailableExecuteable)
+										m_nCurrentUserDirMode = 2;
+									else
+										m_nCurrentUserDirMode = 0; // no preferences.ini found, use the default
 								}
-								else
-									m_nCurrentUserDirMode = nRegistrySetting;
-								
-								if (m_nCurrentUserDirMode == 0){
-									// multiuser
-									strSelectedDataBaseDirectory = strPersonalDownloads + _T("eMule\\");
-									strSelectedConfigBaseDirectory = strLocalAppData + _T("eMule\\");
-									strSelectedExpansionBaseDirectory = strProgrammData + _T("eMule\\");
-									m_nCurrentUserDirMode = 0;
-								}
-								else if (m_nCurrentUserDirMode == 1){
-									// public user
-									strSelectedDataBaseDirectory = strPublicDownloads + _T("eMule\\");
-									strSelectedConfigBaseDirectory = strProgrammData + _T("eMule\\");
-									strSelectedExpansionBaseDirectory = strProgrammData + _T("eMule\\");
-									m_nCurrentUserDirMode = 1;
-								}
-								else if (m_nCurrentUserDirMode == 2){
-									// programm directory
-									m_nCurrentUserDirMode = 2;
-								}
-								else
-									ASSERT( false );
+							}
+							else
+								m_nCurrentUserDirMode = nRegistrySetting;
+							
+							if (m_nCurrentUserDirMode == 0){
+								// multiuser
+								strSelectedDataBaseDirectory = strPersonalDownloads + _T("eMule\\");
+								strSelectedConfigBaseDirectory = strLocalAppData + _T("eMule\\");
+								strSelectedExpansionBaseDirectory = strProgrammData + _T("eMule\\");
+							}
+							else if (m_nCurrentUserDirMode == 1){
+								// public user
+								strSelectedDataBaseDirectory = strPublicDownloads + _T("eMule\\");
+								strSelectedConfigBaseDirectory = strProgrammData + _T("eMule\\");
+								strSelectedExpansionBaseDirectory = strProgrammData + _T("eMule\\");
+							}
+							else if (m_nCurrentUserDirMode == 2){
+								// programm directory
 							}
 							else
 								ASSERT( false );
-							}
+						}
+						else
+							ASSERT( false );
+						}
 
-							CoTaskMemFree(pszLocalAppData);
-							CoTaskMemFree(pszPersonalDownloads);
-							CoTaskMemFree(pszPublicDownloads);
-							CoTaskMemFree(pszProgrammData);
-					}
-					else { // GetWindowsVersion() == _WINVER_VISTA_
-						
-						// function not available on < WinME (at least not the values we query, otherwise also on 98, 95 with IE5)
-						WCHAR wchAppData[MAX_PATH];
-						WCHAR wchPersonal[MAX_PATH];
-						HRESULT (WINAPI* pfnSHGetFolderPathW)(HWND, int, HANDLE, DWORD, LPWSTR);
-						(FARPROC&)pfnSHGetFolderPathW = GetProcAddress(hShell32, "SHGetFolderPathW");
-						if (pfnSHGetFolderPathW != NULL
-							&& (*pfnSHGetFolderPathW)(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wchAppData) == S_OK
-							&& (*pfnSHGetFolderPathW)(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, wchPersonal) == S_OK)
-						{
-							if (_tcsclen(wchAppData) < MAX_PATH - 30 && _tcsclen(wchPersonal) < MAX_PATH - 40){
-								CString strPersonal = wchPersonal;
-								CString strAppData = wchAppData;
-								if (strPersonal.Right(1) != _T("\\"))
-									strPersonal += _T("\\");
-								if (strAppData.Right(1) != _T("\\"))
-									strAppData += _T("\\");
-								if (nRegistrySetting == 0){
-									// registry setting overwrites, use these folders
+						CoTaskMemFree(pszLocalAppData);
+						CoTaskMemFree(pszPersonalDownloads);
+						CoTaskMemFree(pszPublicDownloads);
+						CoTaskMemFree(pszProgrammData);
+				}
+				else { // GetWindowsVersion() == _WINVER_VISTA_
+
+					CString strAppData = ShellGetFolderPath(CSIDL_APPDATA);
+					CString strPersonal = ShellGetFolderPath(CSIDL_PERSONAL);
+					if (!strAppData.IsEmpty() && !strPersonal.IsEmpty())
+					{
+						if (strAppData.GetLength() < MAX_PATH - 30 && strPersonal.GetLength() < MAX_PATH - 40){
+							if (strPersonal.Right(1) != _T("\\"))
+								strPersonal += _T("\\");
+							if (strAppData.Right(1) != _T("\\"))
+								strAppData += _T("\\");
+							if (nRegistrySetting == 0){
+								// registry setting overwrites, use these folders
+								strSelectedDataBaseDirectory = strPersonal + _T("eMule Downloads\\");
+								strSelectedConfigBaseDirectory = strAppData + _T("eMule\\");
+								m_nCurrentUserDirMode = 0;
+								// strSelectedExpansionBaseDirectory stays default
+							}
+							else if (nRegistrySetting == -1 && !bConfigAvailableExecuteable){
+								if (ff.FindFile(strAppData + _T("eMule\\") + CONFIGFOLDER + _T("preferences.ini"), 0)){
+									// preferences.ini found, so we use this as default
 									strSelectedDataBaseDirectory = strPersonal + _T("eMule Downloads\\");
 									strSelectedConfigBaseDirectory = strAppData + _T("eMule\\");
 									m_nCurrentUserDirMode = 0;
-									// strSelectedExpansionBaseDirectory stays default
 								}
-								else if (nRegistrySetting == -1 && !bConfigAvailableExecuteable){
-									if (ff.FindFile(strAppData + _T("eMule\\") + CONFIGFOLDER + _T("preferences.ini"), 0)){
-										// preferences.ini found, so we use this as default
-										strSelectedDataBaseDirectory = strPersonal + _T("eMule Downloads\\");
-										strSelectedConfigBaseDirectory = strAppData + _T("eMule\\");
-										m_nCurrentUserDirMode = 0;
-									}
-									ff.Close();
-								}
-								else
-									ASSERT( false );
+								ff.Close();
 							}
 							else
 								ASSERT( false );
-
-						}	 
+						}
+						else
+							ASSERT( false );
 					}
-					FreeLibrary(hShell32);
 				}
-				else{
-					DebugLogError(_T("Unable to load shell32.dll to retrieve the systemfolder locations, using fallbacks"));
-					ASSERT( false );
-				}
+				FreeLibrary(hShell32);
+			}
+			else{
+				DebugLogError(_T("Unable to load shell32.dll to retrieve the systemfolder locations, using fallbacks"));
+				ASSERT( false );
 			}
 		}
 
@@ -5462,9 +5489,7 @@ void CPreferences::SetMuleDirectory(EDefaultDirectory eDirectory, CString strNew
 void CPreferences::ChangeUserDirMode(int nNewMode){
 	if (m_nCurrentUserDirMode == nNewMode)
 		return;
-	if ((nNewMode == 1 && GetWindowsVersion() != _WINVER_VISTA_)
-		|| (nNewMode == 0 &&
-		(GetWindowsVersion() == _WINVER_95_ || GetWindowsVersion() == _WINVER_NT4_)))
+	if (nNewMode == 1 && GetWindowsVersion() != _WINVER_VISTA_)
 	{
 		ASSERT( false );
 		return;
@@ -5479,7 +5504,7 @@ void CPreferences::ChangeUserDirMode(int nNewMode){
 		else
 			m_nCurrentUserDirMode = nNewMode;
 		rkEMuleRegKey.Close();
-	}	
+	}
 }
 
 bool CPreferences::GetSparsePartFiles()	{
@@ -5665,8 +5690,6 @@ uint16	CPreferences::GetWSPort()
 // MORPH leuk_he:run as ntservice v1.. (startup and ws port) 
 
 // MORPH START show less controls
-
-
 bool CPreferences::SetLessControls(bool newvalue)
 {
 	if (newvalue ==  m_bShowLessControls)
@@ -5676,11 +5699,69 @@ bool CPreferences::SetLessControls(bool newvalue)
 	return m_bShowLessControls;  //  change
 }
 // MORPH END  show less controls
- 
-  
 
+// SLUGFILLER: SafeHash
+bool CPreferences::IsConfigFile(const CString& rstrDirectory, const CString& rstrName)
+{
+	if (CompareDirectories(rstrDirectory, GetMuleDirectory(EMULE_CONFIGDIR)))
+		return false;
 
+	// do not share a file from the config directory, if it contains one of the following extensions
+	static const LPCTSTR _apszNotSharedExts[] = { L".met.bak", L".ini.old" };
+	for (int i = 0; i < _countof(_apszNotSharedExts); i++){
+		int iLen = _tcslen(_apszNotSharedExts[i]);
+		if (rstrName.GetLength()>=iLen && rstrName.Right(iLen).CompareNoCase(_apszNotSharedExts[i])==0)
+			return true;
+	}
 
+	// do not share following files from the config directory
+	static const LPCTSTR _apszNotSharedFiles[] = 
+	{
+		L"AC_SearchStrings.dat",
+		L"AC_ServerMetURLs.dat",
+		L"addresses.dat",
+		L"cancelled.met", //MORPH
+		L"category.ini",
+		L"clients.met",
+		L"cryptkey.dat",
+		L"emfriends.met",
+		L"fileinfo.ini",
+		L"ipfilter.dat",
+		L"known.met",
+		L"known2_64.met", //MORPH
+		L"preferences.dat",
+		L"preferences.ini",
+		L"server.met",
+		L"server.met.new",
+		L"server_met.download",
+		L"server_met.old",
+		L"shareddir.dat",
+		L"sharedsubdir.dat",
+		L"sharedsubdir.ini", //MORPH
+		L"staticservers.dat",
+		L"StoredSearches.met", //MORPH
+		L"webservices.dat"
+	};
+	for (int i = 0; i < _countof(_apszNotSharedFiles); i++){
+		if (rstrName.CompareNoCase(_apszNotSharedFiles[i])==0)
+			return true;
+	}
+
+	return false;
+}
+// SLUGFILLER: SafeHash
+
+//MORPH START - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
+bool CPreferences::IsIPFilterViaDynDNS(CString strURL)
+{
+	if(strURL.IsEmpty())
+		strURL = _T("http://downloads.sourceforge.net/scarangel/ipfilter.rar");
+
+	if(StrStr(GetUpdateURLIPFilter(),strURL)!=0)
+		return true;
+	return false;
+}
+//MORPH END   - Added by Stulle, New IP Filter by Ozzy [Stulle/Ozzy]
 
 // ==> StulleMule Version Check - Stulle
 void CPreferences::UpdateLastSVC()
@@ -5691,6 +5772,7 @@ void CPreferences::UpdateLastSVC()
 // <== StulleMule Version Check - Stulle
 
 // ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 void CPreferences::InitStyles()
 {
 	// client styles
@@ -6276,4 +6358,5 @@ void CPreferences::LoadStylePrefs(CIni &ini)
 		}
 	}
 }
+#endif
 // <== Design Settings [eWombat/Stulle] - Stulle

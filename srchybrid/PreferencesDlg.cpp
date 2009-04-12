@@ -72,7 +72,11 @@ CPreferencesDlg::CPreferencesDlg()
 	m_wndEastShare.m_psp.dwFlags &= ~PSH_HASHELP; //EastShare - Added by Pretender, ES Prefs
 	m_wndEmulespana.m_psp.dwFlags &= ~PSH_HASHELP; //MORPH - Added by SiRoB, emulEspaña preferency
 	m_wndStulle.m_psp.dwFlags &= ~PSH_HASHELP; // StulleMule Preferences window - Stulle
-	m_wndDesign.m_psp.dwFlags &= ~PSH_HASHELP; // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	m_wndDesign.m_psp.dwFlags &= ~PSH_HASHELP;
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 //MORPH START - Preferences groups [ePlus/Sirob]
 /*
 	CTreePropSheet::SetPageIcon(&m_wndGeneral, _T("Preferences"));
@@ -136,7 +140,11 @@ CPreferencesDlg::CPreferencesDlg()
 	AddPage(&m_wndEastShare); //EastShare - Added by Pretender, ES Prefs
 	AddPage(&m_wndEmulespana); //MORPH - Added by SiRoB, emulEspaña preferency
 	AddPage(&m_wndStulle); // StulleMule Preferences window - Stulle
-	AddPage(&m_wndDesign); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	AddPage(&m_wndDesign);
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 	
 	/* morph moved:
 #if defined(_DEBUG) || defined(USE_DEBUG_DEVICE)
@@ -297,7 +305,11 @@ void CPreferencesDlg::Localize()
 	ImageList.Add(CTempIconLoader(_T("EASTSHARE")));  //MORPH - Added by IceCream, Morph Prefs  //EastShare - Modified by Pretender
 	ImageList.Add(CTempIconLoader(_T("EMULESPANA")));  //MORPH - Added by IceCream, eMulEspaña Preferency
 	ImageList.Add(CTempIconLoader(_T("STULLE"))); // StulleMule Preferences window - Stulle
-	ImageList.Add(CTempIconLoader(_T("SEARCHFILETYPE_PICTURE"))); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	ImageList.Add(CTempIconLoader(_T("SEARCHFILETYPE_PICTURE")));
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 	
 	m_slideBar.SetImageList(&ImageList);
 //MORPH END   - Preferences groups [ePlus/Sirob]
@@ -323,7 +335,11 @@ void CPreferencesDlg::Localize()
 	m_wndEastShare.Localize();
 	m_wndEmulespana.Localize(); //MORPH - Added by SiRoB, emulEspaña preferency
 	m_wndStulle.Localize(); // StulleMule Preferences window - Stulle
-	m_wndDesign.Localize(); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	m_wndDesign.Localize();
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
     m_wndIonixWebServer.Localize(); //MORPH ionix advanced webserver
 	m_wndNTService.Localize(); //MORPH leuk_he:run as ntservice v1..
 	m_slideBar.ResetContent(); //MORPH - Preferences groups [ePlus/Sirob]
@@ -390,7 +406,11 @@ void CPreferencesDlg::Localize()
 	m_slideBar.AddGroupItem(_T("EastShare"), iGroup, c++);
 	m_slideBar.AddGroupItem(_T("emulEspaña"), iGroup, c++); //MORPH - Added by SiRoB, emulEspaña preferency
 	m_slideBar.AddGroupItem(_T("StulleMule"), iGroup, c++); // StulleMule Preferences window - Stulle
-	m_slideBar.AddGroupItem(GetResString(IDS_COLOR_BOX), iGroup, c++); // Design Settings [eWombat/Stulle] - Stulle
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	m_slideBar.AddGroupItem(GetResString(IDS_COLOR_BOX), iGroup, c++);
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 	//m_slideBar.AddGroupItem(_T(" "), iGroup, Multiwebserver=c++); // ionix advnaced webserver
 	Multiwebserver=c++;
 	NTService=c++;
@@ -555,7 +575,7 @@ LRESULT CPreferencesDlg::OnSlideBarSelChanged(WPARAM /*wParam*/, LPARAM /*lParam
 	}
 	else
 	// MORPH end tabbed option [leuk_he]
-		SetActivePage(iCurrentGlobalSel);
+	SetActivePage(iCurrentGlobalSel);
 
 	CListBoxST* pListBox = m_slideBar.GetGroupListBox(m_slideBar.GetSelectedGroupIndex());
 	ASSERT_VALID(pListBox);

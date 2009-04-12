@@ -36,7 +36,6 @@ public:
 	CButton m_ctlStart;
 	CButton m_ctlCancel;
 	CButton m_ctlMore;
-	CButton m_ctlUnicode;
 	CSearchResultsWnd* m_searchdlg;
 
 	void Localize();
@@ -67,7 +66,6 @@ protected:
 	CRect m_rcStart;
 	CRect m_rcMore;
 	CRect m_rcCancel;
-	CRect m_rcUnicode;
 	CImageList m_imlSearchMethods;
 	CImageList m_imlFileType;
 	CSize m_szMRU;
@@ -75,7 +73,6 @@ protected:
 	CCustomAutoComplete* m_pacSearchString;
 
 	void UpdateControls();
-	void UpdateUnicodeCtrl();
 	BOOL SaveSearchStrings();
 	void SetAllIcons();
 	void InitMethodsCtrl();
@@ -104,10 +101,12 @@ protected:
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 
 	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
 protected:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	CBrush m_brMyBrush;
 public:
 	void OnBackcolor();
+#endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 };
