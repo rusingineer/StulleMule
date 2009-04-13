@@ -1349,8 +1349,6 @@ public:
 #ifdef ASFU
 	static bool			m_bDirectoryWatcher;
 	static bool			m_bSingleSharedDirWatcher;
-    static CStringList	allsharedsubdir_list;
-    static CStringList	tempsharedsubdir_list;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 

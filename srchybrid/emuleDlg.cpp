@@ -4823,13 +4823,11 @@ BOOL CemuleDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 				}
 
 				// The other shared with subdirs
-				thePrefs.allsharedsubdir_list.RemoveAll();
-				theApp.sharedfiles->FindSubDirs();
-				pos = thePrefs.allsharedsubdir_list.GetHeadPosition();
+				// Note: This function is checking if a device was removed so it is enough to check if the top most
+				// shared with subdir folder is still there. All folders within this one folder will be gone, anyway
+				pos = thePrefs.sharedsubdir_list.GetHeadPosition();
 				while(pos){
-					curDir = thePrefs.allsharedsubdir_list.GetNext(pos);
-					if (curDir.Right(1)==_T("\\"))
-						curDir = curDir.Left(curDir.GetLength() - 1);
+					curDir = thePrefs.sharedsubdir_list.GetNext(pos);
 
 					if( dirList.Find( curDir ) == NULL ) {
 						dirList.AddTail( curDir );
@@ -4860,6 +4858,7 @@ BOOL CemuleDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 					if (curDir.Right(1)==_T("\\"))
 						curDir = curDir.Left(curDir.GetLength() - 1);
 
+					//this is a dir and not a drive
 					if (curDir.Right(1) != _T(":")){
 						if(CFileFind().FindFile(curDir) == FALSE){
 							reload = true;
@@ -4867,6 +4866,7 @@ BOOL CemuleDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 						}
 					}
 
+					//this is a drive
 					if(curDir.MakeLower().GetAt(0) == _TCHAR(drive)){
 						reload = true;
 						pos = NULL;

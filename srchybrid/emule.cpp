@@ -2910,6 +2910,11 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 	POSITION pos = thePrefs.shareddir_list.GetHeadPosition();
 	while(pos){
 		curDir = thePrefs.shareddir_list.GetNext(pos);
+
+		// If this folder does not exist we do not need to watch this folder
+		if (CFileFind().FindFile(curDir) == FALSE)
+			continue;
+
 		if (curDir.Right(1)==_T("\\"))
 			curDir = curDir.Left(curDir.GetLength() - 1);
 
@@ -2947,6 +2952,11 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 		subdirStartPosition = dirList.GetCount();
 	while(pos){
 		curDir = thePrefs.sharedsubdir_list.GetNext(pos);
+
+		// If this folder does not exist we do not need to watch this folder
+		if (CFileFind().FindFile(curDir) == FALSE)
+			continue;
+
 		if (curDir.Right(1)==_T("\\"))
 			curDir = curDir.Left(curDir.GetLength() - 1);
 
@@ -2954,20 +2964,6 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 			dirList.AddTail( curDir );
 		}
 	}
-	/*
-	thePrefs.allsharedsubdir_list.RemoveAll();
-	theApp.sharedfiles->FindSubDirs();
-	pos = thePrefs.allsharedsubdir_list.GetHeadPosition();
-	while(pos){
-		curDir = thePrefs.allsharedsubdir_list.GetNext(pos);
-		if (curDir.Right(1)==_T("\\"))
-			curDir = curDir.Left(curDir.GetLength() - 1);
-
-		if( dirList.Find( curDir ) == NULL ) {
-			dirList.AddTail( curDir );
-		}
-	}
-	*/
 
 	// dirList now contains all shared dirs.
 	// Now we get the parent dirs of shared dirs,

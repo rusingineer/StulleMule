@@ -1052,8 +1052,6 @@ bool	CPreferences::m_bAutoTextColors;
 #ifdef ASFU
 bool	CPreferences::m_bDirectoryWatcher;
 bool	CPreferences::m_bSingleSharedDirWatcher;
-CStringList CPreferences::allsharedsubdir_list;
-CStringList CPreferences::tempsharedsubdir_list;
 #endif
 // <== Automatic shared files updater [MoNKi] - Stulle
 

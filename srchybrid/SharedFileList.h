@@ -158,13 +158,6 @@ public:
 	CMap<CCKey,const CCKey&,CKnownFile*,CKnownFile*> m_Files_map;
 	CStringList			m_liSingleSharedFiles;
 	//SLUGFILLER: shareSubdir - moved to public
-
-	// ==> Automatic shared files updater [MoNKi] - Stulle
-#ifdef ASFU
-	void GetSubDirs(const CString& rstrDirectory);
-	void FindSubDirs();
-#endif
-	// <== Automatic shared files updater [MoNKi] - Stulle
 };
 
 class CAddFileThread : public CWinThread
