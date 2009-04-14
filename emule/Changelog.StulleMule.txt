@@ -1,5 +1,34 @@
 CHANGELOG FOR EMULE StulleMule MOD
 
+eMule v0.49c StulleMule v6.2:
+------------------------
+- xx.xx.2009 -
+-------------------------------------------------------------------------------
+based on eMule 0.49c MorphXT 11.2 compiled with vs2005 SP1
+
+Added: (Design Settings) Shareable file style for SharedFilesCtrl [Stulle]
+Added: Make NT Service strings changeable [Stulle]
+Added: Option to use ASFU for folders including single shared files [Stulle]
+
+Changed: Only check "Control download priority" code every tenth cycle [Stulle]
+Changed: Updated Design Settings for new code (also improves implementation [Stulle]
+Changed: Min small files push size to 1 kbps [Stulle]
+Changed: Small files push size slider KB based (makes keyboard input usable) [Stulle]
+Changed: Introduced pre-processor definitions for various features [Stulle]
+Changed: Global SysInfo RAM stats will support usage of more than 4GB [Stulle]
+Changed: Write FileSettings.ini sequentially (faster) [Stulle]
+Changed: Always wait 5 sec after sending save req before saving file settings [Stulle]
+Changed: Only reset ASFU when needed [Stulle]
+Changed: ASFU uses special bWatchSubtree flag for share with subdir [Stulle]
+Changed: ASFU Only check top most shared with subdir folder On Device Changed [Stulle]
+Changed: ASFU Only monitors dirs that exist on reset/init [Stulle]
+
+Fixed: (Design Settings) Only display if we got score remotely for DL clients [Stulle]
+Fixed: Save known and FileSettings threads were not terminated properly [Stulle]
+Fixed: Default color for source graph [Stulle]
+Fixed: Changing the small files push size reset changes in the Tree options [Stulle]
+
+
 eMule v0.49b StulleMule v6.1:
 ------------------------
 - 17.09.2008 -
