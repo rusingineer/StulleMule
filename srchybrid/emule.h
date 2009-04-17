@@ -104,6 +104,10 @@ public:
 #ifdef USE_OFFICIAL_UPNP
 	CUPnPImplWrapper*	m_pUPnPFinder;
 #endif
+        //MORPH START - Added by schnulli900, dynamic IP-Filters [Xman]
+	bool				m_bIsIPDlgOpen;
+        //MORPH END   - Added by schnulli900, dynamic IP-Filters [Xman]
+
 	// ==> TBH: minimule - Stulle/ leuk_he
 	CTBHMM*				minimule;
 //	CMutex				minimulemutex;

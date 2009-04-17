@@ -642,6 +642,7 @@ void CWebServer::ProcessURL(ThreadData Data)
 
 					SendMessage(theApp.emuledlg->m_hWnd,WM_CLOSE,0,0);
 
+					CoUninitialize();
 					return;
 				}
 				//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management - added ,3
@@ -655,6 +656,7 @@ void CWebServer::ProcessURL(ThreadData Data)
 
 					SendMessage(theApp.emuledlg->m_hWnd,WEB_GUI_INTERACTION, WEBGUIIA_WINFUNC,1);
 
+					CoUninitialize();
 					return;
 
 				}
@@ -670,6 +672,7 @@ void CWebServer::ProcessURL(ThreadData Data)
 
 					SendMessage(theApp.emuledlg->m_hWnd,WEB_GUI_INTERACTION, WEBGUIIA_WINFUNC,2);
 
+					CoUninitialize();
 					return;
 				}
 				else if (_ParseURL(Data.sURL, _T("w")) == _T("commentlist"))
@@ -688,8 +691,10 @@ void CWebServer::ProcessURL(ThreadData Data)
 					CKnownFile* kf=theApp.sharedfiles->GetFileByID(_GetFileHash(_ParseURL(Data.sURL, _T("filehash")),FileHash) );
 
 					if (kf) {
-						if ((thePrefs.GetMaxWebUploadFileSizeMB() != 0 && (kf->GetFileSize()) >(uint64) thePrefs.GetMaxWebUploadFileSizeMB()*1024*1024)) {
+						if (thePrefs.GetMaxWebUploadFileSizeMB() != 0 && kf->GetFileSize() > (uint64)thePrefs.GetMaxWebUploadFileSizeMB()*1024*1024) {
 							Data.pSocket->SendReply( "HTTP/1.1 403 Forbidden\r\n" );
+				
+							CoUninitialize();
 							return;
 						}
 						else {
@@ -702,13 +707,14 @@ void CWebServer::ProcessURL(ThreadData Data)
 								char* buffer=(char*)malloc(SENDFILEBUFSIZE);
 								if (!buffer) {
 									Data.pSocket->SendReply( "HTTP/1.1 500 Internal Server Error\r\n" );
+									CoUninitialize();
 									return;
 								}
 
 								char szBuf[512];
-								int nLen = wsprintfA(szBuf, "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Description: \"%s\"\r\nContent-Disposition: attachment; filename=\"%s\";\r\nContent-Transfer-Encoding: binary\r\nContent-Length: %I64u\r\n\r\n", 
-									CT2CA(kf->GetFileName()),
-									CT2CA(kf->GetFileName()),
+								int nLen = _snprintf(szBuf, _countof(szBuf), "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Description: \"%s\"\r\nContent-Disposition: attachment; filename=\"%s\";\r\nContent-Transfer-Encoding: binary\r\nContent-Length: %I64u\r\n\r\n", 
+									(LPCSTR) CT2CA(kf->GetFileName()),
+									(LPCSTR) CT2CA(kf->GetFileName()),
 									(uint64)filesize);
 								Data.pSocket->SendData(szBuf, nLen);
 
@@ -720,12 +726,13 @@ void CWebServer::ProcessURL(ThreadData Data)
 								}
 								file.Close();
 
-								delete[] buffer;
+								free(buffer);
 								CoUninitialize();
 								return;
 							}
 							else {
 								Data.pSocket->SendReply( "HTTP/1.1 404 File not found\r\n" );
+								CoUninitialize();
 								return;
 							}
 						}
@@ -2621,7 +2628,7 @@ CString CWebServer::_GetTransferList(ThreadData Data)
 
 		dUser.sFileInfo = _SpecialChars(GetClientSummary(cur_client),false);
 		dUser.sFileInfo.Replace(_T("\\"),_T("\\\\"));
-		dUser.sFileInfo.Replace(_T("\n"), _T("<br>"));
+		dUser.sFileInfo.Replace(_T("\n"), _T("<br />"));
 		dUser.sFileInfo.Replace(_T("'"),_T("&#8217;"));
 
 		sTemp= GetClientversionImage(cur_client) ;

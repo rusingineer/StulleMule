@@ -48,8 +48,11 @@
 #include "Kademlia/Kademlia/Prefs.h"
 #include "Log.h"
 #include "collection.h"
-#include "MuleToolbarCtrl.h" // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
+//MORPH START - Added by schnulli900, dynamic IP-Filters [Xman]
+#include "IPFilter.h" 
+//MORPH END   - Added by schnulli900, dynamic IP-Filters [Xman]
 #include "PartFile.h" //Fafner: look for PFOP_COPYING below - 080421
+#include "MuleToolbarCtrl.h" // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -1968,6 +1971,9 @@ VOID CALLBACK CUploadQueue::UploadTimer(HWND /*hwnd*/, UINT /*uMsg*/, UINT_PTR /
 			theApp.serverlist->Process();		// 17 minutes
 			theApp.knownfiles->Process();		// 11 minutes
 			theApp.friendlist->Process();		// 19 minutes
+	                //MORPH START - Added by schnulli900, dynamic IP-Filters [Xman]
+			theApp.ipfilter->Process(); // hourly
+                        //MORPH END   - Added by schnulli900, dynamic IP-Filters [Xman]
 			theApp.clientlist->Process();
 			theApp.sharedfiles->Process();
 			if( Kademlia::CKademlia::IsRunning() )

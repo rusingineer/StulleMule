@@ -496,6 +496,9 @@ bool	CPreferences::enableHighProcess;//MORPH - Added by IceCream, high process p
 bool	CPreferences::enableDownloadInRed; //MORPH - Added by IceCream, show download in red
 #endif
 // <== Design Settings [eWombat/Stulle] - Stulle
+//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+bool	CPreferences::m_bFilterClientFailedDown; 
+//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 bool	CPreferences::enableAntiLeecher; //MORPH - Added by IceCream, enableAntiLeecher
 bool	CPreferences::enableAntiCreditHack; //MORPH - Added by IceCream, enableAntiCreditHack
 int	CPreferences::creditSystemMode; // EastShare - Added by linekin, creditsystem integration
@@ -2853,6 +2856,9 @@ void CPreferences::SavePreferences()
 	ini.WriteBool(_T("EnableDownloadInBold"), m_bShowActiveDownloadsBold,_T("eMule")); //MORPH - Added by SiRoB, show download in Bold
 #endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
+        //MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	ini.WriteBool(_T("FilterClientFailedDown"), m_bFilterClientFailedDown,_T("eMule")); 
+        //MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	ini.WriteBool(_T("EnableAntiLeecher"), enableAntiLeecher,_T("eMule")); //MORPH - Added by IceCream, enable AntiLeecher
 	ini.WriteBool(_T("EnableAntiCreditHack"), enableAntiCreditHack,_T("eMule")); //MORPH - Added by IceCream, enable AntiCreditHack
 	// ==> new credit system - Stulle
@@ -3823,6 +3829,9 @@ void CPreferences::LoadPreferences()
 	m_bShowActiveDownloadsBold = ini.GetBool(_T("EnableDownloadInBold"), true); //MORPH - Added by SiRoB, show download in Bold
 #endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
+        //MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	m_bFilterClientFailedDown = ini.GetBool(_T("FilterClientFailedDown"), true);
+        //MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	enableAntiLeecher = ini.GetBool(_T("EnableAntiLeecher"), true); //MORPH - Added by IceCream, enable AntiLeecher
 	enableAntiCreditHack = ini.GetBool(_T("EnableAntiCreditHack"), true); //MORPH - Added by IceCream, enable AntiCreditHack
 	enableHighProcess = ini.GetBool(_T("EnableHighProcess"), false); //MORPH - Added by IceCream, high process priority

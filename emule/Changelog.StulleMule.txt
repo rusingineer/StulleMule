@@ -4,7 +4,7 @@ eMule v0.49c StulleMule v6.2:
 ------------------------
 - xx.xx.2009 -
 -------------------------------------------------------------------------------
-based on eMule 0.49c MorphXT 11.2 compiled with vs2005 SP1
+based on eMule 0.49c MorphXT 11.3 compiled with vs2005 SP1
 
 Added: (Design Settings) Shareable file style for SharedFilesCtrl [Stulle]
 Added: Make NT Service strings changeable [Stulle]

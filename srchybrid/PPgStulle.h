@@ -50,6 +50,9 @@ protected:
 	bool m_bEnableAntiCreditHack; //MORPH - Added by IceCream, enable Anti-CreditHack
 	bool m_bAntiXsExploiter; // Anti-XS-Exploit [Xman] - Stulle
 	bool m_bSpamBan; // Spam Ban [Xman] - Stulle
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	bool m_bFilterClientFailedDown; 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	int m_iClientBanTime; // adjust ClientBanTime - Stulle
 
 	// ==> push small files [sivka] - Stulle
@@ -213,6 +216,9 @@ protected:
 	HTREEITEM m_htiEnableAntiCreditHack; //MORPH - Added by IceCream, enable Anti-CreditHack
 	HTREEITEM m_htiAntiXsExploiter; // Anti-XS-Exploit [Xman] - Stulle
 	HTREEITEM m_htiSpamBan; // Spam Ban [Xman] - Stulle
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	HTREEITEM m_htiFilterClientFailedDown; 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	HTREEITEM m_htiClientBanTime; // adjust ClientBanTime - Stulle
 
 	HTREEITEM m_htiPush; // push files - Stulle

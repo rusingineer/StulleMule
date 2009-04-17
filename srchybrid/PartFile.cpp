@@ -3423,6 +3423,21 @@ uint32 CPartFile::Process(uint32 reducedownload, UINT icounter/*in percent*/, ui
 						m_RemoteQueueRank_New = cur_src->GetRemoteQueueRank();
 					// <== drop sources - Stulle
 
+					//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+					if(thePrefs.GetFilterClientFailedDown() && cur_src->m_uFailedDownloads>=3)
+					{
+						cur_src->SetDownloadState(DS_ERROR, _T("Morph Filter-Failed-Download-Clients")); //force the delete
+						DebugLog(LOG_MORPH, _T("Morph Filter-Failed-Download-Clients: Client %s "), cur_src->DbgGetClientInfo());
+						theApp.ipfilter->AddIPTemporary(ntohl(cur_src->GetConnectIP()));
+						if(cur_src->Disconnected(_T("Morph Filter-Failed-Download-Clients")))
+							delete cur_src;
+						else
+							//if it's a friend it isn't deleted->remove it
+							theApp.downloadqueue->RemoveSource(cur_src);
+						break;
+					}
+					else 
+					//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 					if( cur_src->IsRemoteQueueFull() )
 					{
 						// ==> drop sources - Stulle

@@ -31,6 +31,6 @@
 //MORPH END  - Added by SiRoB, [itsonlyme: -modname-]
 // ==> Morph-Version-Check Changes for StulleMule - Stulle
 #define MOD_MORPH_VERSION_MJR		11
-#define MOD_MORPH_VERSION_MIN		2
-#define MOD_MORPH_VERSION_BUILD		12
+#define MOD_MORPH_VERSION_MIN		3
+#define MOD_MORPH_VERSION_BUILD		1
 // <== Morph-Version-Check Changes for StulleMule - Stulle

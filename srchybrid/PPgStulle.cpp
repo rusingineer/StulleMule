@@ -82,6 +82,9 @@ CPPgStulle::CPPgStulle()
 	m_htiEnableAntiCreditHack = NULL; //MORPH - Added by IceCream, activate Anti-CreditHack
 	m_htiAntiXsExploiter = NULL; // Anti-XS-Exploit [Xman] - Stulle
 	m_htiSpamBan = NULL; // Spam Ban [Xman] - Stulle
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	m_htiFilterClientFailedDown = NULL; 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	m_htiClientBanTime = NULL; // adjust ClientBanTime - Stulle
 
 	m_htiPush = NULL; // push files - Stulle
@@ -341,6 +344,9 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 		m_htiEnableAntiCreditHack = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_ANTI_CREDITHACK), m_htiSecu, m_bEnableAntiCreditHack); //MORPH - Added by IceCream, Enable Anti-CreditHack
 		m_htiAntiXsExploiter = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_ANTI_XS_EXPLOITER), m_htiSecu, m_bAntiXsExploiter); // Anti-XS-Exploit [Xman] - Stulle
 		m_htiSpamBan = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_SPAM_BAN), m_htiSecu, m_bSpamBan); // Spam Ban [Xman] - Stulle
+		//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+		m_htiFilterClientFailedDown = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_FILTER_CLIENTFAILEDDOWN), m_htiSecu, m_bFilterClientFailedDown); 
+		//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 		// ==> adjust ClientBanTime - Stulle
 		m_htiClientBanTime = m_ctrlTreeOptions.InsertItem(GetResString(IDS_CLIENT_BAN_TIME), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT, m_htiSecu);
 		m_ctrlTreeOptions.AddEditBox(m_htiClientBanTime, RUNTIME_CLASS(CNumTreeOptionsEdit));
@@ -577,6 +583,9 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiEnableAntiCreditHack, m_bEnableAntiCreditHack); //MORPH - Added by IceCream, enable Anti-CreditHack
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiAntiXsExploiter, m_bAntiXsExploiter); // Anti-XS-Exploit [Xman] - Stulle
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiSpamBan, m_bSpamBan); // Spam Ban [Xman] - Stulle
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiFilterClientFailedDown, m_bFilterClientFailedDown); 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	// ==> adjust ClientBanTime - Stulle
 	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiClientBanTime, m_iClientBanTime);
 	DDV_MinMaxInt(pDX, m_iClientBanTime, 1, 10);
@@ -807,6 +816,9 @@ BOOL CPPgStulle::OnInitDialog()
 	m_bEnableAntiCreditHack = thePrefs.enableAntiCreditHack; //MORPH - Added by IceCream, enabnle Anti-CreditHack
 	m_bAntiXsExploiter = thePrefs.GetAntiXSExploiter(); // Anti-XS-Exploit [Xman] - Stulle
 	m_bSpamBan = thePrefs.GetSpamBan(); // Spam Ban [Xman] - Stulle
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	m_bFilterClientFailedDown = thePrefs.m_bFilterClientFailedDown; 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	m_iClientBanTime = thePrefs.GetClientBanTime()/3600000; // adjust ClientBanTime - Stulle
 
 	// ==> push small files [sivka] - Stulle
@@ -1032,6 +1044,9 @@ BOOL CPPgStulle::OnApply()
 	thePrefs.enableAntiCreditHack = m_bEnableAntiCreditHack; //MORPH - Added by IceCream, enable Anti-CreditHack
 	thePrefs.m_bAntiXsExploiter = m_bAntiXsExploiter; // Anti-XS-Exploit [Xman] - Stulle
 	thePrefs.m_bSpamBan = m_bSpamBan; // Spam Ban [Xman] - Stulle
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	thePrefs.m_bFilterClientFailedDown = m_bFilterClientFailedDown; 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	thePrefs.m_dwClientBanTime = m_iClientBanTime*3600000; // adjust ClientBanTime - Stulle
 
 	// ==> push small files [sivka] - Stulle
@@ -1296,6 +1311,9 @@ void CPPgStulle::Localize(void)
 		if (m_htiEnableAntiCreditHack) m_ctrlTreeOptions.SetItemText(m_htiEnableAntiCreditHack, GetResString(IDS_ANTI_CREDITHACK)); //MORPH - Added by IceCream, enable Anti-CreditHack
 		if (m_htiAntiXsExploiter) m_ctrlTreeOptions.SetItemText(m_htiAntiXsExploiter, GetResString(IDS_ANTI_XS_EXPLOITER)); // Anti-XS-Exploit [Xman] - Stulle
 		if (m_bSpamBan) m_ctrlTreeOptions.SetItemText(m_htiSpamBan, GetResString(IDS_SPAM_BAN)); // Spam Ban [Xman] - Stulle
+		//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+		if (m_htiFilterClientFailedDown) m_ctrlTreeOptions.SetItemText(m_htiFilterClientFailedDown, GetResString(IDS_FILTER_CLIENTFAILEDDOWN));
+		//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 		if (m_htiClientBanTime) m_ctrlTreeOptions.SetEditLabel(m_htiClientBanTime, GetResString(IDS_CLIENT_BAN_TIME)); // adjust ClientBanTime - Stulle
 
 		// ==> push small files [sivka] - Stulle
@@ -1453,6 +1471,9 @@ void CPPgStulle::OnDestroy()
 	m_htiEnableAntiCreditHack = NULL; //MORPH - Added by IceCream, activate Anti-CreditHack
 	m_htiAntiXsExploiter = NULL; // Anti-XS-Exploit [Xman] - Stulle
 	m_htiSpamBan = NULL; // Spam Ban [Xman] - Stulle
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	m_htiFilterClientFailedDown = NULL; 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	m_htiClientBanTime = NULL; // adjust ClientBanTime - Stulle
 
 	m_htiPush = NULL; // push files - Stulle

@@ -776,6 +776,9 @@ public:
 	static bool	enableDownloadInRed; //MORPH - Added by IceCream, show download in red
 #endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	static bool	m_bFilterClientFailedDown; 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	static bool	enableAntiLeecher; //MORPH - Added by IceCream, enableAntiLeecher
 	static bool	enableAntiCreditHack; //MORPH - Added by IceCream, enableAntiCreditHack
 	static int	creditSystemMode; // EastShare - Added by linekin, creditsystem integration
@@ -2268,6 +2271,9 @@ public:
 	static	bool GetEnableDownloadInRed()	{ return enableDownloadInRed; } //MORPH - Added by IceCream, show download in red
 #endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	static	bool GetFilterClientFailedDown ()		{ return m_bFilterClientFailedDown; } 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	static	bool GetEnableAntiLeecher()		{ return enableAntiLeecher; } //MORPH - Added by IceCream, enable Anti-leecher
 	
 	static	int		GetCreditSystem()	{return creditSystemMode;} // EastShare - Added by linekin, creditsystem integration
