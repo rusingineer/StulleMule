@@ -2916,7 +2916,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 		curDir = thePrefs.shareddir_list.GetNext(pos);
 
 		// If this folder does not exist we do not need to watch this folder
-		if (CFileFind().FindFile(curDir) == FALSE)
+		if (_taccess(curDir, 0) != 0)
 			continue;
 
 		if (curDir.Right(1)==_T("\\"))
@@ -2929,13 +2929,12 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 
 	// Dirs of single shared files
 	theApp.QueueDebugLogLine(false,_T("ASFU: Starting to add single shared files to list"));
-	if(thePrefs.GetSingleSharedDirWatcher() && theApp.sharedfiles->ProbablyHaveSingleSharedFiles())
+	if(thePrefs.GetSingleSharedDirWatcher()/* && theApp.sharedfiles->ProbablyHaveSingleSharedFiles()*/)
 	{
-		CFileFind thisFile;
 		for (POSITION pos = theApp.sharedfiles->m_liSingleSharedFiles.GetHeadPosition(); pos != NULL; theApp.sharedfiles->m_liSingleSharedFiles.GetNext(pos))
 		{
 			curDir = theApp.sharedfiles->m_liSingleSharedFiles.GetAt(pos);
-			if(!thisFile.FindFile(curDir))
+			if (_taccess(curDir, 0) != 0)
 				continue; // only add for this single shared file if it exists
 
 			int length = curDir.ReverseFind(_T('\\'));
@@ -2958,7 +2957,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 		curDir = thePrefs.sharedsubdir_list.GetNext(pos);
 
 		// If this folder does not exist we do not need to watch this folder
-		if (CFileFind().FindFile(curDir) == FALSE)
+		if (_taccess(curDir, 0) != 0)
 			continue;
 
 		if (curDir.Right(1)==_T("\\"))
@@ -3019,17 +3018,23 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 		while(pos){
 			curDir = dirList.GetNext(pos); 
 			if(subdirStartPosition > 0 && curPos-2 >= subdirStartPosition && curPos-2 < parentsStartPosition)
+			{
+				AddDebugLogLine(false,_T("ASFU: Adding with subdir %s"),curDir);
 				dwChangeHandles[curPos] = FindFirstChangeNotification(
 					curDir, TRUE,
 					FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME |
 					FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE |
 					FILE_NOTIFY_CHANGE_ATTRIBUTES);
+			}
 			else
+			{
+				AddDebugLogLine(false,_T("ASFU: Adding %s"),curDir);
 				dwChangeHandles[curPos] = FindFirstChangeNotification(
 					curDir, FALSE,
 					FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME |
 					FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE |
 					FILE_NOTIFY_CHANGE_ATTRIBUTES);
+			}
 			
 			if(dwChangeHandles[curPos] == INVALID_HANDLE_VALUE){
 				dwChangeHandles[curPos] = nullEvent.m_hObject;
@@ -3158,7 +3163,8 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 						curPos = 2; // Start at pos 2, because the pos 0 and 1 is for the events.
 						pos = dirList.GetHeadPosition();
 						while(pos){
-							curDir = dirList.GetNext(pos); 
+							curDir = dirList.GetNext(pos);
+
 							if(subdirStartPosition > 0 && curPos-2 >= subdirStartPosition && curPos-2 < parentsStartPosition)
 								dwChangeHandles[curPos] = FindFirstChangeNotification(
 									curDir, TRUE,

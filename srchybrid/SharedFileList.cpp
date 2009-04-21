@@ -1027,6 +1027,7 @@ void CSharedFileList::SetOutputCtrl(CSharedFilesCtrl* in_ctrl)
 	HashNextFile();		// SLUGFILLER: SafeHash - if hashing not yet started, start it now
 	*/
 	LoadSingleSharedFilesList(); // MORPH SLUGFILLER: SafeHash - load shared files after everything
+	Reload();		// MORPH SLUGFILLER: SafeHash - load shared files after everything
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
 	theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: SetOutputCtrl"));
@@ -1034,7 +1035,6 @@ void CSharedFileList::SetOutputCtrl(CSharedFilesCtrl* in_ctrl)
 		theApp.ResetDirectoryWatcher();
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
-	Reload();		// MORPH SLUGFILLER: SafeHash - load shared files after everything
 }
 
 uint8 GetRealPrio(uint8 in)
