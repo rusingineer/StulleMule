@@ -9,6 +9,7 @@ based on eMule 0.49c MorphXT 11.3 compiled with vs2005 SP1
 Added: (Design Settings) Shareable file style for SharedFilesCtrl [Stulle]
 Added: Make NT Service strings changeable [Stulle]
 Added: Option to use ASFU for folders including single shared files [Stulle]
+Added: Option for time between automatic reloads [Stulle]
 
 Changed: Only check "Control download priority" code every tenth cycle [Stulle]
 Changed: Updated Design Settings for new code (also improves implementation [Stulle]

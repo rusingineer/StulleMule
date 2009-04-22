@@ -1352,6 +1352,7 @@ public:
 #ifdef ASFU
 	static bool			m_bDirectoryWatcher;
 	static bool			m_bSingleSharedDirWatcher;
+	static uint32		m_uTimeBetweenReloads;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -2824,6 +2825,8 @@ public:
 	static	void	SetDirectoryWatcher(bool in)		{ m_bDirectoryWatcher = in; }
 	static	bool	GetSingleSharedDirWatcher()			{ return m_bSingleSharedDirWatcher; }
 	static	void	SetSingleSharedDirWatcher(bool in)	{ m_bSingleSharedDirWatcher = in; }
+	static	uint32	GetTimeBetweenReloads()				{ return m_uTimeBetweenReloads; }
+	static	void	SetTimeBetweenReloads(uint32 in)	{ m_uTimeBetweenReloads = in; }
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 

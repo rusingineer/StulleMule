@@ -2882,7 +2882,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 	// To set an fixed time between reloads change
 	// minSecondsBetweenReloads to a value greater
 	// than 0, for example 600 for 10 minutes (600 seconds)
-	const DWORD minSecondsBetweenReloads = 120; //Variable time
+	const DWORD minSecondsBetweenReloads = thePrefs.GetTimeBetweenReloads(); //Variable time
 
 	// We use this event when FindFirstChangeNotification fails
 	CEvent nullEvent(FALSE,TRUE); 

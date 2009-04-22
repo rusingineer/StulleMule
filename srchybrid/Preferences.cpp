@@ -1055,6 +1055,7 @@ bool	CPreferences::m_bAutoTextColors;
 #ifdef ASFU
 bool	CPreferences::m_bDirectoryWatcher;
 bool	CPreferences::m_bSingleSharedDirWatcher;
+uint32	CPreferences::m_uTimeBetweenReloads;
 #endif
 // <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -3228,6 +3229,7 @@ void CPreferences::SavePreferences()
 #ifdef ASFU
 	ini.WriteBool(L"AutoReloadSharedFiles", GetDirectoryWatcher());
 	ini.WriteBool(L"SingleSharedDirWatcher", GetSingleSharedDirWatcher());
+	ini.WriteInt(L"TimeBetweenReloads", GetTimeBetweenReloads());
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -4338,8 +4340,8 @@ void CPreferences::LoadPreferences()
 	// <== [MoNKi: -USS initial TTL-] - Stulle
 
 	// ==> new credit system - Stulle
-	int iCsModeOriginal = ini.GetInt(_T("CreditSystemMode"), -1,_T("eMule"));
-	int iCsModeStulle = ini.GetInt(_T("CreditSystemMode"), -1,_T("StulleMule"));
+	int iCsModeOriginal = ini.GetInt(L"CreditSystemMode", -1,L"eMule");
+	int iCsModeStulle = ini.GetInt(L"CreditSystemMode", -1,L"StulleMule");
 	if(iCsModeStulle != -1)
 		creditSystemMode = iCsModeStulle;
 	else if(iCsModeOriginal != -1)
@@ -4352,214 +4354,216 @@ void CPreferences::LoadPreferences()
 	// <== new credit system - Stulle
 
 	// ==> push small files [sivka] - Stulle
-    enablePushSmallFile = ini.GetBool(_T("EnablePushSmallFile"), false, _T("StulleMule"));
-	m_uTemp = ini.GetInt(_T("PushSmallFiles"), 2097152);
-		m_iPushSmallFiles = (m_uTemp > 1024 && m_uTemp <= PARTSIZE) ? m_uTemp : 2097152;
-	m_uTemp = ini.GetInt(_T("PushSmallBoost"), 100);
-		m_iPushSmallBoost = (uint16)((m_uTemp > 0 && m_uTemp <= 65536) ? m_uTemp : 100);
+    enablePushSmallFile = ini.GetBool(L"EnablePushSmallFile", false, L"StulleMule");
+	m_uTemp = ini.GetInt(L"PushSmallFiles", 2097152);
+	m_iPushSmallFiles = (m_uTemp > 1024 && m_uTemp <= PARTSIZE) ? m_uTemp : 2097152;
+	m_uTemp = ini.GetInt(L"PushSmallBoost", 100);
+	m_iPushSmallBoost = (uint16)((m_uTemp > 0 && m_uTemp <= 65536) ? m_uTemp : 100);
 	// <== push small files [sivka] - Stulle
-    enablePushRareFile = ini.GetBool(_T("EnablePushRareFile"), false); // push rare file - Stulle
+    enablePushRareFile = ini.GetBool(L"EnablePushRareFile", false); // push rare file - Stulle
 
-	showSrcInTitle = ini.GetBool(_T("ShowSrcOnTitle"),false); // Show sources on title - Stulle
-	showOverheadInTitle=ini.GetBool(_T("ShowOverheadOnTitle"),false); // show overhead on title - Stulle
-	ShowGlobalHL = ini.GetBool(_T("ShowGlobalHL"),false); // show global HL - Stulle
-	ShowFileHLconst = ini.GetBool(_T("ShowFileHLconst"),true); // show HL per file constantly
-	m_bShowInMSN7 = ini.GetBool(_T("ShowInMSN7"), false); //Show in MSN7 [TPT] - Stulle
-	m_bTrayComplete = ini.GetBool(_T("TrayComplete"),false); // Completed in Tray - Stulle
+	showSrcInTitle = ini.GetBool(L"ShowSrcOnTitle",false); // Show sources on title - Stulle
+	showOverheadInTitle=ini.GetBool(L"ShowOverheadOnTitle",false); // show overhead on title - Stulle
+	ShowGlobalHL = ini.GetBool(L"ShowGlobalHL",false); // show global HL - Stulle
+	ShowFileHLconst = ini.GetBool(L"ShowFileHLconst",true); // show HL per file constantly
+	m_bShowInMSN7 = ini.GetBool(L"ShowInMSN7", false); //Show in MSN7 [TPT] - Stulle
+	m_bTrayComplete = ini.GetBool(L"TrayComplete",false); // Completed in Tray - Stulle
 	// ==> CPU/MEM usage [$ick$/Stulle] - Stulle
-	m_bSysInfo = ini.GetBool(_T("SysInfos"),false);
-	m_bSysInfoGlobal = ini.GetBool(_T("SysInfosGlobal"),false);
+	m_bSysInfo = ini.GetBool(L"SysInfos",false);
+	m_bSysInfoGlobal = ini.GetBool(L"SysInfosGlobal",false);
 	// <== CPU/MEM usage [$ick$/Stulle] - Stulle
-	m_bShowSpeedMeter=ini.GetBool(_T("ShowSpeedMeter"),false); // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
+	m_bShowSpeedMeter=ini.GetBool(L"ShowSpeedMeter",false); // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
 
 	// ==> Sivka-Ban [cyrex2001] - Stulle
-	enableSivkaBan = ini.GetBool(_T("EnableSivkaBan"), false);
-	m_iSivkaAskTime = (uint16)ini.GetInt(_T("SivkaAskTime"), 7);
-	m_iSivkaAskCounter = (uint16)ini.GetInt(_T("SivkaAskCounter"), 5);
-	SivkaAskLog = ini.GetBool(_T("SivkaAskLog"),false);
+	enableSivkaBan = ini.GetBool(L"EnableSivkaBan", false);
+	m_iSivkaAskTime = (uint16)ini.GetInt(L"SivkaAskTime", 7);
+	m_iSivkaAskCounter = (uint16)ini.GetInt(L"SivkaAskCounter", 5);
+	SivkaAskLog = ini.GetBool(L"SivkaAskLog",false);
 	// <== Sivka-Ban [cyrex2001] - Stulle
 
 	// ==> ban systems optional - Stulle
-	m_bBadModString=ini.GetBool(_T("BadModString"), true);
-	m_bBadNickBan=ini.GetBool(_T("BadNickBan"), false);
-	m_bGhostMod=ini.GetBool(_T("GhostMod"), true);
-	m_bAntiModIdFaker=ini.GetBool(_T("AntiModIDFaker"), true);
-	m_bAntiNickThief=ini.GetBool(_T("AntiNickThief"), true);
-	m_bEmptyNick=ini.GetBool(_T("EmptyNick"), true);
-	m_bFakeEmule=ini.GetBool(_T("FakeEmule"), true);
-	m_bLeecherName=ini.GetBool(_T("LeecherName"),true);
-	m_bCommunityCheck=ini.GetBool(_T("CommunityCheck"),true);
-	m_bHexCheck=ini.GetBool(_T("HexCheck"),true);
-	m_bEmcrypt=ini.GetBool(_T("Emcrypt"),true);
-	m_bBadInfo=ini.GetBool(_T("BadInfo"),true);
-	m_bBadHello=ini.GetBool(_T("BadHello"),true);
-	m_bSnafu=ini.GetBool(_T("Snafu"),true);
-	m_bExtraBytes=ini.GetBool(_T("ExtraBytes"),true);
-	m_bNickChanger=ini.GetBool(_T("NickChanger"),true);
-	m_bFileFaker=ini.GetBool(_T("FileFaker"),true);
-	m_bVagaa=ini.GetBool(_T("Vagaa"),true);
+	m_bBadModString=ini.GetBool(L"BadModString", true);
+	m_bBadNickBan=ini.GetBool(L"BadNickBan", false);
+	m_bGhostMod=ini.GetBool(L"GhostMod", true);
+	m_bAntiModIdFaker=ini.GetBool(L"AntiModIDFaker", true);
+	m_bAntiNickThief=ini.GetBool(L"AntiNickThief", true);
+	m_bEmptyNick=ini.GetBool(L"EmptyNick", true);
+	m_bFakeEmule=ini.GetBool(L"FakeEmule", true);
+	m_bLeecherName=ini.GetBool(L"LeecherName",true);
+	m_bCommunityCheck=ini.GetBool(L"CommunityCheck",true);
+	m_bHexCheck=ini.GetBool(L"HexCheck",true);
+	m_bEmcrypt=ini.GetBool(L"Emcrypt",true);
+	m_bBadInfo=ini.GetBool(L"BadInfo",true);
+	m_bBadHello=ini.GetBool(L"BadHello",true);
+	m_bSnafu=ini.GetBool(L"Snafu",true);
+	m_bExtraBytes=ini.GetBool(L"ExtraBytes",true);
+	m_bNickChanger=ini.GetBool(L"NickChanger",true);
+	m_bFileFaker=ini.GetBool(L"FileFaker",true);
+	m_bVagaa=ini.GetBool(L"Vagaa",true);
 	// <== ban systems optional - Stulle
 
 	// ==> Reduce Score for leecher - Stulle
-	m_bReduceScore = ini.GetBool(_T("ReduceScore"),false);
-	float fTemp = ini.GetFloat(_T("ReduceFactor"),0.33f);
+	m_bReduceScore = ini.GetBool(L"ReduceScore",false);
+	float fTemp = ini.GetFloat(L"ReduceFactor",0.33f);
 	m_fReduceFactor = (fTemp >= 0.1f && fTemp <= 1.0f) ? fTemp : 0.33f;
 	// <== Reduce Score for leecher - Stulle
 
-	m_bAntiXsExploiter = ini.GetBool(_T("AntiXsExploiter"),true); // Anti-XS-Exploit [Xman] - Stulle
-	m_bSpamBan = ini.GetBool(_T("SpamBan"),true); // Spam Ban [Xman] - Stulle
+	m_bAntiXsExploiter = ini.GetBool(L"AntiXsExploiter",true); // Anti-XS-Exploit [Xman] - Stulle
+	m_bSpamBan = ini.GetBool(L"SpamBan",true); // Spam Ban [Xman] - Stulle
 
 	// ==> Inform Clients after IP Change - Stulle
-	m_breaskSourceAfterIPChange = ini.GetBool(_T("ReaskSourcesAfterIPChange"),false);
-	m_bInformQueuedClientsAfterIPChange = ini.GetBool(_T("InformQueuedClientsAfterIPChange"),false);
+	m_breaskSourceAfterIPChange = ini.GetBool(L"ReaskSourcesAfterIPChange",false);
+	m_bInformQueuedClientsAfterIPChange = ini.GetBool(L"InformQueuedClientsAfterIPChange",false);
 	// <== Inform Clients after IP Change - Stulle
 
 	// ==> Timer for ReAsk File Sources - Stulle
-	m_uTemp = ini.GetInt(_T("ReAskTime"),29);
+	m_uTemp = ini.GetInt(L"ReAskTime",29);
 	m_uTemp = (m_uTemp >= 29 && m_uTemp <= 55) ? m_uTemp : 29;
 	m_uReAskTimeDif = (m_uTemp-29)*60000;
 	// <== Timer for ReAsk File Sources - Stulle
 
 	// ==> Quick start [TPT] - Stulle
-	m_bQuickStart=ini.GetBool(_T("QuickStart"),false);
+	m_bQuickStart=ini.GetBool(L"QuickStart",false);
 	if (MaxConperFive == m_iQuickStartMaxConnPerFive) { MaxConperFive = 30; }
-	m_iQuickStartMaxTime=(uint16)ini.GetInt(_T("QuickStartMaxTime"), 10);
-	m_iQuickStartMaxConn=ini.GetInt(_T("QuickStartMaxConn"), 1001);
-	m_iQuickStartMaxConnPerFive=(uint16)ini.GetInt(_T("QuickStartMaxConnPerFive"), 151);
+	m_iQuickStartMaxTime=(uint16)ini.GetInt(L"QuickStartMaxTime", 10);
+	m_iQuickStartMaxConn=ini.GetInt(L"QuickStartMaxConn", 1001);
+	m_iQuickStartMaxConnPerFive=(uint16)ini.GetInt(L"QuickStartMaxConnPerFive", 151);
 	if(maxconnections == m_iQuickStartMaxConn) { maxconnections = 400; }
-	m_iQuickStartMaxConnBack=ini.GetInt(_T("QuickStartMaxConnBack"), 400);
-	m_iQuickStartMaxConnPerFiveBack=(uint16)ini.GetInt(_T("QuickStartMaxConnPerFiveBack"), 30);
-	m_bQuickStartAfterIPChange=ini.GetBool(_T("QuickStartAfterIPChange"),false);
+	m_iQuickStartMaxConnBack=ini.GetInt(L"QuickStartMaxConnBack", 400);
+	m_iQuickStartMaxConnPerFiveBack=(uint16)ini.GetInt(L"QuickStartMaxConnPerFiveBack", 30);
+	m_bQuickStartAfterIPChange=ini.GetBool(L"QuickStartAfterIPChange",false);
 	// <== Quick start [TPT] - Stulle
 
 	// ==> FunnyNick Tag - Stulle
-	FnTagMode = (uint8)ini.GetInt(_T("FnTagMode"), 2);
-	_stprintf (m_sFnCustomTag,_T("%s"),ini.GetString (_T("FnCustomTag")));
-	m_bFnTagAtEnd = ini.GetBool(_T("FnTagAtEnd"), false);
+	FnTagMode = (uint8)ini.GetInt(L"FnTagMode", 2);
+	_stprintf (m_sFnCustomTag,_T("%s"),ini.GetString (L"FnCustomTag"));
+	m_bFnTagAtEnd = ini.GetBool(L"FnTagAtEnd", false);
 	// <== FunnyNick Tag - Stulle
 
 	// ==> Pay Back First for insecure clients - Stulle
-	m_bPayBackFirst2=ini.GetBool(_T("IsPayBackFirst2"),false);
-	m_uTemp = ini.GetInt(_T("PayBackFirstLimit2"), 50);
+	m_bPayBackFirst2=ini.GetBool(L"IsPayBackFirst2",false);
+	m_uTemp = ini.GetInt(L"PayBackFirstLimit2", 50);
 	m_iPayBackFirstLimit2 = (uint16)((m_uTemp >= 5 && m_uTemp <=1024) ? m_uTemp : 50);
 	// <== Pay Back First for insecure clients - Stulle
 
 	// ==> adjust ClientBanTime - Stulle
-	m_uTemp = ini.GetInt(_T("ClientBanTime"), 2);
+	m_uTemp = ini.GetInt(L"ClientBanTime", 2);
 	m_uTemp = (m_uTemp >= 1 && m_uTemp <= 10) ? m_uTemp : 2;
 	m_dwClientBanTime = m_uTemp*3600000;
 	// <== adjust ClientBanTime - Stulle
 
 	// ==> drop sources - Stulle
-	m_EnableAutoDropNNSDefault = ini.GetBool(_T("EnableAutoDropNNS"), ENABLE_AUTO_DROP_NNS);
-	m_uTemp = ini.GetInt(_T("AutoNNS_Timer"), AUTO_NNS_TIMER);
+	m_EnableAutoDropNNSDefault = ini.GetBool(L"EnableAutoDropNNS", ENABLE_AUTO_DROP_NNS);
+	m_uTemp = ini.GetInt(L"AutoNNS_Timer", AUTO_NNS_TIMER);
 	m_AutoNNS_TimerDefault = (m_uTemp >= 0 && m_uTemp <= 60000) ? m_uTemp : AUTO_NNS_TIMER;
-	m_uTemp = ini.GetInt(_T("MaxRemoveNNSLimit"), MAX_REMOVE_NNS_LIMIT);
+	m_uTemp = ini.GetInt(L"MaxRemoveNNSLimit", MAX_REMOVE_NNS_LIMIT);
 	m_MaxRemoveNNSLimitDefault = (uint16)((m_uTemp >= 50 && m_uTemp <= 100) ? m_uTemp : MAX_REMOVE_NNS_LIMIT);
-	m_EnableAutoDropFQSDefault = ini.GetBool(_T("EnableAutoDropFQS"), ENABLE_AUTO_DROP_FQS);
-	m_uTemp = ini.GetInt(_T("AutoFQS_Timer"), AUTO_FQS_TIMER);
+	m_EnableAutoDropFQSDefault = ini.GetBool(L"EnableAutoDropFQS", ENABLE_AUTO_DROP_FQS);
+	m_uTemp = ini.GetInt(L"AutoFQS_Timer", AUTO_FQS_TIMER);
 	m_AutoFQS_TimerDefault = (m_uTemp >= 0 && m_uTemp <= 60000) ? m_uTemp : AUTO_FQS_TIMER;
-	m_uTemp = ini.GetInt(_T("MaxRemoveFQSLimit"), MAX_REMOVE_FQS_LIMIT);
+	m_uTemp = ini.GetInt(L"MaxRemoveFQSLimit", MAX_REMOVE_FQS_LIMIT);
 	m_MaxRemoveFQSLimitDefault = (uint16)((m_uTemp >= 50 && m_uTemp <= 100) ? m_uTemp : MAX_REMOVE_FQS_LIMIT);
-	m_EnableAutoDropQRSDefault = ini.GetBool(_T("EnableAutoDropQRS"), ENABLE_AUTO_DROP_QRS);
-	m_uTemp = ini.GetInt(_T("AutoHQRS_Timer"), AUTO_HQRS_TIMER);
+	m_EnableAutoDropQRSDefault = ini.GetBool(L"EnableAutoDropQRS", ENABLE_AUTO_DROP_QRS);
+	m_uTemp = ini.GetInt(L"AutoHQRS_Timer", AUTO_HQRS_TIMER);
 	m_AutoHQRS_TimerDefault = (m_uTemp >= 0 && m_uTemp <= 60000) ? m_uTemp : AUTO_HQRS_TIMER;
-	m_uTemp = ini.GetInt(_T("MaxRemoveQRS"), MAX_REMOVE_QRS);
+	m_uTemp = ini.GetInt(L"MaxRemoveQRS", MAX_REMOVE_QRS);
 	m_MaxRemoveQRSDefault = (uint16)((m_uTemp >= 2500 && m_uTemp <= 10000) ? m_uTemp : MAX_REMOVE_QRS);
-	m_uTemp = ini.GetInt(_T("MaxRemoveQRSLimit"), MAX_REMOVE_QRS_LIMIT);
+	m_uTemp = ini.GetInt(L"MaxRemoveQRSLimit", MAX_REMOVE_QRS_LIMIT);
 	m_MaxRemoveQRSLimitDefault = (uint16)((m_uTemp >= 50 && m_uTemp <= 100) ? m_uTemp : MAX_REMOVE_QRS_LIMIT);
 	// <== drop sources - Stulle
 
 	// ==> TBH: minimule - Stulle
-	speedmetermin = ini.GetInt(_T("SpeedMeterMin"),0);
-	speedmetermax = ini.GetInt(_T("SpeedMeterMax"),GetMaxGraphDownloadRate());	
-	m_bMiniMule = ini.GetBool(_T("ShowMiniMule"), false);
-	m_iMiniMuleUpdate = ini.GetInt(_T("MiniMuleUpdate"), 2);
-	m_bMiniMuleLives = ini.GetBool(_T("MiniMuleLives"), true);
-	m_iMiniMuleTransparency = (uint8)ini.GetInt(_T("MiniMuleTransparency"), 255);
-	m_bMMCompl = ini.GetBool(_T("MiniMuleCompl"),false);
-	m_bMMOpen = ini.GetBool(_T("MiniMuleOpen"),true);
+	speedmetermin = ini.GetInt(L"SpeedMeterMin",0);
+	speedmetermax = ini.GetInt(L"SpeedMeterMax",GetMaxGraphDownloadRate());	
+	m_bMiniMule = ini.GetBool(L"ShowMiniMule", false);
+	m_iMiniMuleUpdate = ini.GetInt(L"MiniMuleUpdate", 2);
+	m_bMiniMuleLives = ini.GetBool(L"MiniMuleLives", true);
+	m_iMiniMuleTransparency = (uint8)ini.GetInt(L"MiniMuleTransparency", 255);
+	m_bMMCompl = ini.GetBool(L"MiniMuleCompl",false);
+	m_bMMOpen = ini.GetBool(L"MiniMuleOpen",true);
 	// <== TBH: minimule - Stulle
 
 	// ==> Anti Uploader Ban - Stulle
-	m_iAntiUploaderBanLimit = (uint16)ini.GetInt(_T("AntiUploaderBanLimit"), 0);
-	AntiUploaderBanCaseMode = (uint8)ini.GetInt(_T("AntiUploaderBanCaseMode"), 1);
+	m_iAntiUploaderBanLimit = (uint16)ini.GetInt(L"AntiUploaderBanLimit", 0);
+	AntiUploaderBanCaseMode = (uint8)ini.GetInt(L"AntiUploaderBanCaseMode", 1);
 	// <== Anti Uploader Ban - Stulle
 
 	// ==> Spread Credits Slot - Stulle
-	SpreadCreditsSlot = ini.GetBool(_T("SpreadCreditsSlot"), false);
-	SpreadCreditsSlotCounter = (uint16)ini.GetInt(_T("SpreadCreditsSlotCounter"));
+	SpreadCreditsSlot = ini.GetBool(L"SpreadCreditsSlot", false);
+	SpreadCreditsSlotCounter = (uint16)ini.GetInt(L"SpreadCreditsSlotCounter");
 	if (SpreadCreditsSlotCounter < 3)
 		SpreadCreditsSlotCounter = 3;
-	m_bSpreadCreditsSlotPS = ini.GetBool(_T("SpreadCreditsSlotPS"),false);
+	m_bSpreadCreditsSlotPS = ini.GetBool(L"SpreadCreditsSlotPS",false);
 	// <== Spread Credits Slot - Stulle
 
 	// ==> Source Graph - Stulle
-	m_bSrcGraph = ini.GetBool(_T("SrcGraph"), false);
-	m_iStatsHLMin = (uint16)ini.GetInt(_T("StatsHLMin"), 2000);
-	m_iStatsHLMax = (uint16)ini.GetInt(_T("StatsHLMax"), 4000);
+	m_bSrcGraph = ini.GetBool(L"SrcGraph", false);
+	m_iStatsHLMin = (uint16)ini.GetInt(L"StatsHLMin", 2000);
+	m_iStatsHLMax = (uint16)ini.GetInt(L"StatsHLMax", 4000);
 	m_iStatsHLDif = m_iStatsHLMax-m_iStatsHLMin;
 	// <== Source Graph - Stulle
 
 	// ==> Global Source Limit (customize for files) - Stulle
-	m_bGlobalHlAll = ini.GetBool(_T("GlobalHlAll"),true);
-	m_bGlobalHlDefault = ini.GetBool(_T("GlobalHlDefault"),false);
+	m_bGlobalHlAll = ini.GetBool(L"GlobalHlAll",true);
+	m_bGlobalHlDefault = ini.GetBool(L"GlobalHlDefault",false);
 	// <== Global Source Limit (customize for files) - Stulle
 
-	m_uStulleVerCheckLastAutomatic = ini.GetInt(_T("StulleVerCheckLastAutomatic"),0); // StulleMule Version Check - Stulle
+	m_uStulleVerCheckLastAutomatic = ini.GetInt(L"StulleVerCheckLastAutomatic",0); // StulleMule Version Check - Stulle
 
 	// ==> Emulate others [WiZaRd/Spike/shadow2004] - Stulle
-	m_bEmuMLDonkey = ini.GetBool(_T("EmuMLDonkey"), false);
-	m_bEmueDonkey= ini.GetBool(_T("EmueDonkey"), false);
-	m_bEmueDonkeyHybrid= ini.GetBool(_T("EmueDonkeyHybrid"), false);
-	m_bEmuShareaza= ini.GetBool(_T("EmuShareaza"), false);
-	m_bEmuLphant= ini.GetBool(_T("EmuLphant"), false);
-	m_bLogEmulator= ini.GetBool(_T("LogEmulator"), false);
+	m_bEmuMLDonkey = ini.GetBool(L"EmuMLDonkey", false);
+	m_bEmueDonkey= ini.GetBool(L"EmueDonkey", false);
+	m_bEmueDonkeyHybrid= ini.GetBool(L"EmueDonkeyHybrid", false);
+	m_bEmuShareaza= ini.GetBool(L"EmuShareaza", false);
+	m_bEmuLphant= ini.GetBool(L"EmuLphant", false);
+	m_bLogEmulator= ini.GetBool(L"LogEmulator", false);
 	// <== Emulate others [WiZaRd/Spike/shadow2004] - Stulle
 
-	m_uReleaseBonus = (uint8)ini.GetInt(_T("ReleaseBonus"),0); // Release Bonus [sivka] - Stulle
-	m_bReleaseScoreAssurance = ini.GetBool(_T("ReleaseScoreAssurance"),false); // Release Score Assurance - Stulle
+	m_uReleaseBonus = (uint8)ini.GetInt(L"ReleaseBonus",0); // Release Bonus [sivka] - Stulle
+	m_bReleaseScoreAssurance = ini.GetBool(L"ReleaseScoreAssurance",false); // Release Score Assurance - Stulle
 
 	// ==> Connection Checker [eWombat/WiZaRd] - Stulle
-	m_bCheckCon = ini.GetBool(_T("CheckConnection"), false); 
-	m_bICMP = ini.GetBool(_T("UseICMP"), true);
-	m_uiPingTimeOut = (uint8) ini.GetInt(_T("PingTimeOut"), 5); 
-	m_uiPingTTL = (uint8) ini.GetInt(_T("PingTTL"), 10); 
+	m_bCheckCon = ini.GetBool(L"CheckConnection", false); 
+	m_bICMP = ini.GetBool(L"UseICMP", true);
+	m_uiPingTimeOut = (uint8) ini.GetInt(L"PingTimeOut", 5); 
+	m_uiPingTTL = (uint8) ini.GetInt(L"PingTTL", 10); 
 	// <== Connection Checker [eWombat/WiZaRd] - Stulle
 
 	// ==> Limit PS by amount of data uploaded - Stulle
-	m_uTemp = ini.GetInt(_T("PsAmountLimit"),0);
+	m_uTemp = ini.GetInt(L"PsAmountLimit",0);
 	PsAmountLimit = (m_uTemp >= 0 && m_uTemp <= MAX_PS_AMOUNT_LIMIT)?m_uTemp:0;
 	// <== Limit PS by amount of data uploaded - Stulle
 
-	m_bNoBadPushing = ini.GetBool(_T("NoBadPushing"),false); // Disable PS/PBF for leechers [Stulle/idea by sfrqlxert] - Stulle
+	m_bNoBadPushing = ini.GetBool(L"NoBadPushing",false); // Disable PS/PBF for leechers [Stulle/idea by sfrqlxert] - Stulle
 
 	// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 #ifdef GLOBAL_MOD_STATS
-	m_uMinModAmount = ini.GetInt(_T("MinModAmount"),2);
+	m_uMinModAmount = ini.GetInt(L"MinModAmount",2);
 #endif
 	// <== Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
-	m_iServiceStartupMode = ini.GetInt(_T("ServiceStartupMode"),1); // Stullemule leuk_he:run as ntservice v1.
+	m_iServiceStartupMode = ini.GetInt(L"ServiceStartupMode",1); // Stullemule leuk_he:run as ntservice v1.
 
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
-	SetDirectoryWatcher(ini.GetBool(_T("AutoReloadSharedFiles"), true));
-	SetSingleSharedDirWatcher(ini.GetBool(_T("SingleSharedDirWatcher"), true));
+	SetDirectoryWatcher(ini.GetBool(L"AutoReloadSharedFiles", true));
+	SetSingleSharedDirWatcher(ini.GetBool(L"SingleSharedDirWatcher", true));
+	m_uTemp = ini.GetInt(L"TimeBetweenReloads",120);
+	SetTimeBetweenReloads((m_uTemp >= 0 && m_uTemp <= 1800)?m_uTemp:120);
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
 	// ==> Control download priority [tommy_gun/iONiX] - Stulle
-	m_uTemp = ini.GetInt(_T("BownfishMode"), 0);
+	m_uTemp = ini.GetInt(L"BownfishMode", 0);
 	m_uiBowlfishMode = (uint8)((m_uTemp >= 0 && m_uTemp <= 2)?m_uTemp:0);
-	m_nBowlfishPrioPercentValue = (uint8)ini.GetInt(_T("AutoBowlfishPrioPercentValue"), 80);
-	m_nBowlfishPrioSizeValue = (uint16)ini.GetInt(_T("AutoBowlfishPrioSizeValue"), 100);
-	m_uTemp = ini.GetInt(_T("AutoBowlfishPrioNewValue"), 2);
+	m_nBowlfishPrioPercentValue = (uint8)ini.GetInt(L"AutoBowlfishPrioPercentValue", 80);
+	m_nBowlfishPrioSizeValue = (uint16)ini.GetInt(L"AutoBowlfishPrioSizeValue", 100);
+	m_uTemp = ini.GetInt(L"AutoBowlfishPrioNewValue", 2);
 	m_nBowlfishPrioNewValue = (uint8)((m_uTemp >= 0 && m_uTemp <= 2)?m_uTemp:2);
 	// <== Control download priority [tommy_gun/iONiX] - Stulle
 
 	// ==> Enforce Ratio - Stulle
-	m_bEnforceRatio = ini.GetBool(_T("EnforceRatio"),false);
-	temp = ini.GetInt(_T("RatioValue"),3);
+	m_bEnforceRatio = ini.GetBool(L"EnforceRatio",false);
+	temp = ini.GetInt(L"RatioValue",3);
 	m_uRatioValue = (uint8)((temp > 0 && temp <= 10)?temp:3);
 	// <== Enforce Ratio - Stulle
 
@@ -4567,7 +4571,7 @@ void CPreferences::LoadPreferences()
 #ifdef ATWL
 	m_uTransferWnd1 = ini.GetInt(L"TransferWnd1",1);
 	m_uTransferWnd2 = ini.GetInt(L"TransferWnd2",1);
-	m_bSplitWindow = ini.GetBool(_T("SplitWindow"), true);
+	m_bSplitWindow = ini.GetBool(L"SplitWindow", true);
 #endif
 	// <== Advanced Transfer Window Layout - Stulle
 
@@ -4579,7 +4583,7 @@ void CPreferences::LoadPreferences()
 
 	// ==> Design Settings [eWombat/Stulle] - Stulle
 #ifdef DESIGN_SETTINGS
-	m_bAutoTextColors = ini.GetBool(_T("AutoTextColors"),true);
+	m_bAutoTextColors = ini.GetBool(L"AutoTextColors",true);
 	LoadStylePrefs(ini);
 #endif
 	// <== Design Settings [eWombat/Stulle] - Stulle

@@ -233,6 +233,7 @@ CPPgStulle::CPPgStulle()
 	m_htiAutoSharedGroup = NULL;
 	m_htiAutoSharedUpdater = NULL;
 	m_htiSingleSharedDirUpdater = NULL;
+	m_htiTimeBetweenReloads = NULL;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 }
@@ -539,6 +540,8 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 		m_htiAutoSharedGroup = m_ctrlTreeOptions.InsertGroup(GetResString(IDS_AUTO_SHARED_UPDATER), iImgASFU, m_htiMisc);
 		m_htiAutoSharedUpdater = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_SUC_ENABLED), m_htiAutoSharedGroup, m_bAutoSharedUpdater);
 		m_htiSingleSharedDirUpdater = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_ASFU_SINGLE), m_htiAutoSharedGroup, m_bSingleSharedDirUpdater);
+		m_htiTimeBetweenReloads = m_ctrlTreeOptions.InsertItem(GetResString(IDS_ASFU_TIMEBETWEEN), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT, m_htiAutoSharedGroup);
+		m_ctrlTreeOptions.AddEditBox(m_htiTimeBetweenReloads, RUNTIME_CLASS(CNumTreeOptionsEdit));
 #endif
 		// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -733,7 +736,9 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiAutoSharedUpdater, m_bAutoSharedUpdater);
-	if(m_htiSingleSharedDirUpdater) DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiSingleSharedDirUpdater, m_bSingleSharedDirUpdater);
+	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiSingleSharedDirUpdater, m_bSingleSharedDirUpdater);
+	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiTimeBetweenReloads, m_iTimeBetweenReloads);
+	DDV_MinMaxInt(pDX, m_iTimeBetweenReloads, 0, 1800);
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -944,6 +949,7 @@ BOOL CPPgStulle::OnInitDialog()
 #ifdef ASFU
 	m_bAutoSharedUpdater = thePrefs.GetDirectoryWatcher();
 	m_bSingleSharedDirUpdater = thePrefs.GetSingleSharedDirWatcher();
+	m_iTimeBetweenReloads = thePrefs.GetTimeBetweenReloads();
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -1244,9 +1250,13 @@ BOOL CPPgStulle::OnApply()
 	// <== Adjustable NT Service Strings - Stulle
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
-	if(m_bAutoSharedUpdater != thePrefs.GetDirectoryWatcher() || m_bSingleSharedDirUpdater != thePrefs.GetSingleSharedDirWatcher()){
+	if(m_bAutoSharedUpdater != thePrefs.GetDirectoryWatcher() ||
+		m_bSingleSharedDirUpdater != thePrefs.GetSingleSharedDirWatcher() ||
+		m_iTimeBetweenReloads != thePrefs.GetTimeBetweenReloads())
+	{
 		thePrefs.SetDirectoryWatcher(m_bAutoSharedUpdater);
 		thePrefs.SetSingleSharedDirWatcher(m_bSingleSharedDirUpdater);
+		thePrefs.SetTimeBetweenReloads((uint32)m_iTimeBetweenReloads);
 		theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: OnApply"));
 		theApp.ResetDirectoryWatcher();
 	}
@@ -1410,6 +1420,7 @@ void CPPgStulle::Localize(void)
 		if (m_htiEmuLphant) m_ctrlTreeOptions.SetItemText(m_htiEmuLphant, GetResString(IDS_EMULATE_PHANT));
 		if (m_htiLogEmulator) m_ctrlTreeOptions.SetItemText(m_htiLogEmulator, GetResString(IDS_EMULATE_LOG));
 		// <== Emulate others [WiZaRd/Spike/shadow2004] - Stulle
+		if (m_htiReleaseBonusDaysEdit) m_ctrlTreeOptions.SetEditLabel(m_htiReleaseBonusDaysEdit, GetResString(IDS_RELEASE_BONUS_EDIT)); // Release Bonus [sivka] - Stulle
 		if (m_htiReleaseScoreAssurance) m_ctrlTreeOptions.SetItemText(m_htiReleaseScoreAssurance, GetResString(IDS_RELEASE_SCORE_ASSURANCE)); // Release Score Assurance - Stulle
 		// ==> Adjustable NT Service Strings - Stulle
 		if (m_htiServiceName) m_ctrlTreeOptions.SetEditLabel(m_htiServiceName, GetResString(IDS_SERVICE_NAME));
@@ -1420,6 +1431,7 @@ void CPPgStulle::Localize(void)
 #ifdef ASFU
 		if (m_htiAutoSharedUpdater) m_ctrlTreeOptions.SetItemText(m_htiAutoSharedUpdater, GetResString(IDS_SUC_ENABLED));
 		if (m_htiSingleSharedDirUpdater) m_ctrlTreeOptions.SetItemText(m_htiSingleSharedDirUpdater,GetResString(IDS_ASFU_SINGLE));
+		if (m_htiTimeBetweenReloads) m_ctrlTreeOptions.SetEditLabel(m_htiTimeBetweenReloads, GetResString(IDS_ASFU_TIMEBETWEEN));
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 	}
@@ -1620,6 +1632,7 @@ void CPPgStulle::OnDestroy()
 	m_htiAutoSharedGroup = NULL;
 	m_htiAutoSharedUpdater = NULL;
 	m_htiSingleSharedDirUpdater = NULL;
+	m_htiTimeBetweenReloads = NULL;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 

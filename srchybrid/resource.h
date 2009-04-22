@@ -4180,6 +4180,7 @@
 #define IDS_ASFU_RELOAD                 60753
 #define IDS_ASFU_RELOADING              60754
 #define IDS_ASFU_SINGLE                 60755
+#define IDS_ASFU_TIMEBETWEEN            60756
 // <== Automatic shared files updater [MoNKi] - Stulle
 // ==> Control download priority [tommy_gun/iONiX] - Stulle
 #define IDS_AUTO_DOWN_GROUP             60760

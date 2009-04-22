@@ -171,6 +171,7 @@ protected:
 #ifdef ASFU
 	bool m_bAutoSharedUpdater;
 	bool m_bSingleSharedDirUpdater;
+	int m_iTimeBetweenReloads;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -367,6 +368,7 @@ protected:
 	HTREEITEM m_htiAutoSharedGroup;
 	HTREEITEM m_htiAutoSharedUpdater;
 	HTREEITEM m_htiSingleSharedDirUpdater;
+	HTREEITEM m_htiTimeBetweenReloads;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
