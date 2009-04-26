@@ -1,4 +1,6 @@
-eMule Copyright (C)2002-2008 Merkur (devteam at emule-project dot net)
+eMule Copyright (C)2002-2005 Merkur (merkur-@users.sourceforge.net)
+eMule morph Copyright (C)2002-2008 morph team
+Note: --- Additions made for emule morph
 
 
 This program is free software; you can redistribute it and/or modify it under 
@@ -15,7 +17,6 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass 
 Ave, Cambridge, MA 02139, USA.
 
-
 -------------------------------------------------------------------------------
 
 
@@ -24,19 +25,21 @@ Welcome to eMule, a filesharing client based on the eDonkey2000(C) network.
 
 Visit us at
  http://www.emule-project.net
+ http://emulemorph.sourceforge.net
 and
  http://sourceforge.net/projects/emule
+ http://sourceforge.net/projects/emulemorph
 or
  the IRC chatroom, #emule on irc.emule-project.net
 
 
+StulleMule is a mod based on the official client and the MorphXT Mod.
+It has all the features of offcial but we added some extra's.
 
-Please remember that this is an early version, not all features are 
-implemented yet, and not everything might work as expected.
 
 Visit our forum for bugreports, feature requests, development or general 
 dicussion.
-
+http://stulle.emule-web.de/ (Support page)
 
 If you have questions or serious problems, please read the FAQ first :) It can 
 be found at www.emule-project.net. A small collection of questions is also 
@@ -73,12 +76,17 @@ INSTALLATION:
 
 -Updating from an earlier version of eMule: The best way to do this is simply 
  to download the .zip file (not the installer), and unzip the new emule.exe to 
- your old emule directory, overwriting the previous one.
+ your old emule directory, overwriting the previous one. THis works for official emule and for the morph mod. 
 
 
 
 CONFIGURATION:
 --------------
+-RUn the emule.exe 
+
+-If this is your first run RUn the wizaard, if it is a upgrade you might wnat to cancel to keep your current settings.
+
+or...
 
 -Go to the "Preferences" tab
 
@@ -125,7 +133,9 @@ yet. Sorry :) Maybe later..
 
 -"Maximum Sources per File": decide for yourself how many you want :) when you 
  set this too high, your computer might slow down drastically or even crash. 
- 500-1000 are good values for people with DSL/cable connection.
+ 500-1000 are good values for people with DSL/cable connection. In morph you can 
+ set a   global limit for all files. A value or 4000 is working for most dsl users. 
+ you need to set this in the morph option
 
 -Choose the directories you want to share with other users. DO NOT SHARE YOUR 
  COMPLETE HARDDISK! Put the stuff you want to share in a seperate Folder. If 
@@ -147,7 +157,6 @@ FAQ: (for more, see http://www.emule-project.net/faq/ )
  from the .zip download.
 
 
-
 --"Why is eMule so slow? My brother/friend/whatever is downloading at 100K constantly"
 
  When you did setup eMule properly, it's all about the availibility of the 
@@ -158,11 +167,9 @@ FAQ: (for more, see http://www.emule-project.net/faq/ )
 --"Where can I get a new serverlist?"
 
  There are several lists availible. Some that I know of are:
- -http://www.thedonkeynetwork.com
- -http://ed2k.2x4u.de
- Note that those sites are not related to the eMule project, we are not 
- responsible for their content.
-
+http://ocbmaurice.dyns.net/pl/slist.pl?download
+http://ed2kmet.x24hr.com/pl/slist.pl?download/server-good.met
+http://corpo.free.fr/server.met Note that those sites are not related to the eMule project, we are not responsible for their content.
 
 
 --"What is the addresses.dat file for?"
@@ -194,7 +201,6 @@ FAQ: (for more, see http://www.emule-project.net/faq/ )
  low.
  
 
-
 --"What does high and low ID mean anyway?"
 
  When your ID is high (green arrow), everything is fine :) When it's low 
@@ -218,14 +224,14 @@ FAQ: (for more, see http://www.emule-project.net/faq/ )
 
 --"I'd like to search for specific file types, what filter stands for which files?"
 
- File Type        Extensions found
+ File Type	Extensions found
  --------------------------------------------------------------------------------
- Audio                .mp3 .mp2 .mpc .wav .ogg .aac .mp4 .ape .au .wma .flac
- Video                .avi .mpg .mpeg .ram .rm .vob .divx .mov .ogm .vivo
- Program        .exe .com
- Archive        .zip .rar .ace
- CD-Image        .bin .cue .iso .nrg .ccd .sub .img .bwt .bwi .bwa .bws .mdf .mds
- Picture        .jpg .jpeg .bmp .gif .tif .png
+ Audio		.mp3 .mp2 .mpc .wav .ogg .aac .mp4 .ape .au .wma .flac
+ Video		.avi .mpg .mpeg .ram .rm .vob .divx .mov .ogm .vivo
+ Program	.exe .com
+ Archive	.zip .rar .ace
+ CD-Image	.bin .cue .iso .nrg .ccd .sub .img .bwt .bwi .bwa .bws .mdf .mds
+ Picture	.jpg .jpeg .bmp .gif .tif .png
 
 
 
@@ -252,8 +258,6 @@ FAQ: (for more, see http://www.emule-project.net/faq/ )
  Learning how the progress bar works will greatly help your understanding of 
  the eDonkey2000 network.
 
-
-
 --"What do the "QR: xxxx" numbers mean that I see when I look at my sources?"
 
  QR stands for "Queue Rank" and it is your current position in this source's 
@@ -265,59 +269,95 @@ FAQ: (for more, see http://www.emule-project.net/faq/ )
 
 
 
-
 COMPILING THE SOURCECODE:
 -------------------------
 
-The sourcecode of eMule is availible as seperate download at:
- http://sourceforge.net/projects/emule
-You need Microsoft(C) Visual Studio .NET 2003 Service Pack 1 to compile eMule.
+The sourcecode of eMule morph is availible as seperate download at:
+ http://sourceforge.net/projects/emulemorph
+ 
+You need Microsoft(C) Visual Studio .NET 2003 + sp1 of this compiler to 
+compile eMule morph.
+vs2002 might work, 
+vs2005 sp1 is experimentally supported by opening emule80.vcproj.
+vs2008 is highly experimentylly supported by upgrading emule80.vcproj. But keep reading. 
+You need to have MFC/ATL installed! Express version will not work for this reason. 
 
--Unzip the sources (with subdirs) into a new folder
+Morph provides external libraries as a special download (scr and libs) 
+Note that for official you need to download and configure them seperatly
+You need the following libs:
 
-Since eMule v0.29b the separate download and compilation of additional 
-libraries is required. These libs are 3rd party and therefore - as usual - not 
-within our distribution. You need the following libs:
+----- Libs (active):
+040721 crypto522 cryptopp.zip    5.2.2 http://www.eskimo.com/~weidai/cryptlib.html
+030301 id3lib  id3lib-3.8.3.zip   3.8.3 http://sourceforge.net/projects/id3lib
+060423 png  lpng1210.zip    1.2.10 http://www.libpng.org/pub/png/libpng.html
+021018 ResizableLib ResizableLib_1_3.zip   1.3 http://sourceforge.net/projects/resizablelib
+050718 zlib  zlib123.zip    1.2.3 http://www.gzip.org/zlib
+041017 CxImage  cximage599c_lite.zip   5.99c http://sourceforge.net/projects/cximage
+050604 Pthreads pthreads-w32-2-7-0-release.tar.gz 2.7.0 http://sources.redhat.com/pthreads-win32/index.html
+       upnplib  libupnp 1.4.1 (pre) http://www.libupnp.org/
 
-*) Crypto++ v5.1
-        http://www.eskimo.com/~weidai/cryptlib.html
+All the above libs are ready configured in the _src_and_lib download of morph. Just extract them and open the emule.sln file
 
-*) zlib v1.2.3
-        http://www.gzip.org/zlib/
 
-*) id3lib v3.8.3
-        http://sourceforge.net/projects/id3lib/
+----- Libs (old):
+050803 CrashRpt CrashRpt.v3.0.2.5.zip   3.0.2.5 http://www3.sympatico.ca/grant.mcdorman
+060407 ZipArchive ziparchive.v2.4.10.zip   2.4.10 http://www.artpol-software.com/index_zip.html
+( 060305 upnplib  libupnp-1.3.1.tar.gz   1.3.1 http://upnp.sourceforge.net)
 
-*) pnglib
-        http://www.libpng.org/pub/png/libpng.html
 
-*) ResizableLib 1.3
-        http://sourceforge.net/projects/resizablelib/
+(for MobileMule only!)
+DirectX SDK
+Microsoft speech api (5.1?)(or just remove "HAVE_SAPI_H" from the preprocessor definitions)
+
+read 
+http://forum.emule-project.net/index.php?showtopic=87109
+for more details
+
+
+[VS2008 only]
+vs2008 requires a seperate download from micosoft for the atlrx.h file
+http://www.codeplex.com/Project/Download/FileDownload.aspx?ProjectName=AtlServer&DownloadId=11220
+
+unzip the file in the (new) atlserv directory.
+
+emulesrc --> atlserv --> include
+         |           +-> source
+         +------------->cryptopp
+         +------------->srchybrid
+
+and add  the includepath in emule80 -> c++ -> general -> addition include directories
+
+NOTE THAT VS2008 is currently only tested to compile. so this is bleeding edge
+ Note that binaries from vs2008 have winver set to 501, requireing windows XP. 
+ (a requirement not for previous compilers)
+ 
+find a topic in the morph forum (http://forum.emule-project.net/index.php?showforum=28) if you have 
+any issues with vs2008 
+[/vs2008 only]     
+         
+
+
 
 Download and save their sourcecode one level above the eMule source code 
 folder and compile them (check the eMule-project file to learn about the 
 required foldernames, or adapt them to your needs!).
 
-Additionally you need to install (and integrate into Visual Studio .NET 2003)
-the following Microsoft SDKs:
 
-*) Microsoft DirectX 9 SDK
+-Open the emule.sln Visual Studio Solution
 
-*) Microsoft Speech SDK
-
-*) Microsoft Windows Media Format SDK 9
-        http://download.microsoft.com/download/3/0/4/30451651-9e47-4313-89a3-5bb1db003c26/WMFormatSDK.exe
-
-
+-Select "release" or "debug" build in the solution configuration manager
+-Build the solution. That's it :)
+-If the compile was successful, the emule.exe is either in the \Debug or 
+ \Release directory
+-When you build a debug dump version, you need the latest dbghelp.dll from
+ Microsoft to run the app
+ 
 -IMPORTANT:
 
  If you make modifications to eMule and you distribute the compiled version of 
  your build, be sure to obey the GPL license. You have to include the 
- sourcecode, or make it availible for download together with the binary 
- version.
-
-
-
+ sourcecode, or make it available for download together with the binary 
+ version. READ THE GPL!
 
 MISC. STUFF:
 ------------
@@ -329,8 +369,6 @@ The eMule staff would like to thank the following (no particular order)
 -OCBmaurice & Stillman for the serverlists and more (www.thedonkeynetwork.com)
 
 -many people who sent us code parts, useful bug reports and useful suggestions :)
-
-
 
 
 STAFF:
@@ -354,17 +392,38 @@ program?
 -Mr. Ozon, Sony, Myxin - Tester (retired)
 
 
+--- MORPHxt team:
+stulle 
+leuk_he 
+andcycle 
+sirob (Retired because of french davsi law)
+Morpheus (founder, retired)
+And all the other team members listed at:
+http://sourceforge.net/project/memberlist.php?group_id=72158
+     
+morph supporters:
+-andu
+-fafner
+-rapid mule
+-morph translators
+-and everyone i forgot to thank.
+
+--- StulleMule team:
+Stulle
+all of the testers (see http://stulle.emule-web.de/)
 
 LEGAL:
 ------
+eMulemorph  Copyright (C)2002-2007 Morph team 
 
-eMule Copyright (C)2002-2008 Merkur (devteam at emule-project dot net)
+eMule StulleMule Copyright (C)2002-2009 Stulle
+
+eMule Copyright (C)2002-2005 Merkur (merkur-@users.sourceforge.net)
 
 eDonkey2000 (C)Jed McCaleb, MetaMachine (www.eDonkey2000.com)
 
 Windows(TM), Windows 95(TM), Windows 98(TM), Windows ME(TM), Windows NT(TM), 
 Windows 2000(TM) and Windows XP(TM) are Copyright (C)Microsoft Corporation. 
 All rights reserved.
-
 
 Goodbye and happy sharing ;)
