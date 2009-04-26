@@ -927,36 +927,36 @@ uint8 CUpDownClient::TestLeecher(){
 				_tcsstr(m_pszUsername,_T("a1[VeryCD]xthame")) || //XL
 //zz_fly End
 //from Riso64bit
-				_tcsstr(username, _T("FincanMod")) || //fincan
-				_tcsstr(username, _T("Finc@nMod")) ||
-				StrStrI(username, _T("www.titanmule.to")) ||
-				StrStrI(username, _T("Www.NFOil.com")) ||
-				StrStrI(username, _T("TLN eMule")) ||
-				StrStrI(username, _T("LHeMule")) ||
-				_tcsstr(username, _T("L!()Network")) ||
-				_tcsstr(username, _T("Li()Network")) ||
-				StrStrI(username, _T("VMULE 2007")) ||
-				StrStrI(username, _T("TLNGuest")) ||
-				StrStrI(username, _T("Div eMule 2007")) ||
-				StrStrI(username, _T("eMulePro.de.vu")) ||
-				StrStrI(username, _T("emuIe-co.net")) ||
-				StrStrI(username, _T("AE CoM UseR")) ||
-				StrStrI(username, _T("BTFaw.Com")) ||
-				StrStrI(username, _T("warezfaw.net")) ||
-				StrStrI(username, _T("lh.2y.net")) ||
-				StrStrI(username, _T("[Pwr Mule]Usuario")) ||
-				StrStrI(username, _T("Www.D-iL.Net")) ||
-				_tcsstr(username, _T("http://emule.net")) ||
-				StrStrI(username, _T("www.aideadsl.com")) ||
-				StrStrI(username, _T("tangot.com")) ||
-				StrStrI(username, _T("r3wlx.com")) ||
-				StrStrI(username, _T("http://yo.com")) ||
-				StrStrI(username, _T("Angel eMule")) ||
-				StrStrI(username, _T("AngelMule")) ||
-				_tcsstr(username, _T("Ultimativ"))||
-				StrStrI(username, _T("www.eChanblardNext.org")) ||		
-				StrStrI(username, _T("www.extremule.com")) || //phishing site
-				StrStrI(username, _T("www.emuleproject.com")) ||
+				_tcsstr(m_pszUsername, _T("FincanMod")) || //fincan
+				_tcsstr(m_pszUsername, _T("Finc@nMod")) ||
+				StrStrI(m_pszUsername, _T("www.titanmule.to")) ||
+				StrStrI(m_pszUsername, _T("Www.NFOil.com")) ||
+				StrStrI(m_pszUsername, _T("TLN eMule")) ||
+				StrStrI(m_pszUsername, _T("LHeMule")) ||
+				_tcsstr(m_pszUsername, _T("L!()Network")) ||
+				_tcsstr(m_pszUsername, _T("Li()Network")) ||
+				StrStrI(m_pszUsername, _T("VMULE 2007")) ||
+				StrStrI(m_pszUsername, _T("TLNGuest")) ||
+				StrStrI(m_pszUsername, _T("Div eMule 2007")) ||
+				StrStrI(m_pszUsername, _T("eMulePro.de.vu")) ||
+				StrStrI(m_pszUsername, _T("emuIe-co.net")) ||
+				StrStrI(m_pszUsername, _T("AE CoM UseR")) ||
+				StrStrI(m_pszUsername, _T("BTFaw.Com")) ||
+				StrStrI(m_pszUsername, _T("warezfaw.net")) ||
+				StrStrI(m_pszUsername, _T("lh.2y.net")) ||
+				StrStrI(m_pszUsername, _T("[Pwr Mule]Usuario")) ||
+				StrStrI(m_pszUsername, _T("Www.D-iL.Net")) ||
+				_tcsstr(m_pszUsername, _T("http://emule.net")) ||
+				StrStrI(m_pszUsername, _T("www.aideadsl.com")) ||
+				StrStrI(m_pszUsername, _T("tangot.com")) ||
+				StrStrI(m_pszUsername, _T("r3wlx.com")) ||
+				StrStrI(m_pszUsername, _T("http://yo.com")) ||
+				StrStrI(m_pszUsername, _T("Angel eMule")) ||
+				StrStrI(m_pszUsername, _T("AngelMule")) ||
+				_tcsstr(m_pszUsername, _T("Ultimativ"))||
+				StrStrI(m_pszUsername, _T("www.eChanblardNext.org")) ||		
+				StrStrI(m_pszUsername, _T("www.extremule.com")) || //phishing site
+				StrStrI(m_pszUsername, _T("www.emuleproject.com")) ||
 //End
 				// <== added - Stulle
 				StrStrI(m_pszUsername,_T("emule")) && StrStrI(m_pszUsername,_T("booster"))
