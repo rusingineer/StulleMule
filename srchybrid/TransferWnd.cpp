@@ -1728,7 +1728,6 @@ BOOL CTransferWnd::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 			theApp.emuledlg->sharedfileswnd->Reload();
 			// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
-			theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: CTransferWnd -> MP_CAT_MERGE"));
 			if(thePrefs.GetDirectoryWatcher())
 				theApp.ResetDirectoryWatcher();
 #endif
@@ -1760,7 +1759,6 @@ BOOL CTransferWnd::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 				theApp.emuledlg->sharedfileswnd->Reload();
 			// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
-				theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: CTransferWnd -> MP_CAT_REMOVE"));
 				if(thePrefs.GetDirectoryWatcher())
 					theApp.ResetDirectoryWatcher();
 			}

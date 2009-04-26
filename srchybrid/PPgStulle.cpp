@@ -1257,7 +1257,6 @@ BOOL CPPgStulle::OnApply()
 		thePrefs.SetDirectoryWatcher(m_bAutoSharedUpdater);
 		thePrefs.SetSingleSharedDirWatcher(m_bSingleSharedDirUpdater);
 		thePrefs.SetTimeBetweenReloads((uint32)m_iTimeBetweenReloads);
-		theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: OnApply"));
 		theApp.ResetDirectoryWatcher();
 	}
 #endif

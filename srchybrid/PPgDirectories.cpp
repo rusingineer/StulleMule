@@ -84,8 +84,8 @@ BOOL CPPgDirectories::OnInitDialog()
 /* old version: on column
 	m_ctlUncPaths.InsertColumn(0, GetResString(IDS_UNCFOLDERS), LVCFMT_LEFT, 280); 
 */
-	m_ctlUncPaths.InsertColumn(0, GetResString(IDS_UNCLIST_INACTIVE  ), LVCFMT_LEFT, 270);  // sharesubdir ==> this can be better
-	m_ctlUncPaths.InsertColumn(1,GetResString(IDS_SUBDIRS), LVCFMT_LEFT); // sharesubdir + column for inactive shares
+	m_ctlUncPaths.InsertColumn(0, GetResString(IDS_UNCLIST_INACTIVE  ), LVCFMT_LEFT, 250);  // sharesubdir ==> this can be better
+	m_ctlUncPaths.InsertColumn(1,GetResString(IDS_SUBDIRS), LVCFMT_LEFT,30); // sharesubdir + column for inactive shares
 	m_ctlUncPaths.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 
 	GetDlgItem(IDC_SELTEMPDIRADD)->ShowWindow(thePrefs.IsExtControlsEnabled()?SW_SHOW:SW_HIDE);
@@ -359,7 +359,6 @@ BOOL CPPgDirectories::OnApply()
 	theApp.emuledlg->sharedfileswnd->Reload();
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
-	theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: OnApply"));
 	if(thePrefs.GetDirectoryWatcher())
 		theApp.ResetDirectoryWatcher();
 #endif

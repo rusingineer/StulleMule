@@ -803,13 +803,12 @@ bool CSharedFileList::AddSingleSharedFile(const CString& rstrFilePath, bool bNoU
 #ifdef ASFU
 		if(!bNoUpdate)
 		{
-			if(iDoAsfuReset == -1)
+			if(iDoAsfuReset == -1) // checked checkbox to share single file
 			{
-				theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: AddSingleSharedFile"));
 				if(thePrefs.GetDirectoryWatcher() && thePrefs.GetSingleSharedDirWatcher())
 					theApp.ResetDirectoryWatcher();
 			}
-			else if(iDoAsfuReset == 0)
+			else if(iDoAsfuReset == 0) // adding single files via drop
 				iDoAsfuReset = 1; // we would have resetted but don't do so just now
 		}
 #endif
@@ -1030,7 +1029,6 @@ void CSharedFileList::SetOutputCtrl(CSharedFilesCtrl* in_ctrl)
 	Reload();		// MORPH SLUGFILLER: SafeHash - load shared files after everything
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
-	theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: SetOutputCtrl"));
 	if(thePrefs.GetDirectoryWatcher() && thePrefs.GetSingleSharedDirWatcher())
 		theApp.ResetDirectoryWatcher();
 #endif
@@ -1892,7 +1890,6 @@ bool CSharedFileList::ExcludeFile(CString strFilePath)
 #ifdef ASFU
 	else
 	{
-		theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: ExcludeFile"));
 		if(thePrefs.GetDirectoryWatcher() && thePrefs.GetSingleSharedDirWatcher())
 			theApp.ResetDirectoryWatcher();
 	}

@@ -3720,7 +3720,6 @@ BOOL CSharedFilesCtrl::CShareDropTarget::OnDrop(CWnd* /*pWnd*/, COleDataObject* 
 #ifdef ASFU
 				if(iDoAsfuReset == 1 || !liToAddDirs.IsEmpty()) // a dropped file caused reset or we added a dir
 				{
-					theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: OnDrop"));
 					if(thePrefs.GetDirectoryWatcher() && (iDoAsfuReset == 0 || thePrefs.GetSingleSharedDirWatcher()))
 						theApp.ResetDirectoryWatcher();
 				}

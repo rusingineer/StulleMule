@@ -2,7 +2,7 @@ CHANGELOG FOR EMULE StulleMule MOD
 
 eMule v0.49c StulleMule v6.2:
 ------------------------
-- xx.xx.2009 -
+- 26.04.2009 -
 -------------------------------------------------------------------------------
 based on eMule 0.49c MorphXT 11.3 compiled with vs2005 SP1
 
@@ -10,6 +10,8 @@ Added: (Design Settings) Shareable file style for SharedFilesCtrl [Stulle]
 Added: Make NT Service strings changeable [Stulle]
 Added: Option to use ASFU for folders including single shared files [Stulle]
 Added: Option for time between automatic reloads [Stulle]
+Added: First awesome StulleMule Installer [leuk_he/MorphXT]
+Added: Turkish translation (partially) [omeringen]
 
 Changed: Only check "Control download priority" code every tenth cycle [Stulle]
 Changed: Updated Design Settings for new code (also improves implementation [Stulle]
@@ -21,13 +23,18 @@ Changed: Write FileSettings.ini sequentially (faster) [Stulle]
 Changed: Always wait 5 sec after sending save req before saving file settings [Stulle]
 Changed: Only reset ASFU when needed [Stulle]
 Changed: ASFU uses special bWatchSubtree flag for share with subdir [Stulle]
-Changed: ASFU Only check top most shared with subdir folder On Device Changed [Stulle]
-Changed: ASFU Only monitors dirs that exist on reset/init [Stulle]
+Changed: ASFU only checks top most shared with subdir folder On Device Changed [Stulle]
+Changed: ASFU only monitors dirs that exist on reset/init [Stulle]
+
+Updated: Anti-Leecher-Lists (DLP v37) [zz_fly/more]
+Updated: Following language files: French [Nicholas_FR]; Spanish [guijarrelson];
+	Italian [v-x-vendetta]; German [Stulle]; Chinese (P.R.C.) [zz_fly]
 
 Fixed: (Design Settings) Only display if we got score remotely for DL clients [Stulle]
 Fixed: Save known and FileSettings threads were not terminated properly [Stulle]
 Fixed: Default color for source graph [Stulle]
 Fixed: Changing the small files push size reset changes in the Tree options [Stulle]
+Fixed: ASFU endlessly reloaded when monitored directory disappeared [Stulle]
 
 
 eMule v0.49b StulleMule v6.1:

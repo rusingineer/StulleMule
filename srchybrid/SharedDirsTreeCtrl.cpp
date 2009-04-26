@@ -1444,7 +1444,6 @@ void CSharedDirsTreeCtrl::EditSharedDirectories(const CDirectoryItem* pDir, bool
 
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
-	theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: EditSharedDirectories"));
 	if(thePrefs.GetDirectoryWatcher())
 		theApp.ResetDirectoryWatcher();
 #endif

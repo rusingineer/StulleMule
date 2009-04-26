@@ -886,7 +886,6 @@ BOOL CemuleApp::InitInstance()
 #ifdef ASFU
 	m_directoryWatcherCloseEvent = NULL;
 	m_directoryWatcherReloadEvent = NULL;
-	theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: InitInstance"));
 	if(thePrefs.GetDirectoryWatcher() && !thePrefs.GetSingleSharedDirWatcher())
 		theApp.ResetDirectoryWatcher();
 #endif
@@ -2887,6 +2886,12 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 	// We use this event when FindFirstChangeNotification fails
 	CEvent nullEvent(FALSE,TRUE); 
 
+	// We use a second list to store inactive shares. Note, dirs will only be added to this list
+	// when they got inactive during runtime so we will not add vast numbers of always inactive
+	// shares. This makes a reset required when such a always inactive dir comes available out
+	// of a sudden. Anyway, there should not be too many of those to boot with.
+	CStringList inactiveDirList;
+
 	// Get all shared directories
 	CStringList dirList;
 	CString curDir;
@@ -2928,7 +2933,6 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 	}
 
 	// Dirs of single shared files
-	theApp.QueueDebugLogLine(false,_T("ASFU: Starting to add single shared files to list"));
 	if(thePrefs.GetSingleSharedDirWatcher()/* && theApp.sharedfiles->ProbablyHaveSingleSharedFiles()*/)
 	{
 		for (POSITION pos = theApp.sharedfiles->m_liSingleSharedFiles.GetHeadPosition(); pos != NULL; theApp.sharedfiles->m_liSingleSharedFiles.GetNext(pos))
@@ -2946,7 +2950,6 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 			}
 		}
 	}
-	theApp.QueueDebugLogLine(false,_T("ASFU: Finished to add single shared files to list"));
 
 	// The other shared with subdirs
 	int subdirStartPosition = -1;
@@ -3018,23 +3021,17 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 		while(pos){
 			curDir = dirList.GetNext(pos); 
 			if(subdirStartPosition > 0 && curPos-2 >= subdirStartPosition && curPos-2 < parentsStartPosition)
-			{
-				AddDebugLogLine(false,_T("ASFU: Adding with subdir %s"),curDir);
 				dwChangeHandles[curPos] = FindFirstChangeNotification(
 					curDir, TRUE,
 					FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME |
 					FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE |
 					FILE_NOTIFY_CHANGE_ATTRIBUTES);
-			}
 			else
-			{
-				AddDebugLogLine(false,_T("ASFU: Adding %s"),curDir);
 				dwChangeHandles[curPos] = FindFirstChangeNotification(
 					curDir, FALSE,
 					FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME |
 					FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE |
 					FILE_NOTIFY_CHANGE_ATTRIBUTES);
-			}
 			
 			if(dwChangeHandles[curPos] == INVALID_HANDLE_VALUE){
 				dwChangeHandles[curPos] = nullEvent.m_hObject;
@@ -3049,7 +3046,24 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 		while(m_directoryWatcherCloseEvent /*true*/){ 
 			dwWaitStatus = WaitForMultipleObjects(nChangeHandles, dwChangeHandles, 
 				FALSE, INFINITE); 
-	 
+
+			// figure out what got signaled
+			if(dwWaitStatus - WAIT_OBJECT_0 >= 2)
+			{
+				// get the dir from the list
+				pos = dirList.GetHeadPosition();
+				for(DWORD dw = 2; dw <= dwWaitStatus - WAIT_OBJECT_0; dw++)
+					curDir = dirList.GetNext(pos);
+
+				if(_taccess(curDir, 0) != 0){ // this one disappeared just now... w000t
+					if( inactiveDirList.Find( curDir ) == NULL ) // well, it should not be in the list but to be sure
+						inactiveDirList.AddTail( curDir ); // add to list of inactive shares
+				}
+				//theApp.QueueDebugLogLine(false,_T("ASFU: Handle number %i --> %s"), dwWaitStatus - WAIT_OBJECT_0, curDir);
+			}
+			//else
+				//theApp.QueueDebugLogLine(false,_T("ASFU: Handle number %i"), dwWaitStatus-WAIT_OBJECT_0);
+
 			// Maybe more than one object has been released,
 			// check if the Close Event has been signaled
 			// because it has precedence.
@@ -3070,14 +3084,29 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 					// it only if needed.
 					reloadShared = false;
 
+					// Note, this was changed in v3.4 and will run through all our monitored shares
+					// so we can maintain a complete list of inactive shares. This list will then allow
+					// us to reload share when a shared folder goes missing and when it pops up again.
 					pos = dirList.GetHeadPosition();
 					while(pos && pos != parentListPos){
 						curDir = dirList.GetNext(pos); 
-						if (curDir.Right(1) != _T(":")){
-							if(CFileFind().FindFile(curDir) == FALSE){
-								// Reload shared files
-								reloadShared = true;
-								pos = NULL; // Force end of loop
+						if (curDir.Right(1) != _T(":")){ // not a root dir
+							if(_taccess(curDir, 0) != 0){ // does not exist
+								if( inactiveDirList.Find( curDir ) == NULL ) { // and not yet in list
+									inactiveDirList.AddTail( curDir ); // add to list of inactive shares
+
+									// Reload shared files
+									reloadShared = true;
+								}
+							}
+							else{ // does exist
+								POSITION inactivePos = inactiveDirList.Find( curDir );
+								if( inactivePos != NULL ) { // and in list of inactive shares
+									inactiveDirList.RemoveAt( inactivePos ); // remove from list
+
+									// Reload shared files
+									reloadShared = true;
+								}
 							}
 						}
 					}
@@ -3177,7 +3206,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 									FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME |
 									FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE |
 									FILE_NOTIFY_CHANGE_ATTRIBUTES);
-							
+
 							if(dwChangeHandles[curPos] == INVALID_HANDLE_VALUE){
 								dwChangeHandles[curPos] = nullEvent.m_hObject;
 							}

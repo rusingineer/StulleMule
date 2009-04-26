@@ -880,7 +880,6 @@ UINT AFX_CDECL CSaveKnownThread::RunProc(LPVOID pParam)
 
 UINT CSaveKnownThread::RunInternal()
 {
-	AddDebugLogLine(false,_T("CSaveKnownThread started"));
 	while(bDoRun) 
 	{
 		theApp.knownfiles->Save();
@@ -890,7 +889,6 @@ UINT CSaveKnownThread::RunInternal()
 	}
 
 	threadEndedEvent->SetEvent();
-	AddDebugLogLine(false,_T("CSaveKnownThread ended"));
 
 	return 0;
 }

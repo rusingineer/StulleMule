@@ -608,8 +608,6 @@ bool CClientReqSocket::ProcessPacket(const BYTE* packet, uint32 size, UINT opcod
 					client->ProcessFileStatus(false, &data, file);
 
                     //MORPH START - ZZUL_20070513-2310
-					//stullemon
-					theApp.QueueDebugLogLine(false,_T("OP_FILESTATUS: client->GetDownloadState() == DS_DOWNLOADING"));
 			if(client->GetDownloadState() == DS_DOWNLOADING) {
                         AddDebugLogLine(false, _T("Checking if we should send block request, since OP_FILESTATUS was received when client->GetDownloadState() == DS_DOWNLOADING() %s"), client->DbgGetClientInfo());
                         client->SendBlockRequests();
@@ -1569,8 +1567,6 @@ bool CClientReqSocket::ProcessExtPacket(const BYTE* packet, uint32 size, UINT op
 								client->ProcessFileStatus(false, &data_in, reqfile);
 
                                 //MORPH START - ZZUL_20070513-2310
-								//stullemon
-								theApp.QueueDebugLogLine(false,_T("OP_MULTIPACKETANSWER -> OP_FILESTATUS: client->GetDownloadState() == DS_DOWNLOADING"));
 				if(client->GetDownloadState() == DS_DOWNLOADING) {
                                     AddDebugLogLine(false, _T("Checking if we should send block request, since OP_FILESTATUS in OP_MULTIPACKETANSWER was received when client->GetDownloadState() == DS_DOWNLOADING() %s"), client->DbgGetClientInfo());
                                     client->SendBlockRequests();
