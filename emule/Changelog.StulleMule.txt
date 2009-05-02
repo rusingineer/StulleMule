@@ -1,5 +1,14 @@
 CHANGELOG FOR EMULE StulleMule MOD
 
+eMule v0.49c StulleMule v6.3:
+------------------------
+- XX.XX.2009 -
+-------------------------------------------------------------------------------
+based on eMule 0.49c MorphXT 11.3 compiled with vs2005 SP1
+
+Fixed: Global Mod statistics were not displayed [Stulle]
+
+
 eMule v0.49c StulleMule v6.2:
 ------------------------
 - 26.04.2009 -
