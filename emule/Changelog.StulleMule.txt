@@ -7,6 +7,8 @@ eMule v0.49c StulleMule v6.3:
 based on eMule 0.49c MorphXT 11.3 compiled with vs2005 SP1
 
 Fixed: Global Mod statistics were not displayed [Stulle]
+Fixed: Service was not stopped when it should be stopped on startin emule.exe [Stulle]
+	+ occured when service name was changed
 
 
 eMule v0.49c StulleMule v6.2:

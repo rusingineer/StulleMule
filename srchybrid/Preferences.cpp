@@ -5689,6 +5689,10 @@ void CPreferences::SetUpnpBindAddr(DWORD bindip) {
  
 // MORPH leuk_he:run as ntservice v1. START (startup and ws port) 
 int CPreferences::GetServiceStartupMode(){
+	// ==> Adjustable NT Service Strings - Stulle
+	if (m_strServiceName.IsEmpty()) // may be called before LoadPreferences()
+		m_strServiceName = theApp.GetProfileStringW(L"StulleMule",L"ServiceName",NULL);
+	// <== Adjustable NT Service Strings - Stulle
 	if (m_iServiceStartupMode == 0) // may be called before LoadPreferences()
 	   m_iServiceStartupMode=theApp.GetProfileInt(_T("eMule"), _T("ServiceStartupMode"),2); // default = stop service and start
    return m_iServiceStartupMode;
