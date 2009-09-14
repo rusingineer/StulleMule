@@ -40,6 +40,8 @@
 #include "PPgWebserver.h"
 CRBMap<uint32, WebServDef>	CWebServer::AdvLogins; //unlimited logs
 //MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
+#include "Scheduler.h" // Don't reset Connection Settings for Webserver/CML/MM [Stulle] - Stulle
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -4574,6 +4576,8 @@ CString CWebServer::_GetPreferences(ThreadData Data)
 			thePrefs.SetMaxConnections(_tstoi(_ParseURL(Data.sURL, _T("maxconnections"))));
 		if(!_ParseURL(Data.sURL, _T("maxconnectionsperfive")).IsEmpty())
 			thePrefs.SetMaxConsPerFive(_tstoi(_ParseURL(Data.sURL, _T("maxconnectionsperfive"))));
+
+		theApp.scheduler->SaveOriginals(); // Don't reset Connection Settings for Webserver/CML/MM [Stulle] - Stulle
 	}
 
 	// Fill form

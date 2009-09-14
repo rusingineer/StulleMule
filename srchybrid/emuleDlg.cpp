@@ -1979,6 +1979,8 @@ LRESULT CemuleDlg::OnWMData(WPARAM /*wParam*/, LPARAM lParam)
 			if (down.GetLength()>0) thePrefs.SetMaxDownload(_tstoi(down));
 			if (up.GetLength()>0) thePrefs.SetMaxUpload(_tstoi(up));
 
+			theApp.scheduler->SaveOriginals(); // Don't reset Connection Settings for Webserver/CML/MM [Stulle] - Stulle
+
 			return true;
 		}
 

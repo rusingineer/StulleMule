@@ -39,6 +39,7 @@
 #include "kademlia/kademlia/kademlia.h"
 #include "emuledlg.h"
 #include "Log.h"
+#include "Scheduler.h" // Don't reset Connection Settings for Webserver/CML/MM [Stulle] - Stulle
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -472,6 +473,8 @@ void  CMMServer::ProcessChangeLimitRequest(CMMData* data, CMMSocket* sender){
 	uint16 nNewDownload = data->ReadShort();
 	thePrefs.SetMaxUpload(nNewUpload);
 	thePrefs.SetMaxDownload(nNewDownload);
+
+	theApp.scheduler->SaveOriginals(); // Don't reset Connection Settings for Webserver/CML/MM [Stulle] - Stulle
 
 	CMMPacket* packet = new CMMPacket(MMP_CHANGELIMITANS);
 	packet->WriteShort((uint16)((thePrefs.GetMaxUpload() >= UNLIMITED) ? 0 : thePrefs.GetMaxUpload())); //MORPH uint16 is not enough
