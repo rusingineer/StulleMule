@@ -3314,13 +3314,16 @@ void CUpDownClient::InitClientSoftwareVersion()
 					// ==> Enhanced Client Recognition [Spike] - Stulle
 					// Recognize other Shareazas - just to be sure :)
 #ifdef ENHANCED_CLIENTS_RECOG
+					/*
 					if (StrStrI(m_pszUsername,_T("shareaza")))
 					{
 						m_clientSoft = SO_SHAREAZA;
 						pszSoftware = _T("Shareaza");
 					}
+					else
+					*/
 					// Recognize all eMulePlus - just to be sure !
-					else if (StrStr(m_strModVersion,_T("Plus 1")))
+					if (StrStr(m_strModVersion,_T("Plus 1")))
 					{
 						m_clientSoft = SO_EMULEPLUS;
 						pszSoftware = _T("eMule Plus");
@@ -3436,10 +3439,11 @@ void CUpDownClient::InitClientSoftwareVersion()
 			nClientUpVersion = m_nClientVersion % 100;
 		}
 		// ==> Enhanced Client Recognition [Spike] - Stulle
-		/*
+#ifndef ENHANCED_CLIENTS_RECOG
 		else if (m_nClientVersion >= 10100 && m_nClientVersion <= 10309){
-		*/
+#else
 		else if (m_nClientVersion >= 10100 && m_nClientVersion <= 10409){ // netfinity
+#endif
 		// <== Enhanced Client Recognition [Spike] - Stulle
 			UINT uMaj = m_nClientVersion/10000;
 			nClientMajVersion = uMaj;
@@ -3494,13 +3498,7 @@ void CUpDownClient::InitClientSoftwareVersion()
 		return;
 	}
 
-	// ==> Enhanced Client Recognition [Spike] - Stulle
-#ifndef ENHANCED_CLIENTS_RECOG
 	if (m_bIsML || iHashType == SO_MLDONKEY){
-#else
-	if (m_bIsML || iHashType == SO_MLDONKEY || iHashType == SO_OLD_MLDONKEY){
-#endif
-	// <== Enhanced Client Recognition [Spike] - Stulle
 		m_clientSoft = SO_MLDONKEY;
 		UINT nClientMinVersion = m_nClientVersion;
 		m_nClientVersion = MAKE_CLIENT_VERSION(0, nClientMinVersion, 0);
@@ -3556,12 +3554,6 @@ int CUpDownClient::GetHashType() const
 	else if (m_achUserHash[5] == 14 && m_achUserHash[14] == 111)
 		return SO_EMULE;
  	else if (m_achUserHash[5] == 'M' && m_achUserHash[14] == 'L')
-	// ==> Enhanced Client Recognition [Spike] - Stulle
-#ifdef ENHANCED_CLIENTS_RECOG
-		return SO_OLD_MLDONKEY;
-	else if (m_achUserHash[5] == 0x0E && m_achUserHash[14] == 0x6F) // Spike2 by Torni - recognize newer MLdonkeys (needed for Enhanced Client Recognization & emulate-Settings!)
-#endif
-	// <== Enhanced Client Recognition [Spike] - Stulle
 		return SO_MLDONKEY;
 	else
 		return SO_UNKNOWN;
