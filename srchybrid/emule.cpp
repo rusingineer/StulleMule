@@ -455,12 +455,6 @@ CemuleApp::CemuleApp(LPCTSTR lpszAppName)
 	//MORPH START - Added by SiRoB, [-modname-]
 	m_strModVersion = CemuleApp::m_szMVersion;
 	m_strModVersion.AppendFormat(_T(" %u.%u"), CemuleApp::m_nMVersionMjr, CemuleApp::m_nMVersionMin);
-	// ==> StulleMule is not banned - Stulle
-	/*
-	m_strModVersionOld = CemuleApp::m_szMVersion;
-	m_strModVersionOld.AppendFormat(_T(" 9.7"));
-	*/
-	// <== StulleMule is not banned - Stulle
 	m_strModLongVersion = CemuleApp::m_szMVersionLong;
 	m_strModLongVersion.AppendFormat(_T("%u.%u"), CemuleApp::m_nMVersionMjr, CemuleApp::m_nMVersionMin);
 	m_strModVersionPure = CemuleApp::m_szMVersion;
@@ -886,6 +880,7 @@ BOOL CemuleApp::InitInstance()
 #ifdef ASFU
 	m_directoryWatcherCloseEvent = NULL;
 	m_directoryWatcherReloadEvent = NULL;
+	theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: InitInstance"));
 	if(thePrefs.GetDirectoryWatcher() && !thePrefs.GetSingleSharedDirWatcher())
 		theApp.ResetDirectoryWatcher();
 #endif
@@ -1147,7 +1142,7 @@ CString CemuleApp::CreateED2kSourceLink(const CAbstractFile* f)
 
 	CString strLink;
 	strLink.Format(_T("ed2k://|file|%s|%I64u|%s|/|sources,%i.%i.%i.%i:%i|/"),
-		EncodeUrlUtf8(StripInvalidFilenameChars(f->GetFileName(), false)),
+		EncodeUrlUtf8(StripInvalidFilenameChars(f->GetFileName())),
 		f->GetFileSize(),
 		EncodeBase16(f->GetFileHash(),16),
 		(uint8)dwID,(uint8)(dwID>>8),(uint8)(dwID>>16),(uint8)(dwID>>24), thePrefs.GetPort() );
@@ -1162,7 +1157,7 @@ CString CemuleApp::CreateKadSourceLink(const CAbstractFile* f)
 		CString KadID;
 		Kademlia::CKademlia::GetPrefs()->GetKadID().Xor(Kademlia::CUInt128(true)).ToHexString(&KadID);
 		strLink.Format(_T("ed2k://|file|%s|%I64u|%s|/|kadsources,%s:%s|/"),
-			EncodeUrlUtf8(StripInvalidFilenameChars(f->GetFileName(), false)),
+			EncodeUrlUtf8(StripInvalidFilenameChars(f->GetFileName())),
 			f->GetFileSize(),
 			EncodeBase16(f->GetFileHash(),16),
 			md4str(thePrefs.GetUserHash()), KadID);
@@ -2683,7 +2678,8 @@ bool CemuleApp::IsEd2kFriendLinkInClipboard()
 
 // MORPH START leuk_he:run as ntservice v1..
 bool CemuleApp::IsRunningAsService(int OptimizeLevel ){
-   if (OptimizeLevel < 5)	// 5: all optmization except server list : need an option for preferneces. 
+//   if (OptimizeLevel < 5)	// 5: all optmization except server list : need an option for preferneces. 
+   if(OptimizeLevel < thePrefs.GetServiceOptLvl())
 		return RunningAsService();
    else
 	   return false;  // disable optimizations
@@ -2881,16 +2877,10 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 	// To set an fixed time between reloads change
 	// minSecondsBetweenReloads to a value greater
 	// than 0, for example 600 for 10 minutes (600 seconds)
-	const DWORD minSecondsBetweenReloads = thePrefs.GetTimeBetweenReloads(); //Variable time
+	const DWORD minSecondsBetweenReloads = 120; //Variable time
 
 	// We use this event when FindFirstChangeNotification fails
 	CEvent nullEvent(FALSE,TRUE); 
-
-	// We use a second list to store inactive shares. Note, dirs will only be added to this list
-	// when they got inactive during runtime so we will not add vast numbers of always inactive
-	// shares. This makes a reset required when such a always inactive dir comes available out
-	// of a sudden. Anyway, there should not be too many of those to boot with.
-	CStringList inactiveDirList;
 
 	// Get all shared directories
 	CStringList dirList;
@@ -2921,7 +2911,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 		curDir = thePrefs.shareddir_list.GetNext(pos);
 
 		// If this folder does not exist we do not need to watch this folder
-		if (_taccess(curDir, 0) != 0)
+		if (CFileFind().FindFile(curDir) == FALSE)
 			continue;
 
 		if (curDir.Right(1)==_T("\\"))
@@ -2933,12 +2923,14 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 	}
 
 	// Dirs of single shared files
-	if(thePrefs.GetSingleSharedDirWatcher()/* && theApp.sharedfiles->ProbablyHaveSingleSharedFiles()*/)
+	theApp.QueueDebugLogLine(false,_T("ASFU: Starting to add single shared files to list"));
+	if(thePrefs.GetSingleSharedDirWatcher() && theApp.sharedfiles->ProbablyHaveSingleSharedFiles())
 	{
+		CFileFind thisFile;
 		for (POSITION pos = theApp.sharedfiles->m_liSingleSharedFiles.GetHeadPosition(); pos != NULL; theApp.sharedfiles->m_liSingleSharedFiles.GetNext(pos))
 		{
 			curDir = theApp.sharedfiles->m_liSingleSharedFiles.GetAt(pos);
-			if (_taccess(curDir, 0) != 0)
+			if(!thisFile.FindFile(curDir))
 				continue; // only add for this single shared file if it exists
 
 			int length = curDir.ReverseFind(_T('\\'));
@@ -2950,6 +2942,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 			}
 		}
 	}
+	theApp.QueueDebugLogLine(false,_T("ASFU: Finished to add single shared files to list"));
 
 	// The other shared with subdirs
 	int subdirStartPosition = -1;
@@ -2960,7 +2953,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 		curDir = thePrefs.sharedsubdir_list.GetNext(pos);
 
 		// If this folder does not exist we do not need to watch this folder
-		if (_taccess(curDir, 0) != 0)
+		if (CFileFind().FindFile(curDir) == FALSE)
 			continue;
 
 		if (curDir.Right(1)==_T("\\"))
@@ -3046,24 +3039,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 		while(m_directoryWatcherCloseEvent /*true*/){ 
 			dwWaitStatus = WaitForMultipleObjects(nChangeHandles, dwChangeHandles, 
 				FALSE, INFINITE); 
-
-			// figure out what got signaled
-			if(dwWaitStatus - WAIT_OBJECT_0 >= 2)
-			{
-				// get the dir from the list
-				pos = dirList.GetHeadPosition();
-				for(DWORD dw = 2; dw <= dwWaitStatus - WAIT_OBJECT_0; dw++)
-					curDir = dirList.GetNext(pos);
-
-				if(_taccess(curDir, 0) != 0){ // this one disappeared just now... w000t
-					if( inactiveDirList.Find( curDir ) == NULL ) // well, it should not be in the list but to be sure
-						inactiveDirList.AddTail( curDir ); // add to list of inactive shares
-				}
-				//theApp.QueueDebugLogLine(false,_T("ASFU: Handle number %i --> %s"), dwWaitStatus - WAIT_OBJECT_0, curDir);
-			}
-			//else
-				//theApp.QueueDebugLogLine(false,_T("ASFU: Handle number %i"), dwWaitStatus-WAIT_OBJECT_0);
-
+	 
 			// Maybe more than one object has been released,
 			// check if the Close Event has been signaled
 			// because it has precedence.
@@ -3084,29 +3060,14 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 					// it only if needed.
 					reloadShared = false;
 
-					// Note, this was changed in v3.4 and will run through all our monitored shares
-					// so we can maintain a complete list of inactive shares. This list will then allow
-					// us to reload share when a shared folder goes missing and when it pops up again.
 					pos = dirList.GetHeadPosition();
 					while(pos && pos != parentListPos){
 						curDir = dirList.GetNext(pos); 
-						if (curDir.Right(1) != _T(":")){ // not a root dir
-							if(_taccess(curDir, 0) != 0){ // does not exist
-								if( inactiveDirList.Find( curDir ) == NULL ) { // and not yet in list
-									inactiveDirList.AddTail( curDir ); // add to list of inactive shares
-
-									// Reload shared files
-									reloadShared = true;
-								}
-							}
-							else{ // does exist
-								POSITION inactivePos = inactiveDirList.Find( curDir );
-								if( inactivePos != NULL ) { // and in list of inactive shares
-									inactiveDirList.RemoveAt( inactivePos ); // remove from list
-
-									// Reload shared files
-									reloadShared = true;
-								}
+						if (curDir.Right(1) != _T(":")){
+							if(CFileFind().FindFile(curDir) == FALSE){
+								// Reload shared files
+								reloadShared = true;
+								pos = NULL; // Force end of loop
 							}
 						}
 					}
@@ -3192,8 +3153,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 						curPos = 2; // Start at pos 2, because the pos 0 and 1 is for the events.
 						pos = dirList.GetHeadPosition();
 						while(pos){
-							curDir = dirList.GetNext(pos);
-
+							curDir = dirList.GetNext(pos); 
 							if(subdirStartPosition > 0 && curPos-2 >= subdirStartPosition && curPos-2 < parentsStartPosition)
 								dwChangeHandles[curPos] = FindFirstChangeNotification(
 									curDir, TRUE,
@@ -3206,7 +3166,7 @@ UINT CemuleApp::CheckDirectoryForChangesThread(LPVOID /*pParam*/)
 									FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME |
 									FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE |
 									FILE_NOTIFY_CHANGE_ATTRIBUTES);
-
+							
 							if(dwChangeHandles[curPos] == INVALID_HANDLE_VALUE){
 								dwChangeHandles[curPos] = nullEvent.m_hObject;
 							}

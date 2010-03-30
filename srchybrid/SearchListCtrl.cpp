@@ -52,6 +52,7 @@
 #include "MediaInfo.h"
 #include "fakecheck.h" //MORPH - Added by milobac, FakeCheck, FakeReport, Auto-updating
 #include "NTService.h" // MORPH leuk_he:run as ntservice v1..
+#include "NetF/Fakealyzer.h" //MORPH - Added by Stulle, Fakealyzer [netfinity]
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -203,7 +204,16 @@ CSearchListCtrl::CSearchListCtrl()
 	searchlist = NULL;
 	m_nResultsID = 0;
 	SetGeneralPurposeFind(true);
+	//MORPH START leuk_he:run as ntservice v1..
+	/*
 	m_tooltip = new CToolTipCtrlX;
+	*/
+	// workaround running MFC as service
+	if (!theApp.IsRunningAsService())
+		m_tooltip = new CToolTipCtrlX;
+	else
+		m_tooltip = NULL;
+	//MORPH END leuk_he:run as ntservice v1..
 	m_eFileSizeFormat = (EFileSizeFormat)theApp.GetProfileInt(_T("eMule"), _T("SearchResultsFileSizeFormat"), fsizeDefault);
 	SetSkinKey(L"SearchResultsLv");
 }
@@ -216,10 +226,7 @@ void CSearchListCtrl::OnDestroy()
 
 void CSearchListCtrl::SetStyle()
 {
-	if (thePrefs.IsDoubleClickEnabled())
-		SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
-	else
-		SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_ONECLICKACTIVATE);
+	SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 }
 
 void CSearchListCtrl::SetAllIcons()
@@ -252,14 +259,20 @@ void CSearchListCtrl::Init(CSearchList* in_searchlist)
 	ASSERT( (GetStyle() & LVS_SINGLESEL) == 0 );
 	SetStyle();
 
-	CToolTipCtrl* tooltip = GetToolTips();
-	if (tooltip){
-		m_tooltip->SetFileIconToolTip(true);
-		m_tooltip->SubclassWindow(*tooltip);
-		tooltip->ModifyStyle(0, TTS_NOPREFIX);
-		tooltip->SetDelayTime(TTDT_AUTOPOP, 20000);
-		//tooltip->SetDelayTime(TTDT_INITIAL, thePrefs.GetToolTipDelay()*1000);
-	}
+	//MORPH START leuk_he:run as ntservice v1..
+	// workaround running MFC as service
+	if (!theApp.IsRunningAsService())
+	{
+	//MORPH END leuk_he:run as ntservice v1..
+		CToolTipCtrl* tooltip = GetToolTips();
+		if (tooltip){
+			m_tooltip->SetFileIconToolTip(true);
+			m_tooltip->SubclassWindow(*tooltip);
+			tooltip->ModifyStyle(0, TTS_NOPREFIX);
+			tooltip->SetDelayTime(TTDT_AUTOPOP, 20000);
+			//tooltip->SetDelayTime(TTDT_INITIAL, thePrefs.GetToolTipDelay()*1000);
+		}
+	} //MORPH leuk_he:run as ntservice v1..
 	searchlist = in_searchlist;
 
 	InsertColumn(0, GetResString(IDS_DL_FILENAME),	LVCFMT_LEFT,  DFLT_FILENAME_COL_WIDTH);
@@ -276,7 +289,8 @@ void CSearchListCtrl::Init(CSearchList* in_searchlist)
 	InsertColumn(11,GetResString(IDS_CODEC),		LVCFMT_LEFT,  DFLT_CODEC_COL_WIDTH);
 	InsertColumn(12,GetResString(IDS_FOLDER),		LVCFMT_LEFT,  DFLT_FOLDER_COL_WIDTH,		-1, true);
 	InsertColumn(13,GetResString(IDS_KNOWN),		LVCFMT_LEFT,   50);
-	InsertColumn(14,GetResString(IDS_CHECKFAKE),		LVCFMT_LEFT,   220); //MORPH - Added by milobac, FakeCheck, FakeReport, Auto-updating
+	InsertColumn(14,GetResString(IDS_AICHHASH),		LVCFMT_LEFT,  DFLT_HASH_COL_WIDTH	,		-1, true);
+	InsertColumn(15,GetResString(IDS_CHECKFAKE),		LVCFMT_LEFT,   220); //MORPH - Added by milobac, FakeCheck, FakeReport, Auto-updating
 
 	SetAllIcons();
 
@@ -322,9 +336,8 @@ CSearchListCtrl::~CSearchListCtrl()
 		delete pValue;
 	}
 	m_mapSortSelectionStates.RemoveAll();
-    if (!RunningAsService()) { // MORPH leuk_he:run as ntservice v1.. workarround.
+    if (!RunningAsService()) // MORPH leuk_he:run as ntservice v1.. workarround.
 		delete m_tooltip;
-	}
 }
 
 void CSearchListCtrl::Localize()
@@ -350,7 +363,8 @@ void CSearchListCtrl::Localize()
 			case 11: strRes = GetResString(IDS_CODEC); break;
 			case 12: strRes = GetResString(IDS_FOLDER); break;
 			case 13: strRes = GetResString(IDS_KNOWN); break;
-			case 14: strRes = GetResString(IDS_CHECKFAKE); break; //MORPH START - Added by milobac, FakeCheck, FakeReport, Auto-updating
+			case 14: strRes = GetResString(IDS_AICHHASH); break;
+			case 15: strRes = GetResString(IDS_CHECKFAKE); break; //MORPH START - Added by milobac, FakeCheck, FakeReport, Auto-updating
 		}
 	
 		hdi.pszText = const_cast<LPTSTR>((LPCTSTR)strRes);
@@ -651,7 +665,11 @@ int CSearchListCtrl::SortProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
 	const CSearchFile *item1 = (CSearchFile *)lParam1;
 	const CSearchFile *item2 = (CSearchFile *)lParam2;
+	// SLUGFILLER: multiSort remove - handled in parent class
+	/*
 	int orgSort = lParamSort;
+	*/
+
 	int sortMod = 1;
 	if (lParamSort >= 100) {
 		sortMod = -1;
@@ -686,10 +704,14 @@ int CSearchListCtrl::SortProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 		comp = CompareChild(item1, item2, lParamSort);
 	}
 
+	// SLUGFILLER: multiSort remove - handled in parent class
+	/*
 	//call secondary sortorder, if this one results in equal
 	int dwNextSort;
 	if (comp == 0 && (dwNextSort = theApp.emuledlg->searchwnd->m_pwndResults->searchlistctrl.GetNextSortOrder(orgSort)) != -1)
 		comp = SortProc(lParam1, lParam2, dwNextSort);
+	*/
+	// SLUGFILLER: multiSort remove - handled in parent class
 
 	return comp;
 }
@@ -704,6 +726,9 @@ int CSearchListCtrl::CompareChild(const CSearchFile *item1, const CSearchFile *i
 			iResult = CompareLocaleStringNoCase(item1->GetFileName(), item2->GetFileName());
 			break;
 
+		case 14: // AICH Hash
+			iResult = CompareAICHHash(item1->GetFileIdentifierC(), item2->GetFileIdentifierC(), true);
+			break;
 		default:
 			// always sort by descending availability
 			iResult = -CompareUnsigned(item1->GetIntTagValue(FT_SOURCES), item2->GetIntTagValue(FT_SOURCES));
@@ -785,8 +810,12 @@ int CSearchListCtrl::Compare(const CSearchFile *item1, const CSearchFile *item2,
 
 		case 13:
 			return item1->GetKnownType() - item2->GetKnownType();
-		//Morph Start - changed by AndCycle, FakeCheck, FakeReport, Auto-updating
+
 		case 14:
+			return CompareAICHHash(item1->GetFileIdentifierC(), item2->GetFileIdentifierC(), bSortAscending);
+
+		//Morph Start - changed by AndCycle, FakeCheck, FakeReport, Auto-updating
+		case 15:
 			return CompareOptLocaleStringNoCase(item1->GetFakeComment(), item2->GetFakeComment());
 		//Morph End - changed by AndCycle, FakeCheck, FakeReport, Auto-updating
 	}
@@ -920,9 +949,16 @@ BOOL CSearchListCtrl::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 				return TRUE;
 			}
 			case MP_RESUME:
+				if (thePrefs.IsExtControlsEnabled())
+					theApp.emuledlg->searchwnd->DownloadSelected(false);
+				else
+					theApp.emuledlg->searchwnd->DownloadSelected();
+				return TRUE;
 			case MP_RESUMEPAUSED:
+				theApp.emuledlg->searchwnd->DownloadSelected(true);
+				return TRUE;
 			case IDA_ENTER:
-				theApp.emuledlg->searchwnd->DownloadSelected(wParam==MP_RESUMEPAUSED);
+				theApp.emuledlg->searchwnd->DownloadSelected();
 				return TRUE;
 			case MP_REMOVESELECTED:
 			case MPG_DELETE:
@@ -1248,6 +1284,7 @@ void CSearchListCtrl::OnLvnGetInfoTip(NMHDR *pNMHDR, LRESULT *pResult)
 						    strInfo += _T("\n");
 					    strInfo += strSource;
 				    }
+    
 /* vs2008  start
 				    const CSimpleArray<CSearchFile::SClient>& aClients = file->GetClients();
 */
@@ -1464,6 +1501,24 @@ void CSearchListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	CSearchFile *content = (CSearchFile *)lpDrawItemStruct->itemData;
 	if (!g_bLowColorDesktop || (lpDrawItemStruct->itemState & ODS_SELECTED) == 0)
 		dc.SetTextColor(GetSearchItemColor(content));
+
+	//MORPH START - Added by Stulle, Fakealyzer [netfinity]
+	// View files with different colours depending if tags match the filetype
+	{
+		COLORREF cr = dc->GetBkColor();
+		int	eFakeState = CFakealyzer::CheckSearchResult(content);
+		if (eFakeState == CFakealyzer::GOOD)
+			dc->SetBkColor(RGB(GetRValue(cr)*0.85,GetGValue(cr),GetBValue(cr)*0.85));
+		else if (eFakeState == CFakealyzer::OK)
+			dc->SetBkColor(RGB(GetRValue(cr)*0.85,GetGValue(cr)*0.85,GetBValue(cr)));
+		else if (eFakeState == CFakealyzer::SUSPECT)
+			dc->SetBkColor(RGB(GetRValue(cr),GetGValue(cr),GetBValue(cr)*0.85));
+		else if (eFakeState == CFakealyzer::FAKE)
+			dc->SetBkColor(RGB(GetRValue(cr),GetGValue(cr)*0.85,GetBValue(cr)*0.85));
+	}
+	dc.FillRect(&cur_rec, &CBrush(dc.GetBkColor()));
+	dc.SetBkMode(TRANSPARENT);
+	//MORPH END   - Added by Stulle, Fakealyzer [netfinity]
 
 	BOOL notLast = lpDrawItemStruct->itemID + 1 != (UINT)GetItemCount();
 	BOOL notFirst = lpDrawItemStruct->itemID != 0;
@@ -1973,8 +2028,12 @@ void CSearchListCtrl::GetItemDisplayText(const CSearchFile *src, int iSubItem, L
 			}
 #endif
 			break;
-		//MORPH START - Added by SiRoB, FakeCheck, FakeReport, Auto-updating
 		case 14:
+			if (src->GetFileIdentifierC().HasAICHHash())
+				_tcsncpy(pszText, src->GetFileIdentifierC().GetAICHHash().GetString(), cchTextMax);
+			break;
+		//MORPH START - Added by SiRoB, FakeCheck, FakeReport, Auto-updating
+		case 15:
 			if (src-> GetFakeComment())
 				_tcsncpy(pszText, src->GetFakeComment(), cchTextMax);
 		//MORPH END   - Added by SiRoB, FakeCheck, FakeReport, Auto-updating

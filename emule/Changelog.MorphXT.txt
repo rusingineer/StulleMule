@@ -1,4 +1,58 @@
 --------------------------------------
+Changelog for eMule 0.50a MorphXT v12.0
+--------------------------------------
+XX-XX-2010
+
+Merged to 0.50a [Stulle]
+ADD: Visual Studio 2008 project files and solution [Stulle]
+ADD: Settings removed from official eMule to Advanced Preferences [Officials/Stulle]
+ADD: Some more Tooltips for the preferences [Stulle]
+ADD: Icon for "Pause when preview possible" menu entry [Stulle]
+ADD: Find menu and OnLvnGetDispInfo to History list [zz_fly]
+ADD: Queue progress bar in Webserver (not in Light) [unknown/Stulle]
+ADD: File Percentage in title of progress images in WebServer [unknown/Stulle]
+ADD: Option to restrict user from downloading files via multiuser webserver [Stulle]
+ADD: Option to set level of optimization for NTService [Stulle]
+ADD: Some more optimizations for NTService [Stulle]
+ADD: Localization for NTService logging [Stulle]
+ADD: Adjustable NT Service Strings [Stulle]
+ADD: Fakealyzer [netfinity]
+CHANGE: Disable FollowTheMajority if file is renamed in Shared Files Dialog [Stulle]
+CHANGE: General settings dialog has been revised to achieve original layout [Stulle]
+CHANGE: Reduced CPU usage in CUInt128::ToHexString [netfinity]
+CHANGE: Reduced CPU usage in CUInt128::ToBinaryString [netfinity]
+CHANGE: Optimize Process Kad client list [WiZaRd]
+CHANGE: Improved filetype sorting in History list [zz_fly]
+CHANGE: Improved reading of Webserver template [Stulle]
+CHANGE: User priviliges for multiuser Webserver [Stulle]
+	+ Guest: Viewing information from webinterface
+	+ Operator: Adding/Removing downloads and according to other settings
+	+ Admin: Like Operator plus privilege to close eMule
+	+ Hi-Admin: Like Admin plus privilege to shutdown/reboot windows
+CHANGE: Improved Failed Login Screen and Login Screen of Webserver [Stulle]
+CHANGE: Improved UPnP info display [Stulle]
+CHANGE: Improved setting of the preferences window title for tabbed Webserver panel [Stulle]
+FIX: Properly localize some Advanced Preferences (official) [Stulle]
+FIX: (Official) Always add AICH hash when creating eD2k link [Avi-3k]
+FIX: (Official) Only resolve hostnames for downloads if partfile found [WiZaRd]
+FIX: (Official) Remove client from DownloadClientsList on RemoveSource [WiZaRd]
+FIX: (Official) Don't publish incomplete small files [WiZaRd]
+FIX: (Official) Possibly crash fix on ShowComment [WiZaRd]
+FIX: (Official) Prevent crash when shutting down in CAICHSyncThread::Run [Xman]
+FIX: (Official) Fix for setting buddy state on removing buddy [WiZaRd]
+FIX: (Official) Initialization fix for COScopeCtrl::m_nXPartial [WiZaRd]
+FIX: Display all time requests in History list [zz_fly]
+FIX: Some bugs in the Webserver templates [Stulle]	
+FIX: Bad login handling for Webserver [Stulle]
+FIX: multiSort in Search List [Xman]
+FIX: Localization of tabs in Webserver panel [Stulle]
+REMOVED: Official changes for high upload speed in favor for more advanced MorphXT code [Stulle]
+REMOVED: New official Ask-On-Exit Dialog in favor of Morph's one (NTService) [Stulle]
+REMOVED: "MorphXT 9.7" workaround [Stulle]
+REMOVED: Unusued ressource strings [Stulle]
+
+
+--------------------------------------
 Changelog for eMule 0.49c MorphXT v11.3
 --------------------------------------
 20-04-2009

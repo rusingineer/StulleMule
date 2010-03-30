@@ -416,7 +416,7 @@ LEGAL:
 ------
 eMulemorph  Copyright (C)2002-2007 Morph team 
 
-eMule StulleMule Copyright (C)2002-2009 Stulle
+eMule StulleMule Copyright (C)2005-2010 Stulle
 
 eMule Copyright (C)2002-2005 Merkur (merkur-@users.sourceforge.net)
 

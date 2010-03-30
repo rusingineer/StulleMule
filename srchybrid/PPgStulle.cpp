@@ -12,9 +12,8 @@
 #include "log.h"
 #include "DownloadQueue.h" // Global Source Limit - Stulle
 #include "ClientList.h" // Reduce Score for leecher - Stulle
-#include "TransferWnd.h" // CPU/MEM usage [$ick$/Stulle] - Stulle
+#include "TransferDlg.h" // CPU/MEM usage [$ick$/Stulle] - Stulle
 #include "MuleToolbarCtrl.h" // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
-#include "NTservice.h" // Adjustable NT Service Strings - Stulle
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -82,9 +81,7 @@ CPPgStulle::CPPgStulle()
 	m_htiEnableAntiCreditHack = NULL; //MORPH - Added by IceCream, activate Anti-CreditHack
 	m_htiAntiXsExploiter = NULL; // Anti-XS-Exploit [Xman] - Stulle
 	m_htiSpamBan = NULL; // Spam Ban [Xman] - Stulle
-	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
-	m_htiFilterClientFailedDown = NULL; 
-	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
+	m_htiFilterClientFailedDown = NULL; // filter clients with failed downloads [Xman]
 	m_htiClientBanTime = NULL; // adjust ClientBanTime - Stulle
 
 	m_htiPush = NULL; // push files - Stulle
@@ -222,18 +219,11 @@ CPPgStulle::CPPgStulle()
 	m_htiReleaseBonusDaysEdit = NULL;
 	// <== Release Bonus [sivka] - Stulle
 	m_htiReleaseScoreAssurance = NULL; // Release Score Assurance - Stulle
-	// ==> Adjustable NT Service Strings - Stulle
-	m_htiServiceStrGrp = NULL;
-	m_htiServiceName = NULL;
-	m_htiServiceDispName = NULL;
-	m_htiServiceDescr = NULL;
-	// <== Adjustable NT Service Strings - Stulle
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
 	m_htiAutoSharedGroup = NULL;
 	m_htiAutoSharedUpdater = NULL;
 	m_htiSingleSharedDirUpdater = NULL;
-	m_htiTimeBetweenReloads = NULL;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 }
@@ -345,9 +335,7 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 		m_htiEnableAntiCreditHack = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_ANTI_CREDITHACK), m_htiSecu, m_bEnableAntiCreditHack); //MORPH - Added by IceCream, Enable Anti-CreditHack
 		m_htiAntiXsExploiter = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_ANTI_XS_EXPLOITER), m_htiSecu, m_bAntiXsExploiter); // Anti-XS-Exploit [Xman] - Stulle
 		m_htiSpamBan = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_SPAM_BAN), m_htiSecu, m_bSpamBan); // Spam Ban [Xman] - Stulle
-		//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
-		m_htiFilterClientFailedDown = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_FILTER_CLIENTFAILEDDOWN), m_htiSecu, m_bFilterClientFailedDown); 
-		//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
+		m_htiFilterClientFailedDown = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_FILTER_CLIENTFAILEDDOWN), m_htiSecu, m_bFilterClientFailedDown); // filter clients with failed downloads [Xman]
 		// ==> adjust ClientBanTime - Stulle
 		m_htiClientBanTime = m_ctrlTreeOptions.InsertItem(GetResString(IDS_CLIENT_BAN_TIME), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT, m_htiSecu);
 		m_ctrlTreeOptions.AddEditBox(m_htiClientBanTime, RUNTIME_CLASS(CNumTreeOptionsEdit));
@@ -526,22 +514,11 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 		m_ctrlTreeOptions.Expand(m_htiReleaseBonusDays, TVE_EXPAND);
 		// <== Release Bonus [sivka] - Stulle
 		m_htiReleaseScoreAssurance = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_RELEASE_SCORE_ASSURANCE), m_htiReleaseBonusGroup, m_bReleaseScoreAssurance); // Release Score Assurance - Stulle
-		// ==> Adjustable NT Service Strings - Stulle
-		m_htiServiceStrGrp = m_ctrlTreeOptions.InsertGroup(GetResString(IDS_SERVICE_STR_GROUP), iImgServiceStrGrp, m_htiMisc);
-		m_htiServiceName = m_ctrlTreeOptions.InsertItem(GetResString(IDS_SERVICE_NAME), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT,m_htiServiceStrGrp);
-		m_ctrlTreeOptions.AddEditBox(m_htiServiceName, RUNTIME_CLASS(CTreeOptionsEditEx));
-		m_htiServiceDispName = m_ctrlTreeOptions.InsertItem(GetResString(IDS_SERVICE_DISP_NAME), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT,m_htiServiceStrGrp);
-		m_ctrlTreeOptions.AddEditBox(m_htiServiceDispName, RUNTIME_CLASS(CTreeOptionsEditEx));
-		m_htiServiceDescr = m_ctrlTreeOptions.InsertItem(GetResString(IDS_SERVICE_DESCR), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT,m_htiServiceStrGrp);
-		m_ctrlTreeOptions.AddEditBox(m_htiServiceDescr, RUNTIME_CLASS(CTreeOptionsEditEx));
-		// <== Adjustable NT Service Strings - Stulle
 		// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
 		m_htiAutoSharedGroup = m_ctrlTreeOptions.InsertGroup(GetResString(IDS_AUTO_SHARED_UPDATER), iImgASFU, m_htiMisc);
 		m_htiAutoSharedUpdater = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_SUC_ENABLED), m_htiAutoSharedGroup, m_bAutoSharedUpdater);
 		m_htiSingleSharedDirUpdater = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_ASFU_SINGLE), m_htiAutoSharedGroup, m_bSingleSharedDirUpdater);
-		m_htiTimeBetweenReloads = m_ctrlTreeOptions.InsertItem(GetResString(IDS_ASFU_TIMEBETWEEN), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT, m_htiAutoSharedGroup);
-		m_ctrlTreeOptions.AddEditBox(m_htiTimeBetweenReloads, RUNTIME_CLASS(CNumTreeOptionsEdit));
 #endif
 		// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -586,9 +563,7 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiEnableAntiCreditHack, m_bEnableAntiCreditHack); //MORPH - Added by IceCream, enable Anti-CreditHack
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiAntiXsExploiter, m_bAntiXsExploiter); // Anti-XS-Exploit [Xman] - Stulle
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiSpamBan, m_bSpamBan); // Spam Ban [Xman] - Stulle
-	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
-	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiFilterClientFailedDown, m_bFilterClientFailedDown); 
-	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
+	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiFilterClientFailedDown, m_bFilterClientFailedDown); // filter clients with failed downloads [Xman]
 	// ==> adjust ClientBanTime - Stulle
 	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiClientBanTime, m_iClientBanTime);
 	DDV_MinMaxInt(pDX, m_iClientBanTime, 1, 10);
@@ -728,17 +703,10 @@ void CPPgStulle::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxInt(pDX, m_iReleaseBonusDays, 1, 16);
 	// <== Release Bonus [sivka] - Stulle
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiReleaseScoreAssurance, m_bReleaseScoreAssurance); // Release Score Assurance - Stulle
-	// ==> Adjustable NT Service Strings - Stulle
-	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiServiceName, m_strServiceName);
-	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiServiceDispName, m_strServiceDispName);
-	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiServiceDescr, m_strServiceDescr);
-	// <== Adjustable NT Service Strings - Stulle
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
 	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiAutoSharedUpdater, m_bAutoSharedUpdater);
-	DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiSingleSharedDirUpdater, m_bSingleSharedDirUpdater);
-	DDX_TreeEdit(pDX, IDC_STULLE_OPTS, m_htiTimeBetweenReloads, m_iTimeBetweenReloads);
-	DDV_MinMaxInt(pDX, m_iTimeBetweenReloads, 0, 1800);
+	if(m_htiSingleSharedDirUpdater) DDX_TreeCheck(pDX, IDC_STULLE_OPTS, m_htiSingleSharedDirUpdater, m_bSingleSharedDirUpdater);
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -821,9 +789,7 @@ BOOL CPPgStulle::OnInitDialog()
 	m_bEnableAntiCreditHack = thePrefs.enableAntiCreditHack; //MORPH - Added by IceCream, enabnle Anti-CreditHack
 	m_bAntiXsExploiter = thePrefs.GetAntiXSExploiter(); // Anti-XS-Exploit [Xman] - Stulle
 	m_bSpamBan = thePrefs.GetSpamBan(); // Spam Ban [Xman] - Stulle
-	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
-	m_bFilterClientFailedDown = thePrefs.m_bFilterClientFailedDown; 
-	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
+	m_bFilterClientFailedDown = thePrefs.m_bFilterClientFailedDown; // filter clients with failed downloads [Xman]
 	m_iClientBanTime = thePrefs.GetClientBanTime()/3600000; // adjust ClientBanTime - Stulle
 
 	// ==> push small files [sivka] - Stulle
@@ -940,16 +906,10 @@ BOOL CPPgStulle::OnInitDialog()
 	}
 	// <== Release Bonus [sivka] - Stulle
 	m_bReleaseScoreAssurance = thePrefs.GetReleaseScoreAssurance(); // Release Score Assurance - Stulle
-	// ==> Adjustable NT Service Strings - Stulle
-	m_strServiceName = thePrefs.GetServiceName();
-	m_strServiceDispName = thePrefs.GetServiceDispName();
-	m_strServiceDescr = thePrefs.GetServiceDescr();
-	// <== Adjustable NT Service Strings - Stulle
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
 	m_bAutoSharedUpdater = thePrefs.GetDirectoryWatcher();
 	m_bSingleSharedDirUpdater = thePrefs.GetSingleSharedDirWatcher();
-	m_iTimeBetweenReloads = thePrefs.GetTimeBetweenReloads();
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -1050,9 +1010,7 @@ BOOL CPPgStulle::OnApply()
 	thePrefs.enableAntiCreditHack = m_bEnableAntiCreditHack; //MORPH - Added by IceCream, enable Anti-CreditHack
 	thePrefs.m_bAntiXsExploiter = m_bAntiXsExploiter; // Anti-XS-Exploit [Xman] - Stulle
 	thePrefs.m_bSpamBan = m_bSpamBan; // Spam Ban [Xman] - Stulle
-	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
-	thePrefs.m_bFilterClientFailedDown = m_bFilterClientFailedDown; 
-	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
+	thePrefs.m_bFilterClientFailedDown = m_bFilterClientFailedDown; // filter clients with failed downloads [Xman]
 	thePrefs.m_dwClientBanTime = m_iClientBanTime*3600000; // adjust ClientBanTime - Stulle
 
 	// ==> push small files [sivka] - Stulle
@@ -1187,76 +1145,12 @@ BOOL CPPgStulle::OnApply()
 		thePrefs.m_uReleaseBonus = (uint8)(m_iReleaseBonusDays*2);
 	// <== Release Bonus [sivka] - Stulle
 	thePrefs.m_bReleaseScoreAssurance = m_bReleaseScoreAssurance; // Release Score Assurance - Stulle
-	// ==> Adjustable NT Service Strings - Stulle
-	int iChangedStr = 0; // nothing changed
-	if(CompareLocaleStringNoCase(thePrefs.GetServiceName(),m_strServiceName))
-		iChangedStr = 1; // name under which we install changed, this is important!
-	else if(CompareLocaleStringNoCase(thePrefs.GetServiceDispName(),m_strServiceDispName) || CompareLocaleStringNoCase(thePrefs.GetServiceDescr(),m_strServiceDescr))
-		iChangedStr = 2; // only visual strings changed, not so important...
-
-	if(iChangedStr>0)
-	{
-		int b_installed;
-		int i_startupmode;
-		int rights;
-		// Startup with system, store in service.
-		NTServiceGet(b_installed,i_startupmode,	rights);
-		if(b_installed == 0)
-		{
-			thePrefs.SetServiceName(m_strServiceName);
-			thePrefs.SetServiceDispName(m_strServiceDispName);
-			thePrefs.SetServiceDescr(m_strServiceDescr);
-		}
-		else
-		{
-			int iResult = IDCANCEL;
-			if(iChangedStr == 1)
-				iResult = MessageBox(GetResString(IDS_SERVICE_NAME_CHANGED),GetResString(IDS_SERVICE_STR_CHANGED),MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2);
-			else if(iChangedStr == 2)
-				iResult = MessageBox(GetResString(IDS_SERVICE_DISP_CHANGED),GetResString(IDS_SERVICE_STR_CHANGED),MB_YESNOCANCEL|MB_ICONQUESTION|MB_DEFBUTTON2);
-
-			if((iChangedStr == 1 && iResult == IDYES) || (iChangedStr == 2 && iResult != IDCANCEL))
-			{
-				if(iChangedStr == 2 && iResult == IDNO)
-				{
-					thePrefs.SetServiceName(m_strServiceName);
-					thePrefs.SetServiceDispName(m_strServiceDispName);
-					thePrefs.SetServiceDescr(m_strServiceDescr);
-				}
-				else if(CmdRemoveService()==0)
-				{
-					thePrefs.SetServiceName(m_strServiceName);
-					thePrefs.SetServiceDispName(m_strServiceDispName);
-					thePrefs.SetServiceDescr(m_strServiceDescr);
-					if(CmdInstallService(i_startupmode == 1) != 0)
-						MessageBox(GetResString(IDS_SERVICE_INSTALL_FAIL), GetResString(IDS_SERVICE_INSTALL_TITLE), MB_OK|MB_ICONWARNING);
-				}
-				else
-				{
-					MessageBox(GetResString(IDS_SERVICE_UNINSTALL_FAIL),GetResString(IDS_SERVICE_UNINSTALL_TITLE),MB_OK|MB_ICONWARNING);
-					m_strServiceName = thePrefs.GetServiceName();
-					m_strServiceDispName = thePrefs.GetServiceDispName();
-					m_strServiceDescr = thePrefs.GetServiceDescr();
-				}
-			}
-			else
-			{
-				m_strServiceName = thePrefs.GetServiceName();
-				m_strServiceDispName = thePrefs.GetServiceDispName();
-				m_strServiceDescr = thePrefs.GetServiceDescr();
-			}
-		}
-	}
-	// <== Adjustable NT Service Strings - Stulle
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
-	if(m_bAutoSharedUpdater != thePrefs.GetDirectoryWatcher() ||
-		m_bSingleSharedDirUpdater != thePrefs.GetSingleSharedDirWatcher() ||
-		m_iTimeBetweenReloads != thePrefs.GetTimeBetweenReloads())
-	{
+	if(m_bAutoSharedUpdater != thePrefs.GetDirectoryWatcher() || m_bSingleSharedDirUpdater != thePrefs.GetSingleSharedDirWatcher()){
 		thePrefs.SetDirectoryWatcher(m_bAutoSharedUpdater);
 		thePrefs.SetSingleSharedDirWatcher(m_bSingleSharedDirUpdater);
-		thePrefs.SetTimeBetweenReloads((uint32)m_iTimeBetweenReloads);
+		theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: OnApply"));
 		theApp.ResetDirectoryWatcher();
 	}
 #endif
@@ -1320,9 +1214,7 @@ void CPPgStulle::Localize(void)
 		if (m_htiEnableAntiCreditHack) m_ctrlTreeOptions.SetItemText(m_htiEnableAntiCreditHack, GetResString(IDS_ANTI_CREDITHACK)); //MORPH - Added by IceCream, enable Anti-CreditHack
 		if (m_htiAntiXsExploiter) m_ctrlTreeOptions.SetItemText(m_htiAntiXsExploiter, GetResString(IDS_ANTI_XS_EXPLOITER)); // Anti-XS-Exploit [Xman] - Stulle
 		if (m_bSpamBan) m_ctrlTreeOptions.SetItemText(m_htiSpamBan, GetResString(IDS_SPAM_BAN)); // Spam Ban [Xman] - Stulle
-		//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
-		if (m_htiFilterClientFailedDown) m_ctrlTreeOptions.SetItemText(m_htiFilterClientFailedDown, GetResString(IDS_FILTER_CLIENTFAILEDDOWN));
-		//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
+		if (m_htiFilterClientFailedDown) m_ctrlTreeOptions.SetItemText(m_htiFilterClientFailedDown, GetResString(IDS_FILTER_CLIENTFAILEDDOWN)); // filter clients with failed downloads [Xman]
 		if (m_htiClientBanTime) m_ctrlTreeOptions.SetEditLabel(m_htiClientBanTime, GetResString(IDS_CLIENT_BAN_TIME)); // adjust ClientBanTime - Stulle
 
 		// ==> push small files [sivka] - Stulle
@@ -1419,18 +1311,11 @@ void CPPgStulle::Localize(void)
 		if (m_htiEmuLphant) m_ctrlTreeOptions.SetItemText(m_htiEmuLphant, GetResString(IDS_EMULATE_PHANT));
 		if (m_htiLogEmulator) m_ctrlTreeOptions.SetItemText(m_htiLogEmulator, GetResString(IDS_EMULATE_LOG));
 		// <== Emulate others [WiZaRd/Spike/shadow2004] - Stulle
-		if (m_htiReleaseBonusDaysEdit) m_ctrlTreeOptions.SetEditLabel(m_htiReleaseBonusDaysEdit, GetResString(IDS_RELEASE_BONUS_EDIT)); // Release Bonus [sivka] - Stulle
 		if (m_htiReleaseScoreAssurance) m_ctrlTreeOptions.SetItemText(m_htiReleaseScoreAssurance, GetResString(IDS_RELEASE_SCORE_ASSURANCE)); // Release Score Assurance - Stulle
-		// ==> Adjustable NT Service Strings - Stulle
-		if (m_htiServiceName) m_ctrlTreeOptions.SetEditLabel(m_htiServiceName, GetResString(IDS_SERVICE_NAME));
-		if (m_htiServiceDispName) m_ctrlTreeOptions.SetEditLabel(m_htiServiceDispName, GetResString(IDS_SERVICE_DISP_NAME));
-		if (m_htiServiceDescr) m_ctrlTreeOptions.SetEditLabel(m_htiServiceDescr, GetResString(IDS_SERVICE_DESCR));
-		// <== Adjustable NT Service Strings - Stulle
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
 		if (m_htiAutoSharedUpdater) m_ctrlTreeOptions.SetItemText(m_htiAutoSharedUpdater, GetResString(IDS_SUC_ENABLED));
 		if (m_htiSingleSharedDirUpdater) m_ctrlTreeOptions.SetItemText(m_htiSingleSharedDirUpdater,GetResString(IDS_ASFU_SINGLE));
-		if (m_htiTimeBetweenReloads) m_ctrlTreeOptions.SetEditLabel(m_htiTimeBetweenReloads, GetResString(IDS_ASFU_TIMEBETWEEN));
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 	}
@@ -1482,9 +1367,7 @@ void CPPgStulle::OnDestroy()
 	m_htiEnableAntiCreditHack = NULL; //MORPH - Added by IceCream, activate Anti-CreditHack
 	m_htiAntiXsExploiter = NULL; // Anti-XS-Exploit [Xman] - Stulle
 	m_htiSpamBan = NULL; // Spam Ban [Xman] - Stulle
-	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
-	m_htiFilterClientFailedDown = NULL; 
-	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
+	m_htiFilterClientFailedDown = NULL; // filter clients with failed downloads [Xman]
 	m_htiClientBanTime = NULL; // adjust ClientBanTime - Stulle
 
 	m_htiPush = NULL; // push files - Stulle
@@ -1620,18 +1503,11 @@ void CPPgStulle::OnDestroy()
 	m_htiReleaseBonusDaysEdit = NULL;
 	// <== Release Bonus [sivka] - Stulle
 	m_htiReleaseScoreAssurance = NULL; // Release Score Assurance - Stulle
-	// ==> Adjustable NT Service Strings - Stulle
-	m_htiServiceStrGrp = NULL;
-	m_htiServiceName = NULL;
-	m_htiServiceDispName = NULL;
-	m_htiServiceDescr = NULL;
-	// <== Adjustable NT Service Strings - Stulle
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
 	m_htiAutoSharedGroup = NULL;
 	m_htiAutoSharedUpdater = NULL;
 	m_htiSingleSharedDirUpdater = NULL;
-	m_htiTimeBetweenReloads = NULL;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 

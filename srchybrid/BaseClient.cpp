@@ -52,7 +52,7 @@
 #include "Kademlia/Kademlia/Prefs.h"
 #include "emuledlg.h"
 #include "ServerWnd.h"
-#include "TransferWnd.h"
+#include "TransferDlg.h"
 #include "ChatWnd.h"
 #include "CxImage/xImage.h"
 #include "PreviewDlg.h"
@@ -110,8 +110,6 @@ CUpDownClient::CUpDownClient(CPartFile* in_reqfile, uint16 in_port, uint32 in_us
 
 void CUpDownClient::Init()
 {
-	m_bKadHello = false;//EastShare
-
 	//SLAHAM: ADDED Known Since/Last Asked =>
 	uiDLAskingCounter = 0;
 	dwThisClientIsKnownSince = ::GetTickCount();
@@ -245,7 +243,8 @@ void CUpDownClient::Init()
 	//EastShare Start - added by AndCycle, IP to Country
 	m_structUserCountry = theApp.ip2country->GetCountryFromIP(GetIP());
 	//EastShare End - added by AndCycle, IP to Country
-	m_fHashsetRequesting = 0;
+	m_fHashsetRequestingAICH = 0;
+	m_fHashsetRequestingMD4 = 0;
 	m_fSharedDirectories = 0;
 	m_fSentCancelTransfer = 0;
 	m_nClientVersion = 0;
@@ -330,16 +329,11 @@ void CUpDownClient::Init()
 
 	m_incompletepartVer = 0; //MORPH - Added By SiRoB, ICS merged into partstatus
 
-	// ==> StulleMule is not banned - Stulle
-	/*
-	m_bSendOldMorph = false; //MORPH - prevent being banned by old MorphXT
-	*/
-	// <== StulleMule is not banned - Stulle
-
 	//MORPH START - ReadBlockFromFileThread
 	m_abyfiledata = NULL;
 	m_readblockthread =NULL;
 	//MORPH END   - ReadBlockFromFileThread
+	m_fSupportsFileIdent = 0;
 
 	// ==> Sivka-Ban [cyrex2001] - Stulle
 	dwLastTimeAskedForWPRank = 0;
@@ -395,14 +389,14 @@ CUpDownClient::~CUpDownClient(){
 	//MORPH END   - ReadBlockFromFileThread
 	if (IsAICHReqPending()){
 		m_fAICHRequested = FALSE;
-		CAICHHashSet::ClientAICHRequestFailed(this);
+		CAICHRecoveryHashSet::ClientAICHRequestFailed(this);
 	}
 
 	if (GetFriend() != NULL)
 	{
 		if (GetFriend()->IsTryingToConnect())
 			GetFriend()->UpdateFriendConnectionState(FCR_DELETED);
-		m_Friend->SetLinkedClient(NULL);
+        m_Friend->SetLinkedClient(NULL);
 	}
 	ASSERT( m_nConnectingState == CCS_NONE || !theApp.emuledlg->IsRunning() );
 	theApp.clientlist->RemoveClient(this, _T("Destructing client object"));
@@ -604,7 +598,7 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStr(m_strModVersion,_T("PROeMule"))||
 				StrStrI(m_strModVersion,_T("Devil"))||
 				StrStrI(m_strModVersion,_T("Elfen"))||
-				StrStrI(m_strModVersion,_T("Ef-mod "))||
+				StrStrI(m_strModVersion,_T("Ef-mod 2.0 "))||
 				StrStrI(m_strModVersion,_T("Xtreme Xtended"))||
 				StrStrI(m_strModVersion,_T("MirageMod"))||
 				StrStrI(m_strModVersion,_T("SpeedX"))||
@@ -710,22 +704,12 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_strModVersion, _T("TYRANUS"))|| //MyTh
 				StrStrI(m_strClientSoftware,_T("eMule v2.0")) || //6/2007 fake Xtreme / GPL-breaker
 				// added in 6.1
-				((_tcsstr(m_strModVersion, _T("MorphXT v9.6")) || _tcsstr(m_strModVersion, _T("Xtreme 7")) || _tcsstr(m_strModVersion, _T("ZZUL Plus 1"))) && _tcsstr(m_strClientSoftware, _T("0.48a"))) || //should not 0.48a
-				_tcsstr(m_strModVersion, _T("NetF WARP 9")) || //should be NetF WARP 0.3a.9
-				_tcsstr(m_strModVersion, _T("xunlei")) ||//xunlei v5.7.1
+				StrStrI(m_strModVersion, _T("xunlei")) ||//xunlei v5.7.1
 				StrStrI(m_strModVersion, _T("20071122")) ||//xunlei 5.7.5
 				StrStrI(m_strModVersion, _T("20080228")) ||//xunlei 5.7.9.463
 				StrStrI(m_strModVersion, _T("080620")) ||//xunlei 5.8
 				StrStrI(m_strModVersion, _T("080509")) ||
 				StrStrI(m_strModVersion, _T("20080505")) || //xunlei 6
-				StrStrI(m_strModVersion, _T("v 080828")) ||
-				StrStrI(m_strModVersion, _T("XL8828")) ||
-				StrStrI(m_strModVersion, _T("build 11230")) ||
-				StrStrI(m_strModVersion, _T("X 9.23")) ||
-				StrStrI(m_strModVersion, _T("ZZULL")) ||
-				StrStrI(m_strModVersion, _T("XunL")) ||
-				StrStrI(m_strModVersion, _T("Xthunder")) ||
-				StrStrI(m_strModVersion, _T("xl build")) ||
 				StrStrI(m_strModVersion, _T("PlayMule")) || //PlayMule
 				( !m_strModVersion.IsEmpty() && m_strModVersion.Trim().IsEmpty() ) || //pruma, korean leecher, modversion is a space
 				StrStrI(m_strModVersion, L"Angelmule") || // JvA: no sources, no changelog, community username,...
@@ -736,69 +720,11 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_strClientSoftware,_T("eMule v2.4")) ||
 				StrStrI(m_strClientSoftware,_T("eMule v2.5")) ||
 				StrStrI(m_strClientSoftware,_T("eMule v3.1")) ||
-				_tcsstr(m_strModVersion,_T("VMULE")) || //israel
+				StrStrI(m_strModVersion,_T("VMULE 2007")) || //israel
 				StrStrI(m_strModVersion,_T("Goop.co.il")) ||
-				StrStrI(m_strModVersion,_T("Razorback3")) ||
-				StrStrI(m_strModVersion,_T("UlTiMaTiC ")) || //based on MA 3.5
-				_tcsstr(m_strModVersion,_T("Peizheng 090304")) || //gpl-breaker
-				_tcsstr(m_strModVersion, _T("Neo-R")) ||
-				_tcsstr(m_strModVersion, _T("Neo-RS")) ||
-				StrStrI(m_strModVersion, _T("Apace")) ||
 				StrStrI(m_strModVersion,_T("L!()Netw0rk")) ||
-				StrStrI(m_strModVersion,_T("L!ONetwork")) ||
 				StrStrI(m_strModVersion, _T("FreeCD")) || //GPL-Breaker
-				StrStrI(m_strModVersion,_T("800STER")) ||
-				StrStrI(m_strModVersion,_T("8OOSTER")) ||
-				StrStrI(m_strModVersion,_T("BOO$T")) ||
-				StrStrI(m_strModVersion,_T("B00ST")) ||
-				StrStrI(m_strModVersion, _T("T-L-N BO0ST")) || //by briandgwx
-				StrStrI(m_strModVersion, _T("T L N B O O S T")) ||	//by taz-me
-//from Riso64bit
-				_tcsstr(m_strModVersion, _T("Thor ")) ||
-				_tcsstr(m_strModVersion, _T("DeSfAlko")) ||
-				_tcsstr(m_strModVersion, _T("ZZ-R ")) ||
-				_tcsstr(m_strModVersion, _T("ZZ-RS ")) ||
-				_tcsstr(m_strModVersion, _T("Reptil-Crew-3")) ||
-				_tcsstr(m_strModVersion, _T("Anonymous Mod")) ||
-				StrStrI(m_strModVersion, _T("NFO.Co.iL")) ||
-				_tcsstr(m_strModVersion, _T("Red Projekt")) ||
-				_tcsstr(m_strModVersion, _T("centraldivx.com")) || //no source
-				StrStrI(m_strModVersion, _T("emule.co.il")) ||
-				StrStrI(m_strModVersion, _T("Fire eMule")) ||
-				StrStrI(m_strModVersion, _T("PirateMule")) ||
-				StrStrI(m_strModVersion, _T("HighTime")) ||
-				StrStrI(m_strModVersion, _T("GPS2Crew")) ||
-				StrStrI(m_strModVersion, _T("TLN eMule")) ||
-				StrStrI(m_strModVersion, _T("DVD-RS")) ||
-				_tcsstr(m_strModVersion, _T("ZZULtimativ-R")) ||
-				_tcsstr(m_strModVersion, _T("Div eMule")) ||
-				_tcsstr(m_strModVersion, _T("Pwr eMule")) ||
-				_tcsstr(m_strModVersion, _T("VipeR")) ||
-				_tcsstr(m_strModVersion, _T("Methadone")) ||
-				_tcsstr(m_strModVersion, _T("Titandonkey")) ||
-				_tcsstr(m_strModVersion, _T("SpeedShare")) ||
-				_tcsstr(m_strModVersion, _T("Wodan")) ||
-				_tcsstr(m_strModVersion, _T("Sikombious")) ||
-				_tcsstr(m_strModVersion, _T("HyperTraxx")) ||
-				_tcsstr(m_strModVersion, _T("Div pro")) ||
-				_tcsstr(m_strModVersion, _T("GangBang")) ||
-				_tcsstr(m_strModVersion, _T("WarezFaw.Com")) ||
-				_tcsstr(m_strModVersion, _T("Rastak")) ||
-				_tcsstr(m_strModVersion, _T("Okinawa")) ||
-				_tcsstr(m_strModVersion, _T("Hiroshima")) ||
-				_tcsstr(m_strModVersion, _T("Kamikaze")) ||
-				_tcsstr(m_strModVersion, _T("Addiction")) ||
-				_tcsstr(m_strModVersion, _T("Bondage")) ||
-				_tcsstr(m_strModVersion, _T("eMuleLife")) ||
-				StrStrI(m_strModVersion, _T("PP-edition")) ||
-				_tcsstr(m_strModVersion, _T("ZZULtra")) ||
-				StrStrI(m_strModVersion, L"RapCom Mod") || //added dlarge 
-				StrStrI(m_strModVersion, L"SBI leecher") || //added dlarge 
-				StrStrI(m_strModVersion, L"TS Next Lite") || //added dlarge  
-				StrStrI(m_strModVersion, L"TR-P2P-MoD") || // JvA: bad client
-				StrStrI(m_strModVersion, L"Esekci") || // JvA: no sources, no changelog, ...
-				_tcslen(m_strModVersion) > 0 && (StrStrI(m_strClientSoftware,_T("edonkey")) || m_strModVersion[0]==_T('['))   ||  //1. donkey user with modstring, 2. modstring begins with [ this is a known leecher
-				(StrStrI(m_strModVersion, _T("Xtreme")) && StrStrI(m_strModVersion, _T("]"))) || //bad Xtreme mod
+				((StrStrI(m_strModVersion,_T("VeryCD 071107")) || StrStrI(m_strModVersion,_T("VeryCD 080307"))) && StrStrI(m_pszUsername, _T("[CHN][VeryCD]yourname"))) || // Fake VeryCD
 				// <== added - Stulle
 				m_strModVersion.IsEmpty() == false && StrStrI(m_strClientSoftware,_T("edonkey"))||
 				((GetVersion()>589) && (GetSourceExchange1Version()>0) && (GetClientSoft()==51)) //LSD, edonkey user with eMule property
@@ -879,20 +805,23 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStr(m_pszUsername, _T("emule.razorback3.com"))||
 				StrStrI(m_pszUsername,_T("[LSD.19"))||
 				StrStr(m_pszUsername, _T("Gate-To-Darkness.com"))||
-				StrStr(m_pszUsername, _T("emule.razorback3.com"))||
-				StrStr(m_pszUsername, _T("Titanesel.tk"))||
-				StrStr(m_pszUsername, _T("bigbang.to"))||
+				StrStr(m_pszUsername, _T("www.emule.razorback3.com"))||
+				StrStr(m_pszUsername, _T("www.Titanesel.tk"))||
+				StrStr(m_pszUsername, _T("www.bigbang.to"))||
 				StrStrI(m_pszUsername,_T("leecherclients.org")) ||  //Xman 10/06
 				StrStrI(m_pszUsername,_T("futuremods.de")) ||  //Xman 10/06
 				StrStrI(m_pszUsername,_T(".::Stenoco-Zone::.")) ||
 				StrStrI(m_pszUsername,_T("emule-mods.cc")) || //Xman 01/07
-				StrStrI(m_pszUsername,_T("leecher-mod.net")) || //Xman 02/07
-				StrStrI(m_pszUsername,_T("leecher-world.com")) || //added dlarge
-				StrStrI(m_pszUsername,_T("leecher.biz")) || //added dlarge
+				StrStrI(m_pszUsername,_T("www.leecher-mod.net")) || //Xman 02/07
+				StrStrI(m_pszUsername,_T("www.leecher-world.com")) || //added dlarge
+				StrStrI(m_pszUsername,_T("www.leecher.biz")) || //added dlarge
 				StrStr(m_pszUsername, _T("FUCKLW"))|| //added dlarge
+				//Xman 6/2007:
+				StrStrI(m_pszUsername,_T("AppleJuice")) && StrStrI(m_pszUsername,_T("[")) && StrStrI(m_pszUsername,_T("]")) ||
 				// added in 6.1
 				StrStrI(m_pszUsername, L"futuremod.de") || // JvA: apple-com adress
 				StrStrI(m_pszUsername, L"@ Raptor") ||     //added dlarge
+				StrStrI(m_pszUsername, L"FUCKLW") ||         //added dlarge
 				StrStrI(m_pszUsername,_T("Flashget")) || //FlashGet
 				StrStrI(m_pszUsername,_T("http://www.net-xfer.com")) || //netxfer
 				StrStrI(m_pszUsername,_T("emuIe-project.net")) || //phishing site
@@ -905,59 +834,6 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_pszUsername, _T("PRUNA 2008")) ||
 				StrStrI(m_pszUsername, _T("MOYAM")) ||
 				StrStrI(m_pszUsername, _T("Li()Network")) || //lionetwork
-				_tcsstr(m_pszUsername,L"dianlei.com") ||
-				_tcsstr(m_pszUsername,L"[eMuleBT]") ||
-				_tcsstr(m_pszUsername,L"[PPMule]") ||
-				_tcsstr(m_pszUsername,L"[TUOTU]") ||
-				_tcsstr(m_pszUsername,L"kaggo.com") ||
-				_tcsstr(m_pszUsername,L"[Chinfo]") ||
-				_tcsstr(m_pszUsername,L"vgo.21cn") ||
-//more AJ modstrings
-				( StrStrI(m_pszUsername, L"[") && StrStrI(m_pszUsername, L"]")
-				&& (
-					StrStrI(m_pszUsername, L"Applejuice") ||
-					StrStrI(m_pszUsername, L"Wikinger") ||
-					StrStrI(m_pszUsername, L"ROCKFORCE") ||
-					StrStrI(m_pszUsername, L"RC-ATLANTIS") ||
-					StrStrI(m_pszUsername, L"Fireball") ||
-					StrStrI(m_pszUsername, L"SunPower")
-					)
-				) ||
-//zz_fly Start
-				_tcsstr(m_pszUsername,_T("a1[VeryCD]xthame")) || //XL
-//zz_fly End
-//from Riso64bit
-				_tcsstr(m_pszUsername, _T("FincanMod")) || //fincan
-				_tcsstr(m_pszUsername, _T("Finc@nMod")) ||
-				StrStrI(m_pszUsername, _T("www.titanmule.to")) ||
-				StrStrI(m_pszUsername, _T("Www.NFOil.com")) ||
-				StrStrI(m_pszUsername, _T("TLN eMule")) ||
-				StrStrI(m_pszUsername, _T("LHeMule")) ||
-				_tcsstr(m_pszUsername, _T("L!()Network")) ||
-				_tcsstr(m_pszUsername, _T("Li()Network")) ||
-				StrStrI(m_pszUsername, _T("VMULE 2007")) ||
-				StrStrI(m_pszUsername, _T("TLNGuest")) ||
-				StrStrI(m_pszUsername, _T("Div eMule 2007")) ||
-				StrStrI(m_pszUsername, _T("eMulePro.de.vu")) ||
-				StrStrI(m_pszUsername, _T("emuIe-co.net")) ||
-				StrStrI(m_pszUsername, _T("AE CoM UseR")) ||
-				StrStrI(m_pszUsername, _T("BTFaw.Com")) ||
-				StrStrI(m_pszUsername, _T("warezfaw.net")) ||
-				StrStrI(m_pszUsername, _T("lh.2y.net")) ||
-				StrStrI(m_pszUsername, _T("[Pwr Mule]Usuario")) ||
-				StrStrI(m_pszUsername, _T("Www.D-iL.Net")) ||
-				_tcsstr(m_pszUsername, _T("http://emule.net")) ||
-				StrStrI(m_pszUsername, _T("www.aideadsl.com")) ||
-				StrStrI(m_pszUsername, _T("tangot.com")) ||
-				StrStrI(m_pszUsername, _T("r3wlx.com")) ||
-				StrStrI(m_pszUsername, _T("http://yo.com")) ||
-				StrStrI(m_pszUsername, _T("Angel eMule")) ||
-				StrStrI(m_pszUsername, _T("AngelMule")) ||
-				_tcsstr(m_pszUsername, _T("Ultimativ"))||
-				StrStrI(m_pszUsername, _T("www.eChanblardNext.org")) ||		
-				StrStrI(m_pszUsername, _T("www.extremule.com")) || //phishing site
-				StrStrI(m_pszUsername, _T("www.emuleproject.com")) ||
-//End
 				// <== added - Stulle
 				StrStrI(m_pszUsername,_T("emule")) && StrStrI(m_pszUsername,_T("booster"))
 				)
@@ -1012,11 +888,9 @@ uint8 CUpDownClient::TestLeecher(){
 		static const TCHAR refuserhash0[] = _T("154CE646120E96CC798C439A20D26F8D");
 		static const TCHAR refuserhash1[] = _T("455361F9D95C3CD7E6BF2192D1CB3D02");
 		static const TCHAR refuserhash2[] = _T("DA1CEEE05B0E5319B3B48CAED24C6F4A");
-		static const TCHAR refuserhash3[] = _T("C8B5F41441C615FBABAD9A7E55294D01");
 		if(_tcsicmp(userhash,refuserhash0)==0 ||
 		_tcsicmp(userhash,refuserhash1)==0 ||
-		_tcsicmp(userhash,refuserhash2)==0 ||
-		_tcsicmp(userhash,refuserhash3)==0)
+		_tcsicmp(userhash,refuserhash2)==0)
 			// ==> Reduce Score for leecher - Stulle
 			/*
 			return _T("Community userhash");
@@ -1025,10 +899,8 @@ uint8 CUpDownClient::TestLeecher(){
 			// <== Reduce Score for leecher - Stulle
 
 		//corrupt userhash check
-		static const TCHAR refuserhash4[] = _T("00000000000E00000000000000006F00");
-		static const TCHAR refuserhash5[] = _T("FE000000000E00000000000000006F00");
-		if(_tcsicmp(userhash,refuserhash4)==0 ||
-		_tcsicmp(userhash,refuserhash5)==0)
+		static const TCHAR refuserhash3[] = _T("00000000000E00000000000000006F00");
+		if(_tcsicmp(userhash,refuserhash3)==0)
 			// ==> Reduce Score for leecher - Stulle
 			/*
 			return _T("Corrupt userhash");
@@ -1077,6 +949,7 @@ void CUpDownClient::ClearHelloProperties()
 	m_fSupportsSourceEx2 = 0;
 	m_fSupportsCaptcha = 0;
 	m_fDirectUDPCallback = 0;
+	m_fSupportsFileIdent = 0;
 }
 
 bool CUpDownClient::ProcessHelloPacket(const uchar* pachPacket, uint32 nSize)
@@ -1228,12 +1101,6 @@ bool CUpDownClient::ProcessHelloTypePacket(CSafeMemFile* data)
 				if (temptag.IsStr())
 				{
 					m_strModVersion = temptag.GetStr();
-					// ==> StulleMule is not banned - Stulle
-					/*
-					m_bSendOldMorph = GetOldMorph();//MORPH - prevent being banned by old MorphXT
-					*/
-					// <== StulleMule is not banned - Stulle
-
 					// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 #ifdef GLOBAL_MOD_STATS
 					SetModPureString();
@@ -1373,7 +1240,7 @@ bool CUpDownClient::ProcessHelloTypePacket(CSafeMemFile* data)
 				//  4 Comments
 				//	1 PeerChache supported
 				//	1 No 'View Shared Files' supported
-				//	1 MultiPacket
+				//	1 MultiPacket - deprecated with FileIdentifiers/MultipacketExt2
 				//  1 Preview
 				if (temptag.IsInt()) {
 					m_fSupportsAICH			= (temptag.GetInt() >> 29) & 0x07;
@@ -1415,7 +1282,8 @@ bool CUpDownClient::ProcessHelloTypePacket(CSafeMemFile* data)
 				break;
 
 			case CT_EMULE_MISCOPTIONS2:
-				//	19 Reserved
+				//	18 Reserved
+				//   1 Supports new FileIdentifiers/MultipacketExt2
 				//   1 Direct UDP Callback supported and available
 				//	 1 Supports ChatCaptchas
 				//	 1 Supports SourceExachnge2 Packets, ignores SX1 Packet Version
@@ -1423,10 +1291,11 @@ bool CUpDownClient::ProcessHelloTypePacket(CSafeMemFile* data)
 				//	 1 Requests CryptLayer
 				//	 1 Supports CryptLayer
 				//	 1 Reserved (ModBit)
-				//   1 Ext Multipacket (Hash+Size instead of Hash)
+				//   1 Ext Multipacket (Hash+Size instead of Hash) - deprecated with FileIdentifiers/MultipacketExt2
 				//   1 Large Files (includes support for 64bit tags)
 				//   4 Kad Version - will go up to version 15 only (may need to add another field at some point in the future)
 				if (temptag.IsInt()) {
+					m_fSupportsFileIdent	= (temptag.GetInt() >>  13) & 0x01;
 					m_fDirectUDPCallback	= (temptag.GetInt() >>  12) & 0x01;
 					m_fSupportsCaptcha	    = (temptag.GetInt() >>  11) & 0x01;
 					m_fSupportsSourceEx2	= (temptag.GetInt() >>  10) & 0x01;
@@ -1804,22 +1673,8 @@ void CUpDownClient::SendMuleInfoPacket(bool bAnswer){
 	CTag tag7(ET_FEATURES, dwTagValue);
 	tag7.WriteTagToFile(&data);
 	if (bSendModVersion){ //MORPH - Added by SiRoB, Don't send MOD_VERSION to client that don't support it to reduce overhead
-		// ==> StulleMule is not banned - Stulle
-		/*
-		//MORPH START - prevent being banned by old MorphXT
-		if(m_bSendOldMorph)
-		{
-			CTag tag8(ET_MOD_VERSION, theApp.m_strModVersionOld);
-			tag8.WriteTagToFile(&data);
-		}
-		else
-		*/
-		// <== StulleMule is not banned - Stulle
-		{
-			CTag tag8(ET_MOD_VERSION, theApp.m_strModVersion);
-			tag8.WriteTagToFile(&data);
-		}
-		//MORPH END   - prevent being banned by old MorphXT
+		CTag tag8(ET_MOD_VERSION, theApp.m_strModVersion);
+		tag8.WriteTagToFile(&data);
 		//Morph Start - added by AndCycle, ICS
 		// enkeyDev: ICS
 		CTag tag9(ET_INCOMPLETEPARTS,1);
@@ -1847,7 +1702,7 @@ void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
 	m_byEmuleVersion = data.ReadUInt8();
 	if (bDbgInfo)
 		m_strMuleInfo.AppendFormat(_T("EmuleVer=0x%x"), (UINT)m_byEmuleVersion);
-	if( m_byEmuleVersion == 0x2B )
+	if (m_byEmuleVersion == 0x2B)
 		m_byEmuleVersion = 0x22;
 	uint8 protversion = data.ReadUInt8();
 	if (bDbgInfo)
@@ -1857,19 +1712,19 @@ void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
 	if (protversion == EMULE_PROTOCOL) {
 		//in the future do not use version to guess about new features
 
-		if(m_byEmuleVersion < 0x25 && m_byEmuleVersion > 0x22)
+		if (m_byEmuleVersion < 0x25 && m_byEmuleVersion > 0x22)
 			m_byUDPVer = 1;
 
-		if(m_byEmuleVersion < 0x25 && m_byEmuleVersion > 0x21)
+		if (m_byEmuleVersion < 0x25 && m_byEmuleVersion > 0x21)
 			m_bySourceExchange1Ver = 1;
 
-		if(m_byEmuleVersion == 0x24)
+		if (m_byEmuleVersion == 0x24)
 			m_byAcceptCommentVer = 1;
 
 		// Shared directories are requested from eMule 0.28+ because eMule 0.27 has a bug in 
 		// the OP_ASKSHAREDFILESDIR handler, which does not return the shared files for a 
 		// directory which has a trailing backslash.
-		if(m_byEmuleVersion >= 0x28 && !m_bIsML) // MLdonkey currently does not support shared directories
+		if (m_byEmuleVersion >= 0x28 && !m_bIsML) // MLdonkey currently does not support shared directories
 			m_fSharedDirectories = 1;
 
 	} else {
@@ -1882,7 +1737,7 @@ void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
 		m_strMuleInfo.AppendFormat(_T("  Tags=%u"), (UINT)tagcount);
 	CString strBanReason=NULL; //MORPH - Added by SiRoB, Control mod Tag
 	uint8 uBanReason = GOOD_BOY; // Reduce Score for leecher - Stulle
-	for (uint32 i = 0;i < tagcount; i++)
+	for (uint32 i = 0; i < tagcount; i++)
 	{
 		CTag temptag(&data, false);
 		switch (temptag.GetNameID())
@@ -2024,8 +1879,8 @@ void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
 				// Bits  7- 0: compatible client ID
 				if (temptag.IsInt()) {
 					m_byCompatibleClient = (uint8)temptag.GetInt();
-				if (bDbgInfo)
-					m_strMuleInfo.AppendFormat(_T("\n  Comptbl=%u"), (UINT)temptag.GetInt());
+					if (bDbgInfo)
+						m_strMuleInfo.AppendFormat(_T("\n  Comptbl=%u"), (UINT)temptag.GetInt());
 				}
 				else if (bDbgInfo)
 					m_strMuleInfo.AppendFormat(_T("\n  ***UnkType=%s"), temptag.GetFullInfo());
@@ -2064,18 +1919,12 @@ void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
 				}
 				//MOPRH END - Added by SiRoB,  Control Mod Tag
 				break;
-				
- 			case ET_MOD_VERSION:
+			
+			case ET_MOD_VERSION:
 				m_strNotOfficial.AppendFormat(_T(",mid=%s"),temptag.GetFullInfo()); //MOPRH - Added by SiRoB, Control Mod Tag
 				if (temptag.IsStr())
 				{
 					m_strModVersion = temptag.GetStr();
-					// ==> StulleMule is not banned - Stulle
-					/*
-					m_bSendOldMorph = GetOldMorph();//MORPH - prevent being banned by old MorphXT
-					*/
-					// <== StulleMule is not banned - Stulle
-
 					// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
 #ifdef GLOBAL_MOD_STATS
 					SetModPureString();
@@ -2133,12 +1982,7 @@ void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
 				break;
 			// <--- enkeyDEV: ICS
 			//Morph End - added by AndCycle, ICS
-
-			//EastShare
-			case KADEMLIA_HELLO_ACK:
-				m_bKadHello = true;
-				break;
-			//EastShare
+			
 			default:
 				bool bTemp = strBanReason.IsEmpty(); // Reduce Score for leecher - Stulle
 				//<<< [SNAFU_V3] Check unknown tags !
@@ -2154,7 +1998,7 @@ void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
 					m_strMuleInfo.AppendFormat(_T("\n  ***UnkTag=%s"), temptag.GetFullInfo());
 		}
 	}
-	if( m_byDataCompVer == 0 ){
+	if (m_byDataCompVer == 0) {
 		m_bySourceExchange1Ver = 0;
 		m_byExtendedRequestsVer = 0;
 		m_byAcceptCommentVer = 0;
@@ -2175,12 +2019,6 @@ void CUpDownClient::ProcessMuleInfoPacket(const uchar* pachPacket, uint32 nSize)
 	}
 
 	m_bEmuleProtocol = true;
-
-	//EastShare
-	if (!StrStrI(m_strModVersion,_T("echanblard")))
-	DoKadHello();
-	//EastShare
-
 	m_byInfopacketsReceived |= IP_EMULEPROTPACK;
 	InitClientSoftwareVersion();
 
@@ -2243,14 +2081,14 @@ void CUpDownClient::SendHelloTypePacket(CSafeMemFile* data)
 	memcpy(hash,thePrefs.GetUserHash(), 16);
 	if (thePrefs.IsEmuMLDonkey() && GetClientSoft() == SO_MLDONKEY)
 	{
-//		if(GetHashType() == SO_OLD_MLDONKEY)
+		if(GetHashType() == SO_OLD_MLDONKEY)
 		{
 			hash[5] = 'M'; //WiZaRd::Proper Hash Fake :P
 			hash[14] = 'L'; //WiZaRd::Proper Hash Fake :P
 			if (thePrefs.IsEmuLog())
 			{
 				CString buffer;
-				buffer.Format(_T("[EMULATE] Emulate MLDonkey (%s)"),DbgGetClientInfo());
+				buffer.Format(_T("[EMULATE] Emulate MLDonkey(old) (%s)"),DbgGetClientInfo());
 				DebugLog(LOG_USC | DLP_VERYLOW,buffer);
 			}
 		}
@@ -2294,11 +2132,6 @@ void CUpDownClient::SendHelloTypePacket(CSafeMemFile* data)
 	// <== Reduce Score for leecher - Stulle
 	if (bSendModVersion) tagcount+=(1/*MOD_VERSION*/+1/*enkeyDev: ICS*/);
 	//MORPH END   - Added by SiRoB, Don't send MOD_VERSION to client that don't support it to reduce overhead
-	// ==> StulleMule is not banned - Stulle
-	/*
-	m_bSendOldMorph = GetOldMorph();//MORPH - prevent being banned by old MorphXT
-	*/
-	// <== StulleMule is not banned - Stulle
 
 	data->WriteUInt32(tagcount);
 
@@ -2426,9 +2259,11 @@ void CUpDownClient::SendHelloTypePacket(CSafeMemFile* data)
 	// direct callback is only possible if connected to kad, tcp firewalled and verified UDP open (for example on a full cone NAT)
 	const UINT uDirectUDPCallback	= (Kademlia::CKademlia::IsRunning() && Kademlia::CKademlia::IsFirewalled()
 		&& !Kademlia::CUDPFirewallTester::IsFirewalledUDP(true) && Kademlia::CUDPFirewallTester::IsVerified()) ? 1 : 0;
+	const UINT uFileIdentifiers		= 1;
 
 	CTag tagMisOptions2(CT_EMULE_MISCOPTIONS2, 
-//				(RESERVED				     ) 
+//				(RESERVED				     )
+				(uFileIdentifiers		<< 13) |
 				(uDirectUDPCallback		<< 12) |
 				(uSupportsCaptcha		<< 11) |
 				(uSupportsSourceEx2		<< 10) |
@@ -2547,22 +2382,8 @@ void CUpDownClient::SendHelloTypePacket(CSafeMemFile* data)
 
 	if (bSendModVersion) { //MORPH - Added by SiRoB, Don't send MOD_VERSION to client that don't support it to reduce overhead
 		//MORPH - Added by SiRoB, ET_MOD_VERSION 0x55
-		// ==> StulleMule is not banned - Stulle
-		/*
-		//MORPH START - prevent being banned by old MorphXT
-		if(m_bSendOldMorph)
-		{
-			CTag tagMODVersion(ET_MOD_VERSION, theApp.m_strModVersionOld);
-			tagMODVersion.WriteTagToFile(data);
-		}
-		else
-		*/
-		// <== StulleMule is not banned - Stulle
-		{
-			CTag tagMODVersion(ET_MOD_VERSION, theApp.m_strModVersion);
-			tagMODVersion.WriteTagToFile(data);
-		}
-		//MORPH END   - prevent being banned by old MorphXT
+		CTag tagMODVersion(ET_MOD_VERSION, theApp.m_strModVersion);
+		tagMODVersion.WriteTagToFile(data);
 		//MORPH - Added by SiRoB, ET_MOD_VERSION 0x55
 
 		//Morph Start - added by AndCycle, ICS
@@ -2716,14 +2537,16 @@ bool CUpDownClient::Disconnected(LPCTSTR pszReason, bool bFromSocket)
 	// we had still an AICH request pending, handle it
 	if (IsAICHReqPending()){
 		m_fAICHRequested = FALSE;
-		CAICHHashSet::ClientAICHRequestFailed(this);
+		CAICHRecoveryHashSet::ClientAICHRequestFailed(this);
 	}
 
 	// The remote client does not have to answer with OP_HASHSETANSWER *immediatly* 
 	// after we've sent OP_HASHSETREQUEST. It may occure that a (buggy) remote client 
 	// is sending use another OP_FILESTATUS which would let us change to DL-state to DS_ONQUEUE.
-	if (((GetDownloadState() == DS_REQHASHSET) || m_fHashsetRequesting) && (reqfile != NULL))
-        reqfile->hashsetneeded = true;
+	if (m_fHashsetRequestingMD4 && (reqfile != NULL))
+        reqfile->m_bMD4HashsetNeeded = true;
+	if (m_fHashsetRequestingAICH && (reqfile != NULL))
+        reqfile->SetAICHHashSetNeeded(true);
 
     if (m_iFileListRequested){
 		LogWarning(LOG_STATUSBAR, GetResString(IDS_SHAREDFILES_FAILED), GetUserName());
@@ -2793,7 +2616,7 @@ bool CUpDownClient::Disconnected(LPCTSTR pszReason, bool bFromSocket)
 	}
 	socket = NULL;
 
-	theApp.emuledlg->transferwnd->clientlistctrl.RefreshClient(this);
+	theApp.emuledlg->transferwnd->GetClientList()->RefreshClient(this);
 
 	// finally, remove the client from the timeouttimer and reset the connecting state
 	m_nConnectingState = CCS_NONE;
@@ -2809,7 +2632,8 @@ bool CUpDownClient::Disconnected(LPCTSTR pszReason, bool bFromSocket)
 	{
 		if (thePrefs.GetDebugClientTCPLevel() > 0)
 			Debug(_T("--- Disconnected client       %s; Reason=%s\n"), DbgGetClientInfo(true), pszReason);
-		m_fHashsetRequesting = 0;
+		m_fHashsetRequestingMD4 = 0;
+		m_fHashsetRequestingAICH = 0;
 		SetSentCancelTransfer(0);
 		m_bHelloAnswerPending = false;
 		m_fQueueRankPending = 0;
@@ -3314,16 +3138,13 @@ void CUpDownClient::InitClientSoftwareVersion()
 					// ==> Enhanced Client Recognition [Spike] - Stulle
 					// Recognize other Shareazas - just to be sure :)
 #ifdef ENHANCED_CLIENTS_RECOG
-					/*
 					if (StrStrI(m_pszUsername,_T("shareaza")))
 					{
 						m_clientSoft = SO_SHAREAZA;
 						pszSoftware = _T("Shareaza");
 					}
-					else
-					*/
 					// Recognize all eMulePlus - just to be sure !
-					if (StrStr(m_strModVersion,_T("Plus 1")))
+					else if (StrStr(m_strModVersion,_T("Plus 1")))
 					{
 						m_clientSoft = SO_EMULEPLUS;
 						pszSoftware = _T("eMule Plus");
@@ -3438,13 +3259,7 @@ void CUpDownClient::InitClientSoftwareVersion()
 			nClientMinVersion = (m_nClientVersion - uMaj*100000) / 100;
 			nClientUpVersion = m_nClientVersion % 100;
 		}
-		// ==> Enhanced Client Recognition [Spike] - Stulle
-#ifndef ENHANCED_CLIENTS_RECOG
 		else if (m_nClientVersion >= 10100 && m_nClientVersion <= 10309){
-#else
-		else if (m_nClientVersion >= 10100 && m_nClientVersion <= 10409){ // netfinity
-#endif
-		// <== Enhanced Client Recognition [Spike] - Stulle
 			UINT uMaj = m_nClientVersion/10000;
 			nClientMajVersion = uMaj;
 			nClientMinVersion = (m_nClientVersion - uMaj*10000) / 100;
@@ -3498,7 +3313,13 @@ void CUpDownClient::InitClientSoftwareVersion()
 		return;
 	}
 
+	// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifndef ENHANCED_CLIENTS_RECOG
 	if (m_bIsML || iHashType == SO_MLDONKEY){
+#else
+	if (m_bIsML || iHashType == SO_MLDONKEY || iHashType == SO_OLD_MLDONKEY){
+#endif
+	// <== Enhanced Client Recognition [Spike] - Stulle
 		m_clientSoft = SO_MLDONKEY;
 		UINT nClientMinVersion = m_nClientVersion;
 		m_nClientVersion = MAKE_CLIENT_VERSION(0, nClientMinVersion, 0);
@@ -3554,6 +3375,12 @@ int CUpDownClient::GetHashType() const
 	else if (m_achUserHash[5] == 14 && m_achUserHash[14] == 111)
 		return SO_EMULE;
  	else if (m_achUserHash[5] == 'M' && m_achUserHash[14] == 'L')
+	// ==> Enhanced Client Recognition [Spike] - Stulle
+#ifdef ENHANCED_CLIENTS_RECOG
+		return SO_OLD_MLDONKEY;
+	else if (m_achUserHash[5] == 0x0E && m_achUserHash[14] == 0x6F) // Spike2 by Torni - recognize newer MLdonkeys (needed for Enhanced Client Recognization & emulate-Settings!)
+#endif
+	// <== Enhanced Client Recognition [Spike] - Stulle
 		return SO_MLDONKEY;
 	else
 		return SO_UNKNOWN;
@@ -5495,6 +5322,7 @@ bool CUpDownClient::IsMorphLeecher()
 			StrStrI(m_strModVersion,_T("MorphXT 7.60")) ||
 			StrStrI(m_strModVersion,_T("MorphXT 7.30")) ||
 			(StrStrI(m_strModVersion,_T("MorphXT 9.7")) && m_nClientVersion < MAKE_CLIENT_VERSION(0, 48, 0)) ||
+			(StrStrI(m_strModVersion,_T("MorphXT 9.7")) && m_nClientVersion > MAKE_CLIENT_VERSION(0, 49, 2)) ||
 			(StrStrI(m_strModVersion,_T("Morph")) && (StrStrI(m_strModVersion,_T("Max")) || StrStrI(m_strModVersion,_T("+")) || StrStrI(m_strModVersion,_T("FF")) || StrStrI(m_strModVersion,_T("\xD7"))))
 			)
 		{
@@ -5509,33 +5337,6 @@ bool CUpDownClient::IsMorphLeecher()
 	return false;
 }
 //MORPH END - Added by Stulle, Morph Leecher Detection
-
-// ==> StulleMule is not banned - Stulle
-/*
-//MORPH START - prevent being banned by old MorphXT
-bool CUpDownClient::GetOldMorph()
-{
-	if(m_pszUsername == NULL)
-		return true; // unknown, always true!
-
-	if(m_clientSoft != SO_EMULE)
-		return false; // no mule, anyways
-
-	if(m_nClientVersion >= MAKE_CLIENT_VERSION(0, 48, 0))
-		return false; // bug fixed from this point on
-
-	if	(// pre 10.0
-			GetModClient() == MOD_MORPH || // MorphXT
-			GetModClient() == MOD_STULLE || // MorphXT based
-			GetModClient() == MOD_EASTSHARE //|| MorphXT based
-		)
-		return true; // it's an old morph
-
-	return false; // it's not an old morph
-}
-//MORPH END   - prevent being banned by old MorphXT
-*/
-// <== StulleMule is not banned - Stulle
 
 //MOPRH START - Anti ModID Faker [Xman]
 bool CUpDownClient::IsModFaker()
@@ -5626,11 +5427,6 @@ bool CUpDownClient::CheckUserHash()
 			return false;
 }
 //MORPH END   - Added by Stulle, AppleJuice Detection [Xman]
-
-void CUpDownClient::DoKadHello(){
-	if(m_bKadHello)
-		BanLeecher(NULL,0);
-}
 
 // ==> Anti Uploader Ban - Stulle
 bool CUpDownClient::AntiUploaderBanActive()

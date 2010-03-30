@@ -175,12 +175,30 @@ CUInt128& CUInt128::XorBE(const byte *pbyValueBE)
 void CUInt128::ToHexString(CString *pstr) const
 {
 	pstr->SetString(_T(""));
+	//MORPH START - Changed by Stulle, Reduced CPU usage in CUInt128::ToHexString [netfinity]
+	/*
 	CString sElement;
 	for (int iIndex=0; iIndex<4; iIndex++)
-	{   
+	{
 		sElement.Format(_T("%08X"), m_uData[iIndex]);
 		pstr->Append(sElement);
 	}
+	*/
+	wchar_t element[10];
+	for (int i=0; i<4; ++i)
+	{
+		for (int j=0; j<8; ++j)
+		{
+			ULONG   digit = (m_uData[i] >> (j*4)) & 0xF;
+			if (digit < 10)
+				element[7-j] = TCHAR(_T('0') + digit);
+			else
+				element[7-j] = TCHAR(_T('A') + (digit - 10));
+		}
+		element[8] = _T('\0');
+		pstr->Append(element);
+	}
+	//MORPH END   - Changed by Stulle, Reduced CPU usage in CUInt128::ToHexString [netfinity]
 }
 
 CString CUInt128::ToHexString() const
@@ -198,6 +216,8 @@ CString CUInt128::ToHexString() const
 void CUInt128::ToBinaryString(CString *pstr, bool bTrim) const
 {
 	pstr->SetString(_T(""));
+	//MORPH START - Changed by Stulle, Reduced CPU usage in CUInt128::ToBinaryString [netfinity]
+	/*
 	CString sElement;
 	int iBit;
 	for (int iIndex=0; iIndex<128; iIndex++)
@@ -210,6 +230,22 @@ void CUInt128::ToBinaryString(CString *pstr, bool bTrim) const
 			bTrim = false;
 		}
 	}
+	*/
+	int iBit = 0;
+	for (int iIndex=0; iIndex<128; iIndex++)
+	{
+		iBit = GetBitNumber(iIndex);
+		if (!bTrim || iBit != 0)
+		{
+			if(iBit == 0)
+				pstr->Append(_T("0"));
+			else
+				pstr->Append(_T("1"));
+			//pstr->AppendFormat(_T("%d"), iBit);
+			bTrim = false;
+		}
+	}
+	//MORPH END   - Changed by Stulle, Reduced CPU usage in CUInt128::ToBinaryString [netfinity]
 	if (pstr->GetLength() == 0)
 		pstr->SetString(_T("0"));
 }
@@ -297,6 +333,27 @@ CUInt128& CUInt128::Subtract(ULONG uValue)
 	Subtract(CUInt128(uValue));
 	return *this;
 }
+
+/* Untested
+CUInt128& CUInt128::Div(ULONG uValue)
+{
+	ULONG uBit, uRemain = 0;
+	for (i = 0; i < 128; i++)
+	{
+		uBit = GetBitNumber(0);
+		uRemain <<= 1;
+		if (uBit)
+			uRemain |= 1;
+		ShiftLeft(1);
+		if (uRemain >= uValue)
+		{
+			uRemain -= uValue;
+			SetBitNumber(127, 1);
+		}
+	}
+	return *this;
+}
+*/
 
 CUInt128& CUInt128::ShiftLeft(UINT uBits)
 {

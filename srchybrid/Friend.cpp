@@ -139,13 +139,6 @@ void CFriend::LoadFromFile(CFileDataIO* file)
 				break;
 			}
 			//MORPH END - Added by Yun.SF3, ZZ Upload System
-			// ==> Import 0x66 FriendSlots - Stulle
-			case 0x66: {
-				if(thePrefs.m_bImport60Friends && newtag->IsInt())
-					m_friendSlot = (newtag->GetInt() == 1) ? true : false;
-				break;
-			}
-			// <== Import 0x66 FriendSlots - Stulle
 			// MORPH (CB) Friendnote START
 			case FF_FRIENDNOTE: {
 				ASSERT( newtag->IsStr() );

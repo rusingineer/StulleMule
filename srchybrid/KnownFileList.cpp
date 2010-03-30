@@ -27,7 +27,7 @@
 #include "UpDownClient.h"
 #include "DownloadQueue.h"
 #include "emuledlg.h"
-#include "TransferWnd.h"
+#include "TransferDlg.h"
 #include "Log.h"
 #include "packets.h"
 #include "MD5Sum.h"
@@ -56,6 +56,9 @@ CKnownFileList::CKnownFileList()
 	accepted = 0;
 	requested = 0;
 	transferred = 0;
+	m_nRequestedTotal = 0;
+	m_nAcceptedTotal = 0;
+	m_nTransferredTotal = 0;
 	m_dwCancelledFilesSeed = 0;
 	m_nLastSaved = ::GetTickCount();
 	Init();
@@ -120,7 +123,8 @@ bool CKnownFileList::LoadKnownFiles()
 			pRecord = new CKnownFile();
 			if (!pRecord->LoadFromFile(&file)){
 				TRACE(_T("*** Failed to load entry %u (name=%s  hash=%s  size=%I64u  parthashs=%u expected parthashs=%u) from known.met\n"), i, 
-					pRecord->GetFileName(), md4str(pRecord->GetFileHash()), pRecord->GetFileSize(), pRecord->GetHashCount(), pRecord->GetED2KPartCount());	// SLUGFILLER: SafeHash - removed unnececery hash counter
+					pRecord->GetFileName(), md4str(pRecord->GetFileHash()), pRecord->GetFileSize()
+					, pRecord->GetFileIdentifier().GetAvailableMD4PartHashCount(), pRecord->GetFileIdentifier().GetTheoreticalMD4PartHashCount());
 				delete pRecord;
 				pRecord = NULL;
 				continue;
@@ -406,7 +410,7 @@ bool CKnownFileList::SafeAddKFile(CKnownFile* toadd)
 		// shared file list -> crash.
 
 		m_Files_map.RemoveKey(CCKey(pFileInMap->GetFileHash()));
-		m_mapKnownFilesByAICH.RemoveKey(pFileInMap->GetAICHHashset()->GetMasterHash());
+		m_mapKnownFilesByAICH.RemoveKey(pFileInMap->GetFileIdentifier().GetAICHHash());
 		//This can happen in a couple situations..
 		//File was renamed outside of eMule.. 
 		//A user decided to redownload a file he has downloaded and unshared..
@@ -450,8 +454,8 @@ bool CKnownFileList::SafeAddKFile(CKnownFile* toadd)
 
 		// Quick fix: If we downloaded already downloaded files again and if those files all had the same file names
 		// and were renamed during file completion, we have a pending ptr in transfer window.
-		if (theApp.emuledlg && theApp.emuledlg->transferwnd && theApp.emuledlg->transferwnd->downloadlistctrl.m_hWnd)
-			theApp.emuledlg->transferwnd->downloadlistctrl.RemoveFile((CPartFile*)pFileInMap);
+		if (theApp.emuledlg && theApp.emuledlg->transferwnd && theApp.emuledlg->transferwnd->GetDownloadList()->m_hWnd)
+			theApp.emuledlg->transferwnd->GetDownloadList()->RemoveFile((CPartFile*)pFileInMap);
 
 		//MORPH START - Added, Downloaded History [Monki/Xman]
 #ifndef NO_HISTORY
@@ -465,8 +469,8 @@ bool CKnownFileList::SafeAddKFile(CKnownFile* toadd)
 	if (bRemovedDuplicateSharedFile) {
 		theApp.sharedfiles->SafeAddKFile(toadd);
 	}
-	if (toadd->GetAICHHashset()->HasValidMasterHash())
-		m_mapKnownFilesByAICH.SetAt(toadd->GetAICHHashset()->GetMasterHash(), toadd);
+	if (toadd->GetFileIdentifier().HasAICHHash())
+		m_mapKnownFilesByAICH.SetAt(toadd->GetFileIdentifier().GetAICHHash(), toadd);
 	return true;
 }
 
@@ -528,8 +532,8 @@ void CKnownFileList::MergePartFileStats(CKnownFile* original){
 	{
 		m_Files_map.RemoveKey(CCKey(pFileInMap->GetFileHash()));
 		//MORPH - mergeKnown fix
-		if (theApp.emuledlg && theApp.emuledlg->transferwnd && theApp.emuledlg->transferwnd->downloadlistctrl.m_hWnd)
-			theApp.emuledlg->transferwnd->downloadlistctrl.RemoveFile((CPartFile*)pFileInMap);
+		if (theApp.emuledlg && theApp.emuledlg->transferwnd && theApp.emuledlg->transferwnd->GetDownloadList()->m_hWnd)
+			theApp.emuledlg->transferwnd->GetDownloadList()->RemoveFile((CPartFile*)pFileInMap);
 		//MORPH - mergeKnown fix
 		ASSERT( original->GetFileSize() == pFileInMap->GetFileSize() );
 		if (original->GetFileSize() == pFileInMap->GetFileSize())
@@ -880,6 +884,7 @@ UINT AFX_CDECL CSaveKnownThread::RunProc(LPVOID pParam)
 
 UINT CSaveKnownThread::RunInternal()
 {
+	AddDebugLogLine(false,_T("CSaveKnownThread started"));
 	while(bDoRun) 
 	{
 		theApp.knownfiles->Save();
@@ -889,6 +894,7 @@ UINT CSaveKnownThread::RunInternal()
 	}
 
 	threadEndedEvent->SetEvent();
+	AddDebugLogLine(false,_T("CSaveKnownThread ended"));
 
 	return 0;
 }

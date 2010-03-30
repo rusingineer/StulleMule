@@ -21,6 +21,7 @@
 #include "MenuCmds.h"
 #include "UserMsgs.h"
 #include "VisualStylesXP.h"
+#include "MenuXP.h" // XP Style Menu [Xanatos] - Stulle
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -468,7 +469,7 @@ void CClosableTabCtrl::SetAllIcons()
 		const int iIconHeight = 16;
 		m_ImgLstCloseButton.DeleteImageList();
 		m_ImgLstCloseButton.Create(iIconWidth, iIconHeight, theApp.m_iDfltImageListColorFlags | ILC_MASK, 0, 1);
-		m_ImgLstCloseButton.SetBkColor(CLR_NONE);
+		m_ImgLstCloseButton.SetBkColor(CLR_NONE); // Morph - Stullemon: Why do we need this?
 		m_ImgLstCloseButton.Add(CTempIconLoader(_T("CloseTabSelected"), iIconWidth, iIconHeight));
 		m_ImgLstCloseButton.Add(CTempIconLoader(_T("CloseTab"), iIconWidth, iIconHeight));
 		m_ImgLstCloseButton.GetImageInfo(0, &m_iiCloseButton);
@@ -496,9 +497,17 @@ void CClosableTabCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 		{
 			if (GetParent()->SendMessage(UM_QUERYTAB, (WPARAM)iTab) == 0)
 			{
+				// ==> XP Style Menu [Xanatos] - Stulle
+				/*
 				CMenu menu;
 				menu.CreatePopupMenu();
 				menu.AppendMenu(MF_STRING, MP_REMOVE, GetResString(IDS_FD_CLOSE));
+				*/
+				CTitleMenu menu;
+				menu.CreatePopupMenu();
+				menu.AddMenuTitle(GetResString(IDS_SEARCH_ARC));
+				menu.AppendMenu(MF_STRING, MP_REMOVE, GetResString(IDS_FD_CLOSE), _T("CLOSETABSELECTED"));
+				// <== XP Style Menu [Xanatos] - Stulle
 				menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
 				VERIFY( menu.DestroyMenu() ); // XP Style Menu [Xanatos] - Stulle
 			}
@@ -552,4 +561,12 @@ HBRUSH CClosableTabCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 BOOL CClosableTabCtrl::OnEraseBkgnd(CDC* pDC)
 {
 	return CTabCtrl::OnEraseBkgnd(pDC);
+}
+
+BOOL CClosableTabCtrl::DeleteItem(int nItem)
+{
+	// if we remove a tab which would lead to scrolling back to other tabs, all those become hidden for... whatever reasons
+	// its easy enough wo work arround by scrolling to the first visible tab _before_ we delete the other one
+	SetCurSel(0);
+	return __super::DeleteItem(nItem);
 }

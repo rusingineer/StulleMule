@@ -19,9 +19,9 @@
 
 //MORPH START - Added by SiRoB, [-modname-]
 //START - This part should not be changed in anyway
-#define MOD_VERSION_MJR		6
-#define MOD_VERSION_MIN		2
-#define MOD_VERSION_BUILD	8
+#define MOD_VERSION_MJR		7
+#define MOD_VERSION_MIN		0
+#define MOD_VERSION_BUILD	1
 #define	MOD_VERSION			_T("StulleMule") // remark: last sign != ' ' (space) !!!
 #define	MOD_VERSION_LONG	_T("StulleMule v")
 ///END - This part should not be changed in anyway
@@ -30,7 +30,7 @@
 // Stulle uses his own code! :P
 //MORPH END  - Added by SiRoB, [itsonlyme: -modname-]
 // ==> Morph-Version-Check Changes for StulleMule - Stulle
-#define MOD_MORPH_VERSION_MJR		11
-#define MOD_MORPH_VERSION_MIN		3
-#define MOD_MORPH_VERSION_BUILD		1
+#define MOD_MORPH_VERSION_MJR		12
+#define MOD_MORPH_VERSION_MIN		0
+#define MOD_MORPH_VERSION_BUILD		2
 // <== Morph-Version-Check Changes for StulleMule - Stulle

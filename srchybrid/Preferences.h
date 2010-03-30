@@ -357,6 +357,7 @@ public:
 	*/
 	static	DWORD	m_adwStatsColors[17];
 	// <== Source Graph - Stulle
+	static	bool	bHasCustomTaskIconColor;
 	static  bool	m_bIconflashOnNewMessage;
 
 	static	bool	splashscreen;
@@ -706,6 +707,11 @@ public:
 	static	bool	m_bAdjustNTFSDaylightFileTime;
 	static	bool	m_bRearrangeKadSearchKeywords;
 	static  bool    m_bAllocFull;
+	static	bool	m_bShowSharedFilesDetails;
+	static  bool	m_bShowWin7TaskbarGoodies;
+	static  bool	m_bShowUpDownIconInTaskbar;
+	static	bool	m_bForceSpeedsToKB;
+	static	bool	m_bAutoShowLookups;
 
 
 	// Web Server [kuchin]
@@ -766,6 +772,7 @@ public:
 	static	CSize	m_sizToolbarIconSize;
 
 	static	bool	m_bWinaTransToolbar;
+	static	bool	m_bShowDownloadToolbar;
 
 	//preview
 	static	bool	m_bPreviewEnabled;
@@ -1031,6 +1038,7 @@ public:
 	static	CStringList inactive_sharedsubdir_list;	// sharedsubdir inactive
     
 	static	CStringList addresses_list;
+	static	bool	m_bKeepUnavailableFixedSharedDirs;
 
 	static	int		m_iDbgHeap;
 	static	UINT	m_nWebMirrorAlertLevel;
@@ -1111,11 +1119,21 @@ public:
 
 	static bool m_bStaticIcon; //MORPH - Added, Static Tray Icon
 
-	static int m_iServiceStartupMode; // MORPH leuk_he:run as ntservice v1..
+	//MORPH START leuk_he:run as ntservice v1..
+	static int		m_iServiceStartupMode;
+	static int		m_iServiceOptLvl;
+	//MORPH END leuk_he:run as ntservice v1..
+
 	// ==> [MoNKi: -USS initial TTL-] - Stulle
 	static uint8	m_iUSSinitialTTL;
 	// <== [MoNKi: -USS initial TTL-] - Stulle
 
+	//MORPH START - Added by Stulle, Adjustable NT Service Strings
+	static CString	m_strServiceName;
+	static CString	m_strServiceDispName;
+	static CString	m_strServiceDescr;
+	static bool		m_bServiceStringsLoaded;
+	//MORPH END   - Added by Stulle, Adjustable NT Service Strings
 
 	// ==> push small files [sivka] - Stulle
     static  bool	enablePushSmallFile;
@@ -1352,7 +1370,6 @@ public:
 #ifdef ASFU
 	static bool			m_bDirectoryWatcher;
 	static bool			m_bSingleSharedDirWatcher;
-	static uint32		m_uTimeBetweenReloads;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -1367,14 +1384,6 @@ public:
 	static bool		m_bSplitWindow;
 #endif
 	// <== Advanced Transfer Window Layout - Stulle
-
-	// ==> Adjustable NT Service Strings - Stulle
-	static CString	m_strServiceName;
-	static CString	m_strServiceDispName;
-	static CString	m_strServiceDescr;
-	// <== Adjustable NT Service Strings - Stulle
-
-	static bool		m_bImport60Friends; // Import 0x66 FriendSlots - Stulle
 
 	enum Table
 	{
@@ -1432,7 +1441,7 @@ public:
 
 	static	LPCTSTR GetTempDir(int id = 0)				{return (LPCTSTR)tempdir.GetAt((id < tempdir.GetCount()) ? id : 0);}
 	static	int		GetTempDirCount()					{return tempdir.GetCount();}
-	static	bool	CanFSHandleLargeFiles();
+	static	bool	CanFSHandleLargeFiles(int nForCat);
 	static	LPCTSTR GetConfigFile();
 	static	const CString& GetFileCommentsFilePath()	{return m_strFileCommentsFilePath;}
 	static	CString	GetMuleDirectory(EDefaultDirectory eDirectory, bool bCreate = true);
@@ -1748,6 +1757,7 @@ public:
 
 	static	bool	IsErrorBeepEnabled()				{return beepOnError;}
 	static	bool	IsConfirmExitEnabled()				{return confirmExit;}
+	static	void	SetConfirmExit(bool bVal)			{confirmExit = bVal;} 
 	static	bool	UseSplashScreen()					{return splashscreen;}
 	static  bool	UseStartupSound()			{return startupsound;}//Commander - Added: Enable/Disable Startupsound
 	static  bool	UseSideBanner()			    {return sidebanner;}//Commander - Added: Side Banner	
@@ -1921,6 +1931,7 @@ public:
 	static	void	GetAllStatsColors(int iCount, LPDWORD pdwColors);
 	static	bool	SetAllStatsColors(int iCount, const DWORD* pdwColors);
 	static	void	ResetStatsColor(int index);
+	static	bool	HasCustomTaskIconColor()			{return bHasCustomTaskIconColor;}
 
 	static	void	SetMaxConsPerFive(UINT in)			{MaxConperFive=in;}
 	static	LPLOGFONT GetHyperTextLogFont()				{return &m_lfHyperText;}
@@ -1954,6 +1965,9 @@ public:
 	static	bool	GetSparsePartFiles();
 	static	void	SetSparsePartFiles(bool bEnable)	{m_bSparsePartFiles = bEnable;}
 	static	bool	GetResolveSharedShellLinks()		{return m_bResolveSharedShellLinks;}
+	static  bool	IsShowUpDownIconInTaskbar()			{return m_bShowUpDownIconInTaskbar;}
+	static  bool	IsWin7TaskbarGoodiesEnabled()				{return m_bShowWin7TaskbarGoodies;}
+	static  void    SetWin7TaskbarGoodiesEnabled(bool flag)	{m_bShowWin7TaskbarGoodies = flag;}
 
 	static	void	SetMaxUpload(UINT in);
 	static	void	SetMaxDownload(UINT in);
@@ -2009,7 +2023,18 @@ public:
 	static	UINT	GetMaxLogFileSize()					{return uMaxLogFileSize;}
 	static	ELogFileFormat GetLogFileFormat()			{return m_iLogFileFormat;}
 
-	static int      GetServiceStartupMode(); // MORPH leuk_he:run as ntservice v1..
+	//MORPH START leuk_he:run as ntservice v1..
+	static int      GetServiceStartupMode();
+	static int		GetServiceOptLvl()		{ return m_iServiceOptLvl; }
+	//MORPH END leuk_he:run as ntservice v1..
+	//MORPH START - Added by Stulle, Adjustable NT Service Strings
+	static	CString	GetServiceName();
+	static	void	SetServiceName(CString in)		{ m_strServiceName = in; }
+	static	CString	GetServiceDispName()			{ return m_strServiceDispName; }
+	static	void	SetServiceDispName(CString in)	{ m_strServiceDispName = in; }
+	static	CString	GetServiceDescr()				{ return m_strServiceDescr; }
+	static	void	SetServiceDescr(CString in)		{ m_strServiceDescr = in; }
+	//MORPH END   - Added by Stulle, Adjustable NT Service Strings
 
 	// WebServer
 	/*
@@ -2098,6 +2123,11 @@ public:
 	static	bool	GetShowActiveDownloadsBold()		{return m_bShowActiveDownloadsBold;}
 #endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
+	static	bool	GetShowSharedFilesDetails()			{return m_bShowSharedFilesDetails;}
+	static	void	SetShowSharedFilesDetails(bool bIn) {m_bShowSharedFilesDetails = bIn;}
+	static	bool	GetAutoShowLookups()				{return m_bAutoShowLookups;}
+	static	void	SetAutoShowLookups(bool bIn)		{m_bAutoShowLookups = bIn;}
+	static	bool	GetForceSpeedsToKB()				{return m_bForceSpeedsToKB;}
 
     //Commander - Added: Client Percentage - Start
 	static	bool	GetUseClientPercentage()					{ return m_bShowClientPercentage;}
@@ -2125,6 +2155,8 @@ public:
 	static	void	SetToolbarIconSize(CSize siz)		{m_sizToolbarIconSize = siz;}
 
 	static	bool	IsTransToolbarEnabled()				{return m_bWinaTransToolbar;}
+	static	bool	IsDownloadToolbarEnabled()			{return m_bShowDownloadToolbar;}
+	static	void	SetDownloadToolbar(bool bShow)		{m_bShowDownloadToolbar = bShow;}
 
 	static	int		GetSearchMethod()					{return m_iSearchMethod;}
 	static	void	SetSearchMethod(int iMethod)		{m_iSearchMethod = iMethod;}
@@ -2825,8 +2857,6 @@ public:
 	static	void	SetDirectoryWatcher(bool in)		{ m_bDirectoryWatcher = in; }
 	static	bool	GetSingleSharedDirWatcher()			{ return m_bSingleSharedDirWatcher; }
 	static	void	SetSingleSharedDirWatcher(bool in)	{ m_bSingleSharedDirWatcher = in; }
-	static	uint32	GetTimeBetweenReloads()				{ return m_uTimeBetweenReloads; }
-	static	void	SetTimeBetweenReloads(uint32 in)	{ m_uTimeBetweenReloads = in; }
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -2865,15 +2895,6 @@ public:
 	static	void	SetSplitWindow(bool in)	{ m_bSplitWindow = in; }
 #endif
 	// <== Advanced Transfer Window Layout - Stulle
-
-	// ==> Adjustable NT Service Strings - Stulle
-	static	CString	GetServiceName()				{ return m_strServiceName; }
-	static	void	SetServiceName(CString in)		{ m_strServiceName = in; }
-	static	CString	GetServiceDispName()			{ return m_strServiceDispName; }
-	static	void	SetServiceDispName(CString in)	{ m_strServiceDispName = in; }
-	static	CString	GetServiceDescr()				{ return m_strServiceDescr; }
-	static	void	SetServiceDescr(CString in)		{ m_strServiceDescr = in; }
-	// <== Adjustable NT Service Strings - Stulle
 
 	// ==> ZZ Ratio Activation Changes - Stulle
 public: 

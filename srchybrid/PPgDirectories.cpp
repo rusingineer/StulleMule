@@ -31,7 +31,7 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 
@@ -84,8 +84,8 @@ BOOL CPPgDirectories::OnInitDialog()
 /* old version: on column
 	m_ctlUncPaths.InsertColumn(0, GetResString(IDS_UNCFOLDERS), LVCFMT_LEFT, 280); 
 */
-	m_ctlUncPaths.InsertColumn(0, GetResString(IDS_UNCLIST_INACTIVE  ), LVCFMT_LEFT, 250);  // sharesubdir ==> this can be better
-	m_ctlUncPaths.InsertColumn(1,GetResString(IDS_SUBDIRS), LVCFMT_LEFT,30); // sharesubdir + column for inactive shares
+	m_ctlUncPaths.InsertColumn(0, GetResString(IDS_UNCLIST_INACTIVE  ), LVCFMT_LEFT, 270);  // sharesubdir ==> this can be better
+	m_ctlUncPaths.InsertColumn(1,GetResString(IDS_SUBDIRS), LVCFMT_LEFT); // sharesubdir + column for inactive shares
 	m_ctlUncPaths.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 
 	GetDlgItem(IDC_SELTEMPDIRADD)->ShowWindow(thePrefs.IsExtControlsEnabled()?SW_SHOW:SW_HIDE);
@@ -95,7 +95,7 @@ BOOL CPPgDirectories::OnInitDialog()
 	Localize();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX Property Pages should return FALSE
+				  // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CPPgDirectories::LoadSettings(void)
@@ -189,9 +189,9 @@ BOOL CPPgDirectories::OnApply()
 				SHFILEINFO info;
 				if (SHGetFileInfo(ff.GetFilePath(), 0, &info, sizeof(info), SHGFI_ATTRIBUTES) && (info.dwAttributes & SFGAO_LINK)){
 					if (!thePrefs.GetResolveSharedShellLinks())
-									continue;
-								}
-							}
+						continue;
+				}
+			}
 
 			// ignore real THUMBS.DB files -- seems that lot of ppl have 'thumbs.db' files without the 'System' file attribute
 			if (ff.GetFileName().CompareNoCase(_T("thumbs.db")) == 0)
@@ -282,7 +282,6 @@ BOOL CPPgDirectories::OnApply()
 	// Commander - Added: Custom incoming / temp folder icon [emulEspaña] - End
 		thePrefs.m_strIncomingDir = strIncomingDir;
 	MakeFoldername(thePrefs.m_strIncomingDir);
-	thePrefs.GetCategory(0)->strIncomingPath = thePrefs.GetMuleDirectory(EMULE_INCOMINGDIR);
 
 	// Commander - Added: Custom incoming / temp folder icon [emulEspaña] - Start
 	if(thePrefs.ShowFolderIcons()){
@@ -335,11 +334,9 @@ BOOL CPPgDirectories::OnApply()
 	}
 	*/ // end safehash remove
 
-	if (testtempdirchanged)
-		AfxMessageBox(GetResString(IDS_SETTINGCHANGED_RESTART));
-	
 	// on changing incoming dir, update incoming dirs of category of the same path
 	if (testincdirchanged.CompareNoCase(thePrefs.GetMuleDirectory(EMULE_INCOMINGDIR)) != 0) {
+		thePrefs.GetCategory(0)->strIncomingPath = thePrefs.GetMuleDirectory(EMULE_INCOMINGDIR);
 		CString oldpath;
 		bool dontaskagain=false;
 		for (int cat=1; cat<=thePrefs.GetCatCount()-1;cat++){
@@ -354,11 +351,17 @@ BOOL CPPgDirectories::OnApply()
 				thePrefs.GetCategory(cat)->strIncomingPath = thePrefs.GetMuleDirectory(EMULE_INCOMINGDIR) + oldpath.Mid(testincdirchanged.GetLength());
 			}
 		}
+		thePrefs.SaveCats();
 	}
+
+
+	if (testtempdirchanged)
+		AfxMessageBox(GetResString(IDS_SETTINGCHANGED_RESTART));
 
 	theApp.emuledlg->sharedfileswnd->Reload();
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
+	theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: OnApply"));
 	if(thePrefs.GetDirectoryWatcher())
 		theApp.ResetDirectoryWatcher();
 #endif
@@ -574,7 +577,6 @@ void CPPgDirectories::OnDestroy()
 	/*
 	CPropertyPage::OnDestroy();
 	*/
-	// Stullemon - is this right? it should be 'coz we derive from CPPgtooltipped
 	CPPgtooltipped::OnDestroy();
 	//tooltipped
 	if (m_icoBrowse)

@@ -803,12 +803,13 @@ bool CSharedFileList::AddSingleSharedFile(const CString& rstrFilePath, bool bNoU
 #ifdef ASFU
 		if(!bNoUpdate)
 		{
-			if(iDoAsfuReset == -1) // checked checkbox to share single file
+			if(iDoAsfuReset == -1)
 			{
+				theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: AddSingleSharedFile"));
 				if(thePrefs.GetDirectoryWatcher() && thePrefs.GetSingleSharedDirWatcher())
 					theApp.ResetDirectoryWatcher();
 			}
-			else if(iDoAsfuReset == 0) // adding single files via drop
+			else if(iDoAsfuReset == 0)
 				iDoAsfuReset = 1; // we would have resetted but don't do so just now
 		}
 #endif
@@ -879,11 +880,8 @@ void CSharedFileList::RepublishFile(CKnownFile* pFile)
 
 bool CSharedFileList::AddFile(CKnownFile* pFile)
 {
-	/* morph SafeHash - use GetED2KPartCount
-	ASSERT( pFile->GetHashCount() == pFile->GetED2KPartHashCount() );
-	*/
-	ASSERT( pFile->GetHashCount() == pFile->GetED2KPartCount() );	// SLUGFILLER: SafeHash - use GetED2KPartCount
-	ASSERT( !pFile->IsKindOf(RUNTIME_CLASS(CPartFile)) || !STATIC_DOWNCAST(CPartFile, pFile)->hashsetneeded );
+	ASSERT( pFile->GetFileIdentifier().HasExpectedMD4HashCount() );
+	ASSERT( !pFile->IsKindOf(RUNTIME_CLASS(CPartFile)) || !STATIC_DOWNCAST(CPartFile, pFile)->m_bMD4HashsetNeeded );
 	ASSERT( !pFile->IsShellLinked() || ShouldBeShared(pFile->GetSharedDirectory(), _T(""), false) );
 	CCKey key(pFile->GetFileHash());
 	CKnownFile* pFileInMap;
@@ -940,6 +938,10 @@ bool CSharedFileList::AddFile(CKnownFile* pFile)
 	*/
 	// SLUGFILLER END: mergeKnown - moved up
 
+	theApp.knownfiles->m_nRequestedTotal += pFile->statistic.GetAllTimeRequests();
+	theApp.knownfiles->m_nAcceptedTotal += pFile->statistic.GetAllTimeAccepts();
+	theApp.knownfiles->m_nTransferredTotal += pFile->statistic.GetAllTimeTransferred();
+
 	return true;
 }
 
@@ -993,7 +995,12 @@ bool CSharedFileList::RemoveFile(CKnownFile* pFile, bool bDeleted)
 	output->RemoveFile(pFile, bDeleted);
 	m_keywords->RemoveKeywords(pFile);
 	if (bResult)
+	{
 		m_UnsharedFiles_map.SetAt(CSKey(pFile->GetFileHash()), true);
+		theApp.knownfiles->m_nRequestedTotal -= pFile->statistic.GetAllTimeRequests();
+		theApp.knownfiles->m_nAcceptedTotal -= pFile->statistic.GetAllTimeAccepts();
+		theApp.knownfiles->m_nTransferredTotal -= pFile->statistic.GetAllTimeTransferred();
+	}
 	m_dwFile_map_updated = GetTickCount(); //MOPRH - Added by SiRoB, Optimization requpfile
 	return bResult;
 }
@@ -1026,13 +1033,14 @@ void CSharedFileList::SetOutputCtrl(CSharedFilesCtrl* in_ctrl)
 	HashNextFile();		// SLUGFILLER: SafeHash - if hashing not yet started, start it now
 	*/
 	LoadSingleSharedFilesList(); // MORPH SLUGFILLER: SafeHash - load shared files after everything
-	Reload();		// MORPH SLUGFILLER: SafeHash - load shared files after everything
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
+	theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: SetOutputCtrl"));
 	if(thePrefs.GetDirectoryWatcher() && thePrefs.GetSingleSharedDirWatcher())
 		theApp.ResetDirectoryWatcher();
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
+	Reload();		// MORPH SLUGFILLER: SafeHash - load shared files after everything
 }
 
 uint8 GetRealPrio(uint8 in)
@@ -1106,7 +1114,14 @@ void CSharedFileList::SendListToServer(){
 		m_Files_map.GetNextAssoc(pos, bufKey, cur_file);
 		added=false;
 		//insertsort into sortedList
+		//MORPH START - Changed by Stulle, Don't publish incomplete small files [WiZaRd]
+		/*
 		if(!cur_file->GetPublishedED2K() ) {
+		*/
+		if(cur_file->GetFileSize() <= PARTSIZE && cur_file->IsPartFile())
+			added=true;
+		if(!added && !cur_file->GetPublishedED2K() ) {
+		//MORPH END   - Changed by Stulle, Don't publish incomplete small files [WiZaRd]
 			if  (!cur_file->IsLargeFile() || (pCurServer != NULL && pCurServer->SupportsLargeFilesTCP()))
 			{
 				for (pos2 = sortedList.GetHeadPosition();pos2 != 0 && !added;sortedList.GetNext(pos2))
@@ -1485,6 +1500,20 @@ CKnownFile* CSharedFileList::GetFileByID(const uchar* hash) const
 			return found_file;
 	}
 	return NULL;
+}
+
+CKnownFile* CSharedFileList::GetFileByIdentifier(const CFileIdentifierBase& rFileIdent, bool bStrict) const
+{
+	CKnownFile* pResult;
+	if (m_Files_map.Lookup(CCKey(rFileIdent.GetMD4Hash()), pResult))
+	{
+		if (bStrict)
+			return pResult->GetFileIdentifier().CompareStrict(rFileIdent) ? pResult : NULL;
+		else
+			return pResult->GetFileIdentifier().CompareRelaxed(rFileIdent) ? pResult : NULL;
+	}
+	else
+		return NULL;
 }
 
 
@@ -1890,6 +1919,7 @@ bool CSharedFileList::ExcludeFile(CString strFilePath)
 #ifdef ASFU
 	else
 	{
+		theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: ExcludeFile"));
 		if(thePrefs.GetDirectoryWatcher() && thePrefs.GetSingleSharedDirWatcher())
 			theApp.ResetDirectoryWatcher();
 	}
@@ -2288,6 +2318,34 @@ CString CSharedFileList::GetDirNameByPseudo(const CString& strPseudoName) const
 	CString strResult;
 	m_mapPseudoDirNames.Lookup(strPseudoName, strResult);
 	return strResult;
+}
+
+bool CSharedFileList::GetPopularityRank(const CKnownFile* pFile, uint32& rnOutSession, uint32& rnOutTotal) const
+{
+	rnOutSession = 0;
+	rnOutTotal = 0;
+	if (GetFileByIdentifier(pFile->GetFileIdentifierC()) == NULL)
+	{
+		ASSERT( false );
+		return false;
+	}
+	// cycle all files, each file which has more request than the given files lowers the rank
+	CKnownFile* cur_file;
+	CCKey bufKey;
+	for (POSITION pos = m_Files_map.GetStartPosition(); pos != 0; )
+	{
+		m_Files_map.GetNextAssoc(pos,bufKey,cur_file);
+		if (cur_file == pFile)
+			continue;
+		if (cur_file->statistic.GetAllTimeRequests() > pFile->statistic.GetAllTimeRequests())
+			rnOutTotal++;
+		if (cur_file->statistic.GetRequests() > pFile->statistic.GetRequests())
+			rnOutSession++;
+	}
+	// we start at rank #1, not 0
+	rnOutSession++;
+	rnOutTotal++;
+	return true;
 }
 
 //MORPH START - Added by SiRoB, POWERSHARE Limit

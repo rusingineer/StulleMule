@@ -10,7 +10,7 @@
 * $Workfile:$
 * $Revision: 1.3 $
 * $Modtime:$
-* $Author: stulleamgym $
+* $Author: sirob $
 *
 * Revision History:
 *	$History:$

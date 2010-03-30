@@ -3,7 +3,7 @@
 
 // MORPH START leuk_he tooltipped
 /*
-class CPPgServer : public CPropertyPage
+class CPPgServer : public CPropertyPage 
 */
 class CPPgServer : public CPPgtooltipped  
 // MORPH END leuk_he tooltipped

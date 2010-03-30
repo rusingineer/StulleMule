@@ -10,7 +10,7 @@
 #include "SharedFilesCtrl.h"
 #include "UserMsgs.h"
 #include "emuledlg.h"
-#include "TransferWnd.h"
+#include "TransferDlg.h"
 #include "ServerWnd.h"
 #include "ServerListCtrl.h"
 #include "MuleStatusBarCtrl.h"

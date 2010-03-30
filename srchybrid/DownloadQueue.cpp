@@ -35,7 +35,7 @@
 #include "kademlia/utils/uint128.h"
 #include "ipfilter.h"
 #include "emuledlg.h"
-#include "TransferWnd.h"
+#include "TransferDlg.h"
 #include "TaskbarNotifier.h"
 #include "MenuCmds.h"
 #include "Log.h"
@@ -167,7 +167,7 @@ void CDownloadQueue::Init(){
 				if (toadd->GetStatus(true) == PS_READY)
 					theApp.sharedfiles->SafeAddKFile(toadd); // part files are always shared files
 				*/
-				theApp.emuledlg->transferwnd->downloadlistctrl.AddFile(toadd);// show in downloadwindow
+				theApp.emuledlg->transferwnd->GetDownloadList()->AddFile(toadd);// show in downloadwindow
 			}
 			else
 				delete toadd;
@@ -197,7 +197,7 @@ void CDownloadQueue::Init(){
 				if (toadd->GetStatus(true) == PS_READY)
 					theApp.sharedfiles->SafeAddKFile(toadd); // part files are always shared files
 				*/
-				theApp.emuledlg->transferwnd->downloadlistctrl.AddFile(toadd);// show in downloadwindow
+				theApp.emuledlg->transferwnd->GetDownloadList()->AddFile(toadd);// show in downloadwindow
 
 				AddLogLine(false, GetResString(IDS_RECOVERED_PARTMET), toadd->GetFileName());
 			}
@@ -245,7 +245,7 @@ void CDownloadQueue::AddSearchToDownload(CSearchFile* toadd, uint8 paused, int c
 	if (toadd->GetFileSize() == (uint64)0 || IsFileExisting(toadd->GetFileHash()))
 		return;
 
-	if (toadd->GetFileSize() > OLD_MAX_EMULE_FILE_SIZE && !thePrefs.CanFSHandleLargeFiles()){
+	if (toadd->GetFileSize() > OLD_MAX_EMULE_FILE_SIZE && !thePrefs.CanFSHandleLargeFiles(cat)){
 		LogError(LOG_STATUSBAR, GetResString(IDS_ERR_FSCANTHANDLEFILE));
 		return;
 	}
@@ -463,16 +463,38 @@ void CDownloadQueue::AddFileLinkToDownload(CED2KFileLink* pLink, int theCat, boo
 		partfile = GetFileByID(pLink->GetHashKey());
 	if (partfile)
 	{
-		if (pLink->HasValidSources())
-			partfile->AddClientSources(pLink->SourcesList,1,false);
-		if (pLink->HasValidAICHHash() ){
-			if ( !(partfile->GetAICHHashset()->HasValidMasterHash() && partfile->GetAICHHashset()->GetMasterHash() == pLink->GetAICHHash())){
-				partfile->GetAICHHashset()->SetMasterHash(pLink->GetAICHHash(), AICH_VERIFIED);
-				partfile->GetAICHHashset()->FreeHashSet();
+		// match the fileidentifier and only if the are the same add possible sources
+		CFileIdentifierSA tmpFileIdent(pLink->GetHashKey(), pLink->GetSize(), pLink->GetAICHHash(), pLink->HasValidAICHHash());
+		if (partfile->GetFileIdentifier().CompareRelaxed(tmpFileIdent))
+		{
+			if (pLink->HasValidSources())
+				partfile->AddClientSources(pLink->SourcesList, 1, false);
+			if (!partfile->GetFileIdentifier().HasAICHHash() && tmpFileIdent.HasAICHHash())
+			{
+				partfile->GetFileIdentifier().SetAICHHash(tmpFileIdent.GetAICHHash());
+				partfile->GetAICHRecoveryHashSet()->SetMasterHash(tmpFileIdent.GetAICHHash(), AICH_VERIFIED);
+				partfile->GetAICHRecoveryHashSet()->FreeHashSet();
+
 			}
+			//MORPH START - Added by Stulle, Only resolve hostnames for downloads if partfile found [WiZaRd]
+			if (pLink->HasHostnameSources())
+			{
+				POSITION pos = pLink->m_HostnameSourcesList.GetHeadPosition();
+				while (pos != NULL)
+				{
+					const SUnresolvedHostname* pUnresHost = pLink->m_HostnameSourcesList.GetNext(pos);
+					m_srcwnd.AddToResolve(pLink->GetHashKey(), pUnresHost->strHostname, pUnresHost->nPort, pUnresHost->strURL);
+				}
+			}
+			//MORPH END   - Added by Stulle, Only resolve hostnames for downloads if partfile found [WiZaRd]
 		}
+		else
+			DebugLogWarning(_T("FileIdentifier mismatch when trying to add ed2k link to existing download - AICH Hash or Size might differ, no sources added. File: %s"),
+				partfile->GetFileName());
 	}
 
+	//MORPH START - Removed by Stulle, Only resolve hostnames for downloads if partfile found [WiZaRd]
+	/*
 	if (pLink->HasHostnameSources())
 	{
 		POSITION pos = pLink->m_HostnameSourcesList.GetHeadPosition();
@@ -482,6 +504,8 @@ void CDownloadQueue::AddFileLinkToDownload(CED2KFileLink* pLink, int theCat, boo
 			m_srcwnd.AddToResolve(pLink->GetHashKey(), pUnresHost->strHostname, pUnresHost->nPort, pUnresHost->strURL);
 		}
 	}
+	*/
+	//MORPH END   - Removed by Stulle, Only resolve hostnames for downloads if partfile found [WiZaRd]
 
 	// khaos::categorymod+ Deallocate memory, because if we've gotten here,
 	// this link wasn't added to the queue and therefore there's no reason to
@@ -569,9 +593,9 @@ bool CDownloadQueue::PurgeED2KLinkQueue()
 			if (pLink->HasValidSources())
 			partfile->AddClientSources(pLink->SourcesList, 1, false);
 			if (pLink->HasValidAICHHash() ){
-				if ( !(partfile->GetAICHHashset()->HasValidMasterHash() && partfile->GetAICHHashset()->GetMasterHash() == pLink->GetAICHHash())){
-					partfile->GetAICHHashset()->SetMasterHash(pLink->GetAICHHash(), AICH_VERIFIED);
-					partfile->GetAICHHashset()->FreeHashSet();
+				if ( !(partfile->GetAICHRecoveryHashSet()->HasValidMasterHash() && partfile->GetAICHRecoveryHashSet()->GetMasterHash() == pLink->GetAICHHash())){
+					partfile->GetAICHRecoveryHashSet()->SetMasterHash(pLink->GetAICHHash(), AICH_VERIFIED);
+					partfile->GetAICHRecoveryHashSet()->FreeHashSet();
 				}
 			}
 		}
@@ -866,14 +890,16 @@ void CDownloadQueue::AddDownload(CPartFile* newfile,bool paused) {
 	else
 		newfile->SetActivatedTick();
 	// khaos::accuratetimerem-
+	
 	//MORPH - Removed by SiRoB, Due to Khaos Categorie
 	/*
-		SetAutoCat(newfile);// HoaX_69 / Slugfiller: AutoCat
+	SetAutoCat(newfile);// HoaX_69 / Slugfiller: AutoCat
 	*/
+
 	filelist.AddTail(newfile);
 	SortByPriority();
 	CheckDiskspace();
-	theApp.emuledlg->transferwnd->downloadlistctrl.AddFile(newfile);
+	theApp.emuledlg->transferwnd->GetDownloadList()->AddFile(newfile);
 	AddLogLine(true, GetResString(IDS_NEWDOWNLOAD), newfile->GetFileName());
 	CString msgTemp;
 	msgTemp.Format(GetResString(IDS_NEWDOWNLOAD) + _T("\n"), newfile->GetFileName());
@@ -1112,9 +1138,23 @@ void CDownloadQueue::Process(){
 	udcounter++;
 	GlobalHardLimitTemp = 0; // show global HL - Stulle
 
+	theStats.m_fGlobalDone = 0;
+	theStats.m_fGlobalSize = 0;
+	theStats.m_dwOverallStatus=0;
 	//filelist is already sorted by prio, therefore I removed all the extra loops..
 	for (POSITION pos = filelist.GetHeadPosition();pos != 0;){
 		CPartFile* cur_file = filelist.GetNext(pos);
+
+		// maintain global download stats
+		theStats.m_fGlobalDone += (uint64)cur_file->GetCompletedSize();
+		theStats.m_fGlobalSize += (uint64)cur_file->GetFileSize();
+		
+		if (cur_file->GetTransferringSrcCount()>0)
+			theStats.m_dwOverallStatus  |= STATE_DOWNLOADING;
+		if (cur_file->GetStatus()==PS_ERROR)
+			theStats.m_dwOverallStatus  |= STATE_ERROROUS;
+
+
 		if (cur_file->GetStatus() == PS_READY || cur_file->GetStatus() == PS_EMPTY){
 
 			cur_file->ProcessSourceCache(); //MORPH - Added by Stulle, Source cache [Xman]
@@ -1122,7 +1162,7 @@ void CDownloadQueue::Process(){
 			//MORPH STRAT - Changed by SiRoB, zz Upload System
 			//MORPH START - Changed by Stulle, No zz ratio for http traffic
 			/*
-			datarateX += cur_file->Process(downspeed,udcounter);
+			datarateX += cur_file->Process(downspeed, udcounter);
 			*/
 			datarateX += cur_file->Process(downspeed,udcounter, friendDownspeed, httpDownspeed);
 			//MORPH END   - Changed by Stulle, No zz ratio for http traffic
@@ -1143,7 +1183,7 @@ void CDownloadQueue::Process(){
 	{
         if (filelist.GetCount() == 0)
 			GlobalHardLimitTemp = 0;
-		theApp.emuledlg->transferwnd->downloadlistctrl.GlobalHardLimit = GlobalHardLimitTemp;
+		theApp.emuledlg->transferwnd->GetDownloadList()->GlobalHardLimit = GlobalHardLimitTemp;
 	}
 	// <== show global HL - Stulle
 
@@ -1316,7 +1356,7 @@ bool CDownloadQueue::CheckAndAddSource(CPartFile* sender,CUpDownClient* source){
 				}
 				// set request for this source
 				if (cur_client->AddRequestForAnotherFile(sender)){
-					theApp.emuledlg->transferwnd->downloadlistctrl.AddSource(sender,cur_client,true);
+					theApp.emuledlg->transferwnd->GetDownloadList()->AddSource(sender,cur_client,true);
 					delete source;
                     if(cur_client->GetDownloadState() != DS_CONNECTED) {
                         cur_client->SwapToAnotherFile(_T("New A4AF source found. CDownloadQueue::CheckAndAddSource()"), false, false, false, NULL, true, false); // ZZ:DownloadManager
@@ -1361,7 +1401,7 @@ bool CDownloadQueue::CheckAndAddSource(CPartFile* sender,CUpDownClient* source){
 #endif
 
 	sender->srclist.AddTail(source);
-	theApp.emuledlg->transferwnd->downloadlistctrl.AddSource(sender,source,false);
+	theApp.emuledlg->transferwnd->GetDownloadList()->AddSource(sender,source,false);
 	return true;
 }
 
@@ -1430,8 +1470,8 @@ bool CDownloadQueue::CheckAndAddKnownSource(CPartFile* sender,CUpDownClient* sou
 			}
 			bool addedA4AF = source->AddRequestForAnotherFile(sender);
 			if (addedA4AF)
-				theApp.emuledlg->transferwnd->downloadlistctrl.AddSource(sender,source,true);
-             if(source->GetDownloadState() != DS_CONNECTED) {
+				theApp.emuledlg->transferwnd->GetDownloadList()->AddSource(sender,source,true);
+                if(source->GetDownloadState() != DS_CONNECTED) {
                     source->SwapToAnotherFile(_T("New A4AF source found. CDownloadQueue::CheckAndAddKnownSource()"), false, false, false, NULL, true, false); // ZZ:DownloadManager
                 }
 			if (doThrow && addedA4AF)
@@ -1461,7 +1501,7 @@ bool CDownloadQueue::CheckAndAddKnownSource(CPartFile* sender,CUpDownClient* sou
 	}
 #endif
 
-	theApp.emuledlg->transferwnd->downloadlistctrl.AddSource(sender,source,false);
+	theApp.emuledlg->transferwnd->GetDownloadList()->AddSource(sender,source,false);
 	//UpdateDisplayedInfo();
 	return true;
 }
@@ -1500,7 +1540,7 @@ bool CDownloadQueue::RemoveSource(CUpDownClient* toremove, bool bDoStatsUpdate)
 		if(pos5)
 		{ 
 			cur_file->A4AFsrclist.RemoveAt(pos5);
-			theApp.emuledlg->transferwnd->downloadlistctrl.RemoveSource(toremove,cur_file);
+			theApp.emuledlg->transferwnd->GetDownloadList()->RemoveSource(toremove,cur_file);
 			cur_file->RemoveDownloadingSource(toremove);
 			cur_file->UpdatePartsInfo();
 		}
@@ -1516,7 +1556,7 @@ bool CDownloadQueue::RemoveSource(CUpDownClient* toremove, bool bDoStatsUpdate)
 		if(pos5)
 		{ 
 			cur_file->A4AFsrclist.RemoveAt(pos5);
-			theApp.emuledlg->transferwnd->downloadlistctrl.RemoveSource(toremove,cur_file);
+			theApp.emuledlg->transferwnd->GetDownloadList()->RemoveSource(toremove,cur_file);
 			cur_file->RemoveDownloadingSource(toremove);
 			cur_file->UpdatePartsInfo();
 		}
@@ -1531,7 +1571,7 @@ bool CDownloadQueue::RemoveSource(CUpDownClient* toremove, bool bDoStatsUpdate)
 	}
 
 	toremove->SetDownloadState(DS_NONE);
-	theApp.emuledlg->transferwnd->downloadlistctrl.RemoveSource(toremove,0);
+	theApp.emuledlg->transferwnd->GetDownloadList()->RemoveSource(toremove,0);
 	toremove->SetRequestFile(NULL);
 	return bRemovedSrcFromPartFile;
 }
@@ -2044,8 +2084,8 @@ CUpDownClient* CDownloadQueue::GetDownloadClientByIP_UDP(uint32 dwIP, uint16 nUD
 			else if (dwIP == cur_client->GetIP() && bIgnorePortOnUniqueIP && cur_client != pMatchingIPClient){
 				pMatchingIPClient = cur_client;
 				cMatches++;
+			}
 		}
-	}
 	}
 	if (pbMultipleIPs != NULL)
 		*pbMultipleIPs = cMatches > 1;
@@ -2053,7 +2093,7 @@ CUpDownClient* CDownloadQueue::GetDownloadClientByIP_UDP(uint32 dwIP, uint16 nUD
 	if (pMatchingIPClient != NULL && cMatches == 1)
 		return pMatchingIPClient;
 	else
-	return NULL;
+		return NULL;
 }
 
 bool CDownloadQueue::IsInList(const CUpDownClient* client) const
@@ -3166,6 +3206,7 @@ UINT AFX_CDECL CSaveSettingsThread::RunProc(LPVOID pParam)
 
 UINT CSaveSettingsThread::RunInternal()
 {
+	AddDebugLogLine(false,_T("CSaveSettingsThread started"));
 	while (bDoWait)
 	{
 		if(m_dwLastWait == 0) // initial wait
@@ -3179,9 +3220,17 @@ UINT CSaveSettingsThread::RunInternal()
 				m_SettingsSaver.SaveSettings(); // save!
 		}
 	}
+	AddDebugLogLine(false,_T("CSaveSettingsThread finished waiting"));
 
 	while(bDoRun) 
 	{
+		/*
+		if(bWait)
+			Sleep(SEC2MS(SAVE_WAIT_TIME));
+
+		bWait = false; // no more waiting henceforth
+		*/
+
 		if(m_SettingsSaver.SaveSettings()) // if this fails we need to run again
 		{
 			Pause(true);
@@ -3191,6 +3240,7 @@ UINT CSaveSettingsThread::RunInternal()
 	}
 
 	threadEndedEvent->SetEvent();
+	AddDebugLogLine(false,_T("CSaveSettingsThread ended"));
 
 	return 0;
 }

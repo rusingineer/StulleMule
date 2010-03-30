@@ -580,7 +580,7 @@ BOOL CPPgConnection::OnApply()
 	}
 	// End emulEspaña
   
-  theApp.scheduler->SaveOriginals();
+	theApp.scheduler->SaveOriginals();
 
 	// ==> TBH: minimule - Stulle
 	int iMaxRange = thePrefs.GetMaxGraphDownloadRate();

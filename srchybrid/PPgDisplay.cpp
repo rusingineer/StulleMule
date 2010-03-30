@@ -23,14 +23,14 @@
 #include "Preferences.h"
 #include "OtherFunctions.h"
 #include "emuledlg.h"
-#include "TransferWnd.h"
+#include "TransferDlg.h"
 #include "ServerWnd.h"
 #include "HelpIDs.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 #define MAX_TOOLTIP_DELAY_SEC	32
@@ -43,7 +43,6 @@ BEGIN_MESSAGE_MAP(CPPgDisplay, CPropertyPage)
 	ON_BN_CLICKED(IDC_DBLCLICK, OnSettingsChange)
 	ON_EN_CHANGE(IDC_TOOLTIPDELAY, OnSettingsChange)
 	ON_WM_HSCROLL()
-	ON_BN_CLICKED(IDC_UPDATEQUEUE, OnSettingsChange)
 	// ==> show overhead on title - Stulle
 	/*
 	ON_BN_CLICKED(IDC_SHOWRATEONTITLE, OnSettingsChange)
@@ -56,11 +55,11 @@ BEGIN_MESSAGE_MAP(CPPgDisplay, CPropertyPage)
 	ON_BN_CLICKED(IDC_DISABLEQUEUELIST, OnSettingsChange)
 	ON_BN_CLICKED(IDC_SHOWCATINFO, OnSettingsChange)
 	ON_BN_CLICKED(IDC_SHOWDWLPERCENT, OnSettingsChange)
-	ON_BN_CLICKED(IDC_REPAINT,OnSettingsChange)
 	ON_BN_CLICKED(IDC_SELECT_HYPERTEXT_FONT, OnBnClickedSelectHypertextFont)
 	ON_BN_CLICKED(IDC_CLEARCOMPL,OnSettingsChange)
 	ON_BN_CLICKED(IDC_SHOWTRANSTOOLBAR,OnSettingsChange)
 	ON_BN_CLICKED(IDC_STORESEARCHES, OnSettingsChange)
+	ON_BN_CLICKED(IDC_WIN7TASKBARGOODIES, OnSettingsChange)
 	ON_BN_CLICKED(IDC_RESETHIST, OnBtnClickedResetHist)
 	ON_WM_HELPINFO()
 END_MESSAGE_MAP()
@@ -111,11 +110,6 @@ void CPPgDisplay::LoadSettings(void)
 		CheckDlgButton(IDC_SHOWOVERHEADONTITLE,0);
 	// <== show overhead on title - Stulle
 
-	if(thePrefs.m_bupdatequeuelist)
-		CheckDlgButton(IDC_UPDATEQUEUE,0);
-	else
-		CheckDlgButton(IDC_UPDATEQUEUE,1);
-
 	if(thePrefs.m_bDisableKnownClientList)
 		CheckDlgButton(IDC_DISABLEKNOWNLIST,1);
 	else
@@ -132,11 +126,19 @@ void CPPgDisplay::LoadSettings(void)
 		CheckDlgButton(IDC_STORESEARCHES,0);
 
 	CheckDlgButton(IDC_SHOWCATINFO,(UINT)thePrefs.ShowCatTabInfos());
-	CheckDlgButton(IDC_REPAINT,(UINT)thePrefs.IsGraphRecreateDisabled() );
 	CheckDlgButton(IDC_SHOWDWLPERCENT,(UINT)thePrefs.GetUseDwlPercentage() );
 	CheckDlgButton(IDC_CLEARCOMPL, (uint8)thePrefs.GetRemoveFinishedDownloads());
 	CheckDlgButton(IDC_SHOWTRANSTOOLBAR, (uint8)thePrefs.IsTransToolbarEnabled());
 	CheckDlgButton(IDC_DISABLEHIST, (uint8)thePrefs.GetUseAutocompletion());
+	
+#ifndef HAVE_WIN7_SDK_H
+	GetDlgItem(IDC_WIN7TASKBARGOODIES)->EnableWindow(FALSE);
+#else
+	if ( thePrefs.GetWindowsVersion() >= _WINVER_7_)
+		CheckDlgButton(IDC_WIN7TASKBARGOODIES, (uint8)thePrefs.IsWin7TaskbarGoodiesEnabled());	
+	else
+		GetDlgItem(IDC_WIN7TASKBARGOODIES)->EnableWindow(FALSE);
+#endif
 
 	SetDlgItemInt(IDC_TOOLTIPDELAY, thePrefs.m_iToolDelayTime, FALSE);
 }
@@ -164,7 +166,7 @@ BOOL CPPgDisplay::OnInitDialog()
 	OnEnChangeSREnabled(); // show overhead on title - Stulle
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX Property Pages should return FALSE
+				  // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 BOOL CPPgDisplay::OnApply()
@@ -177,16 +179,15 @@ BOOL CPPgDisplay::OnApply()
 		thePrefs.mintotray = IsDlgButtonChecked(IDC_MINTRAY)!=0;
 		thePrefs.transferDoubleclick = IsDlgButtonChecked(IDC_DBLCLICK)!=0;
 		thePrefs.depth3D = ((CSliderCtrl*)GetDlgItem(IDC_3DDEPTH))->GetPos();
-		thePrefs.dontRecreateGraphs = IsDlgButtonChecked(IDC_REPAINT)!=0;
 		thePrefs.m_bShowDwlPercentage = IsDlgButtonChecked(IDC_SHOWDWLPERCENT)!=0;
 		thePrefs.m_bRemoveFinishedDownloads = IsDlgButtonChecked(IDC_CLEARCOMPL)!=0;
 		thePrefs.m_bUseAutocompl = IsDlgButtonChecked(IDC_DISABLEHIST)!=0;
 		thePrefs.m_bStoreSearches = IsDlgButtonChecked(IDC_STORESEARCHES) != 0;
 
-		if(IsDlgButtonChecked(IDC_UPDATEQUEUE))
-			thePrefs.m_bupdatequeuelist = false;
-		else
-			thePrefs.m_bupdatequeuelist = true;
+#ifdef HAVE_WIN7_SDK_H
+		thePrefs.m_bShowWin7TaskbarGoodies = IsDlgButtonChecked(IDC_WIN7TASKBARGOODIES) != 0;
+		theApp.emuledlg->EnableTaskbarGoodies(thePrefs.m_bShowWin7TaskbarGoodies);
+#endif
 
 		if(IsDlgButtonChecked(IDC_SHOWRATEONTITLE))
 			thePrefs.showRatesInTitle= true;
@@ -211,7 +212,7 @@ BOOL CPPgDisplay::OnApply()
     	    if (thePrefs.m_bDisableKnownClientList)
     	        bListDisabled = true;
     	    else
-    	        theApp.emuledlg->transferwnd->clientlistctrl.ShowKnownClients();
+    	        theApp.emuledlg->transferwnd->GetClientList()->ShowKnownClients();
 			bResetToolbar = true;
 		}
 
@@ -220,7 +221,7 @@ BOOL CPPgDisplay::OnApply()
 		if (thePrefs.m_bDisableQueueList)
 			bListDisabled = true;
 	        else
-	            theApp.emuledlg->transferwnd->queuelistctrl.ShowQueueClients();
+	            theApp.emuledlg->transferwnd->GetQueueList()->ShowQueueClients();
 			bResetToolbar = true;
 		}
 
@@ -235,7 +236,7 @@ BOOL CPPgDisplay::OnApply()
 		m_Tip.SetDelayTime(TTDT_INITIAL,thePrefs.m_iToolDelayTime*1000);
 		// MORPH END leuk_he tooltipped
 	
-		theApp.emuledlg->transferwnd->downloadlistctrl.SetStyle();
+		theApp.emuledlg->transferwnd->GetDownloadList()->SetStyle();
 
 		if (bListDisabled)
 			theApp.emuledlg->transferwnd->OnDisableList();
@@ -286,14 +287,12 @@ void CPPgDisplay::Localize(void)
 		GetDlgItem(IDC_3DDEP)->SetWindowText(GetResString(IDS_3DDEP));
 		GetDlgItem(IDC_FLAT)->SetWindowText(GetResString(IDS_FLAT));
 		GetDlgItem(IDC_ROUND)->SetWindowText(GetResString(IDS_ROUND));
-		GetDlgItem(IDC_UPDATEQUEUE)->SetWindowText(GetResString(IDS_UPDATEQUEUE));
 		GetDlgItem(IDC_SHOWRATEONTITLE)->SetWindowText(GetResString(IDS_SHOWRATEONTITLE));
 		GetDlgItem(IDC_SHOWOVERHEADONTITLE)->SetWindowText(GetResString(IDS_SHOWOVERHEADONTITLE)); // show overhead on title - Stulle
 		GetDlgItem(IDC_DISABLEKNOWNLIST)->SetWindowText(GetResString(IDS_DISABLEKNOWNLIST));
 		GetDlgItem(IDC_DISABLEQUEUELIST)->SetWindowText(GetResString(IDS_DISABLEQUEUELIST));
 		GetDlgItem(IDC_STATIC_CPUMEM)->SetWindowText(GetResString(IDS_STATIC_CPUMEM));
 		GetDlgItem(IDC_SHOWCATINFO)->SetWindowText(GetResString(IDS_SHOWCATINFO));
-		GetDlgItem(IDC_REPAINT)->SetWindowText(GetResString(IDS_REPAINTGRAPHS));
 		SetDlgItemText(IDC_HYPERTEXT_FONT_HINT, GetResString(IDS_HYPERTEXT_FONT_HINT));
 		SetDlgItemText(IDC_SELECT_HYPERTEXT_FONT, GetResString(IDS_SELECT_FONT) + _T("..."));
 		SetDlgItemText(IDC_SHOWDWLPERCENT, GetResString(IDS_SHOWDWLPERCENTAGE));
@@ -305,7 +304,9 @@ void CPPgDisplay::Localize(void)
 		GetDlgItem(IDC_DISABLEHIST)->SetWindowText(GetResString(IDS_ENABLED));
 
 		GetDlgItem(IDC_SHOWTRANSTOOLBAR)->SetWindowText(GetResString(IDS_PW_SHOWTRANSTOOLBAR));
-        // MORPH START leuk_he tooltipped
+		GetDlgItem(IDC_WIN7TASKBARGOODIES)->SetWindowText(GetResString(IDS_SHOWWIN7TASKBARGOODIES));
+
+		// MORPH START leuk_he tooltipped
 		SetTool(IDC_MINTRAY,IDS_PW_TRAY_TIP);
 		SetTool(IDC_DBLCLICK,IDS_PW_DBLCLICK_TIP);
 		SetTool(IDC_TOOLTIPDELAY_LBL,IDS_PW_TOOL_TIP);
@@ -314,21 +315,21 @@ void CPPgDisplay::Localize(void)
 		SetTool(IDC_3DDEPTH,IDS_3DDEP_TIP);
 		SetTool(IDC_FLAT,IDS_3DDEP_TIP);
 		SetTool(IDC_ROUND,IDS_3DDEP_TIP);
-		SetTool(IDC_UPDATEQUEUE,IDS_UPDATEQUEUE_TIP);
 		SetTool(IDC_SHOWRATEONTITLE,IDS_SHOWRATEONTITLE_TIP);
+		SetTool(IDC_SHOWOVERHEADONTITLE,IDS_SHOWOVERHEADONTITLE_TIP); // show overhead on title - Stulle
 		SetTool(IDC_DISABLEKNOWNLIST,IDS_DISABLEKNOWNLIST_TIP);
 		SetTool(IDC_DISABLEQUEUELIST,IDS_DISABLEQUEUELIST_TIP);
 		SetTool(IDC_SHOWCATINFO,IDS_SHOWCATINFO_TIP);
-		SetTool(IDC_REPAINT,IDS_REPAINTGRAPHS_TIP);
 		SetTool(IDC_SELECT_HYPERTEXT_FONT,IDC_SELECT_HYPERTEXT_FONT_TIP);
 		SetTool(IDC_CLEARCOMPL,IDS_AUTOREMOVEFD_TIP);
+		SetTool(IDC_STORESEARCHES,IDS_STORESEARCHES_TIP);
 		SetTool(IDC_RESETLABEL,IDS_RESETLABEL_TIP);
 		SetTool(IDC_RESETHIST,IDS_PW_RESET_TIP);
 		SetTool(IDC_DISABLEHIST,IDS_DISABLEHIST_TIP);
 		SetTool(IDC_SHOWTRANSTOOLBAR,IDS_PW_SHOWTRANSTOOLBAR_TIP);
+		SetTool(IDC_WIN7TASKBARGOODIES,IDS_SHOWWIN7TASKBARGOODIES_TIP);
 		SetTool(IDC_SHOWDWLPERCENT,IDC_SHOWDWLPERCENT_TIP);
-        // MORPH END   leuk_he tooltipped
-
+		// MORPH END   leuk_he tooltipped
 	}
 }
 
@@ -455,6 +456,7 @@ void CPPgDisplay::DrawPreview()
 	int dep=((CSliderCtrl*)GetDlgItem(IDC_3DDEPTH))->GetPos();
 	m_3DPreview.SetSliderPos( dep);
 }
+
 // ==> show overhead on title - Stulle
 void CPPgDisplay::OnEnChangeSREnabled()
 {

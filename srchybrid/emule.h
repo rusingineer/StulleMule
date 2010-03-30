@@ -157,11 +157,6 @@ public:
 	static const TCHAR	m_szMVersion[];
 	static const TCHAR	m_szMMVersion[];
 	CString		m_strModVersion;
-	// ==> StulleMule is not banned - Stulle
-	/*
-	CString		m_strModVersionOld;
-	*/
-	// <== StulleMule is not banned - Stulle
 	CString		m_strModVersionPure;
 	CString		m_strModLongVersion;
 	uint8		m_uModLength;

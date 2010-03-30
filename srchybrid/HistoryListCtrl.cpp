@@ -43,7 +43,7 @@
 #include "SharedFilesWnd.h"
 #include "HighColorTab.hpp"
 #include "PartFile.h"
-#include "TransferWnd.h"
+#include "TransferDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -212,6 +212,8 @@ CHistoryListCtrl::~CHistoryListCtrl()
 
 BEGIN_MESSAGE_MAP(CHistoryListCtrl, CMuleListCtrl)
 	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnLvnColumnClick)
+	ON_NOTIFY_REFLECT(LVN_GETDISPINFO, OnLvnGetDispInfo)
+	ON_NOTIFY_REFLECT(NM_DBLCLK, OnNMDblclk)
 	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
@@ -229,7 +231,6 @@ void CHistoryListCtrl::Init(void)
 	InsertColumn(4,GetResString(IDS_DATE),LVCFMT_LEFT, 120);
 	InsertColumn(5,GetResString(IDS_DOWNHISTORY_SHARED),LVCFMT_LEFT, 65);
 	InsertColumn(6,GetResString(IDS_COMMENT),LVCFMT_LEFT, 260);
-	
 	//EastShare START - Added by Pretender
 	InsertColumn(7,GetResString(IDS_SF_TRANSFERRED),LVCFMT_RIGHT,120);
 	InsertColumn(8,GetResString(IDS_SF_REQUESTS),LVCFMT_RIGHT,100);
@@ -278,6 +279,8 @@ void CHistoryListCtrl::Reload(void)
 	SetRedraw(false);
 
 	DeleteAllItems();
+
+	theApp.emuledlg->sharedfileswnd->ShowSelectedFilesDetails(false, true);
 
 	//Xman 4.8
 	//don't know exactly what happend, but a few users (with old known.met) had a crash
@@ -511,8 +514,18 @@ int CHistoryListCtrl::SortProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort
 				break;
 
 			case 2: //filetype asc
-				iResult= item1->GetFileType().CompareNoCase(item2->GetFileType());
-				break;
+			iResult= item1->GetFileType().CompareNoCase(item2->GetFileType());
+			// if the type is equal, subsort by extension
+			if (iResult == 0)
+			{
+				LPCTSTR pszExt1 = PathFindExtension(item1->GetFileName());
+				LPCTSTR pszExt2 = PathFindExtension(item2->GetFileName());
+				if ((pszExt1 == NULL) ^ (pszExt2 == NULL))
+					iResult = pszExt1 == NULL ? 1 : (-1);
+				else
+					iResult = pszExt1 != NULL ? _tcsicmp(pszExt1, pszExt2) : 0;
+			}
+			break;
 
 			case 3: //file ID
 				iResult= memcmp(item1->GetFileHash(),item2->GetFileHash(),16);
@@ -541,7 +554,7 @@ int CHistoryListCtrl::SortProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort
 				break;
 
 			case 8: //acc requests asc
-				iResult=item1->statistic.GetAllTimeAccepts() - item2->statistic.GetAllTimeAccepts();
+				iResult=item1->statistic.GetAllTimeRequests() - item2->statistic.GetAllTimeRequests();
 				break;
 			
 			case 9: //acc accepts asc
@@ -735,9 +748,15 @@ void CHistoryListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 	UINT flag = (iWebMenuEntries == 0 || iSelectedItems != 1) ? MF_GRAYED : MF_ENABLED;
 	m_HistoryMenu.AppendMenu(MF_POPUP | flag, (UINT_PTR)WebMenu.m_hMenu, GetResString(IDS_WEBSERVICES), _T("SEARCHMETHOD_GLOBAL"));
 
+	m_HistoryMenu.AppendMenu(MF_SEPARATOR); 
+	m_HistoryMenu.AppendMenu(MF_STRING | (GetItemCount() > 0 ? MF_ENABLED : MF_GRAYED), MP_FIND, GetResString(IDS_FIND), _T("Search"));
+
+	GetPopupMenuPos(*this, point);
 	m_HistoryMenu.TrackPopupMenu(TPM_LEFTALIGN |TPM_RIGHTBUTTON,point.x,point.y,this);
 
-	m_HistoryMenu.RemoveMenu(m_HistoryMenu.GetMenuItemCount()-1,MF_BYPOSITION);
+	m_HistoryMenu.RemoveMenu(m_HistoryMenu.GetMenuItemCount()-1,MF_BYPOSITION); //find menu
+	m_HistoryMenu.RemoveMenu(m_HistoryMenu.GetMenuItemCount()-1,MF_BYPOSITION); //separator
+	m_HistoryMenu.RemoveMenu(m_HistoryMenu.GetMenuItemCount()-1,MF_BYPOSITION); //web menu
 	VERIFY( WebMenu.DestroyMenu() );
 }
 
@@ -766,6 +785,14 @@ BOOL CHistoryListCtrl::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 {
 	UINT selectedCount = this->GetSelectedCount(); 
 	int iSel = GetSelectionMark();
+
+	switch (wParam)
+	{
+	case MP_FIND:
+		OnFindStart();
+		return TRUE;
+	}
+
 
 	CTypedPtrList<CPtrList, CKnownFile*> selectedList;
 	POSITION pos = GetFirstSelectedItemPosition();
@@ -885,7 +912,7 @@ void CHistoryListCtrl::RemoveFile(CKnownFile *toRemove) {
 		return;
 
 	if (toRemove->IsKindOf(RUNTIME_CLASS(CPartFile)))
-		theApp.emuledlg->transferwnd->downloadlistctrl.ClearCompleted(static_cast<CPartFile*>(toRemove));
+		theApp.emuledlg->transferwnd->GetDownloadList()->ClearCompleted(static_cast<CPartFile*>(toRemove));
 
 	if(theApp.knownfiles->RemoveKnownFile(toRemove)){
 		LVFINDINFO info;
@@ -940,7 +967,7 @@ void CHistoryListCtrl::UpdateFile(const CKnownFile* file)
 	{
 		Update(iItem);
 		if (GetItemState(iItem, LVIS_SELECTED))
-			theApp.emuledlg->sharedfileswnd->ShowSelectedFilesSummary();
+			theApp.emuledlg->sharedfileswnd->ShowSelectedFilesDetails(false,true);
 	}
 }
 int CHistoryListCtrl::FindFile(const CKnownFile* pFile)
@@ -964,7 +991,7 @@ void CHistoryListCtrl::UpdateFile(const CKnownFile* file)
 	//MORPH END   - SiRoB, Don't Refresh item if not needed
 
 	m_updatethread->AddItemToUpdate((LPARAM)file);
-	theApp.emuledlg->sharedfileswnd->ShowSelectedFilesSummary();
+	theApp.emuledlg->sharedfileswnd->ShowSelectedFilesDetails(false,true);
 }
 //MORPH END - UpdateItemThread
 
@@ -975,5 +1002,28 @@ void CHistoryListCtrl::ShowFileDialog(CTypedPtrList<CPtrList, CKnownFile*>& aFil
 		CHistoryFileDetailsSheet dialog(aFiles, uPshInvokePage, this);
 		dialog.DoModal();
 	}
+}
+void CHistoryListCtrl::OnLvnGetDispInfo(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (theApp.emuledlg->IsRunning()) {
+		// Although we have an owner drawn listview control we store the text for the primary item in the listview, to be
+		// capable of quick searching those items via the keyboard. Because our listview items may change their contents,
+		// we do this via a text callback function. The listview control will send us the LVN_DISPINFO notification if
+		// it needs to know the contents of the primary item.
+		//
+		// But, the listview control sends this notification all the time, even if we do not search for an item. At least
+		// this notification is only sent for the visible items and not for all items in the list. Though, because this
+		// function is invoked *very* often, do *NOT* put any time consuming code in here.
+		//
+		// Vista: That callback is used to get the strings for the label tips for the sub(!) items.
+		//
+		NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
+		if (pDispInfo->item.mask & LVIF_TEXT) {
+			CKnownFile* pFile = reinterpret_cast<CKnownFile*>(pDispInfo->item.lParam);
+			if (pFile != NULL)
+				GetItemDisplayText(pFile, pDispInfo->item.iSubItem, pDispInfo->item.pszText, pDispInfo->item.cchTextMax);
+		}
+	}
+	*pResult = 0;
 }
 #endif

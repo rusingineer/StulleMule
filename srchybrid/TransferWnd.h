@@ -15,7 +15,7 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #pragma once
-#include "ResizableLib\ResizableDialog.h"
+#include "ResizableLib\ResizableFormView.h"
 #include "SplitterControl.h"
 #include "BtnST.h"
 #include "TabCtrl.hpp"
@@ -29,9 +29,9 @@
 class CDropDownButton;
 class CToolTipCtrlX;
 
-class CTransferWnd : public CResizableDialog
+class CTransferWnd : public CResizableFormView
 {
-	DECLARE_DYNAMIC(CTransferWnd)
+	DECLARE_DYNCREATE(CTransferWnd)
 
 public:
 	CTransferWnd(CWnd* pParent = NULL);   // standard constructor
@@ -68,8 +68,9 @@ public:
 	void VerifyCatTabSize(bool _forceverify=false);
 	//MOPRH - Moved by SiRoB, Due to Khaos Cat moved in public area
 	/*
-	int AddCategory(CString newtitle,CString newincoming,CString newcomment,CString newautocat,bool addTab=true);
+	int	 AddCategory(CString newtitle,CString newincoming,CString newcomment,CString newautocat,bool addTab=true);
 	*/
+	int	 AddCategoryInteractive();
 	void SwitchUploadList();
 	void ResetTransToolbar(bool bShowToolbar, bool bResetLists = true);
 	void SetToolTipsDelay(DWORD dwDelay);
@@ -110,10 +111,10 @@ protected:
 	POINT		m_pLastMousePoint;
 	uint32		m_dwShowListIDC;
 	CToolTipCtrlX* m_tooltipCats;
+	bool		m_bLayoutInited;
 	CProgressCtrlX queueBar; //Commander - Added: ClientQueueProgressBar
 	CProgressCtrlX queueBar2; //Commander - Added: ClientQueueProgressBar
 	CFont bold;//Commander - Added: ClientQueueProgressBar
-
 
 	void	ShowWnd2(EWnd2 uList);
 	void	SetWnd2(EWnd2 uWnd2);
@@ -141,14 +142,14 @@ protected:
 #ifndef ATWL
 	void	ShowSplitWindow(bool bReDraw = false);
 #else
-	void	ShowSplitWindow(bool bReDraw, uint32 dwListIDC, bool bInitSplitted = false);
+	void	ShowSplitWindow(bool bReDraw, uint32 dwListIDC);
 #endif
 	// <== Advanced Transfer Window Layout - Stulle
 	void	LocalizeToolbars();
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual BOOL OnInitDialog();
+	virtual void OnInitialUpdate();
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	
@@ -172,6 +173,7 @@ protected:
 	afx_msg void OnTcnSelchangeDltab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnWnd1BtnDropDown(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnWnd2BtnDropDown(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnPaint();
 	// ==> XP Style Menu [Xanatos] - Stulle
 	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	// <== XP Style Menu [Xanatos] - Stulle
