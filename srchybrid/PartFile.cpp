@@ -7590,7 +7590,7 @@ bool CPartFile::GetNextRequestedBlock(CUpDownClient* sender,
 // Maella end
 
 
-CString CPartFile::GetInfoSummary() const
+CString CPartFile::GetInfoSummary(bool bNoFormatCommands) const
 {
 	if (!IsPartFile())
 		return CKnownFile::GetInfoSummary();
@@ -7631,10 +7631,11 @@ CString CPartFile::GetInfoSummary() const
 	else 
 		status.Format(_T("%s\n"), getPartfileStatus());
 
+	CString strHeadFormatCommand = bNoFormatCommands ? _T("") : _T("<br_head>");
 	CString info;
 	info.Format(_T("%s\n")
 		+ GetResString(IDS_FD_HASH) + _T(" %s\n")
-		+ GetResString(IDS_FD_SIZE) + _T(" %s  %s\n<br_head>\n")
+		+ GetResString(IDS_FD_SIZE) + _T(" %s  %s\n") + strHeadFormatCommand + _T("\n")
 		+ GetResString(IDS_FD_MET)+ _T(" %s\n")
 		+ GetResString(IDS_STATUS) + _T(": ") + status
 		+ _T("%s")
@@ -8406,7 +8407,7 @@ void CPartFile::ParseICHResult()
 		return;
 
 	while (!m_ICHPartsComplete.IsEmpty()) {
-		uint16 partnumber = m_ICHPartsComplete.RemoveHead();
+		UINT partnumber = m_ICHPartsComplete.RemoveHead();
 		uint64 partRange = (partnumber < GetPartCount()-1)?PARTSIZE:((uint64)m_nFileSize % PARTSIZE);
 
 		m_uPartsSavedDueICH++;
@@ -8491,7 +8492,7 @@ int CPartHashThread::SetFirstHash(CPartFile* pOwner)
 	if (!theApp.emuledlg->IsRunning())	// Don't start any last-minute hashing
 		return 1;	// Hash next start
 
-	for (uint16 i = 0; i < pOwner->GetPartCount(); i++)
+	for (UINT i = 0; i < pOwner->GetPartCount(); i++)
 		//MORPH - Changed by SiRoB, Need to check buffereddata otherwise we may try to hash wrong part
 		/*
 		if (pOwner->IsComplete((uint64)i*PARTSIZE,(uint64)(i+1)*PARTSIZE-1, false)){
@@ -8570,7 +8571,7 @@ int CPartHashThread::Run()
 	
 	if (file.Open(directory+_T("\\")+filename,CFile::modeRead|CFile::osSequentialScan|CFile::shareDenyNone)){
 		for (UINT i = 0; i < (UINT)m_PartsToHash.GetSize(); i++){
-			uint16 partnumber = m_PartsToHash[i];
+			UINT partnumber = m_PartsToHash[i];
 			uchar hashresult[16];
 			file.Seek((LONGLONG)PARTSIZE*partnumber,0);
 			uint64 length = PARTSIZE;

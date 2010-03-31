@@ -100,8 +100,8 @@ CDownloadListCtrl::CDownloadListCtrl()
 	//MORPH END leuk_he:run as ntservice v1..
 	SetGeneralPurposeFind(true);
 	SetSkinKey(L"DownloadsLv");
-	m_pRelatedToolbar = NULL;
 	m_dwLastAvailableCommandsCheck = 0;
+	m_availableCommandsDirty = true;
 }
 
 CDownloadListCtrl::~CDownloadListCtrl()
@@ -631,7 +631,7 @@ void CDownloadListCtrl::UpdateItem(void* toupdate)
 		m_updatethread->AddItemToUpdate((LPARAM)updateItem);
 		//MORPH END - UpdateItemThread
 	}
-	ReportAvailableCommands();
+	m_availableCommandsDirty = true;
 }
 
 void CDownloadListCtrl::GetFileItemDisplayText(CPartFile *lpPartFile, int iSubItem, LPTSTR pszText, int cchTextMax)
@@ -1871,7 +1871,7 @@ void CDownloadListCtrl::HideSources(CPartFile* toCollapse)
 	for (int i = 0; i < GetItemCount(); i++)
 	{
 		CtrlItem_Struct* item = (CtrlItem_Struct*)GetItemData(i);
-		if (item->owner == toCollapse)
+		if (item != NULL && item->owner == toCollapse)
 		{
 			pre++;
 			item->dwUpdated = 0;
@@ -1894,7 +1894,7 @@ void CDownloadListCtrl::ExpandCollapseItem(int iItem, int iAction, bool bCollaps
 	CtrlItem_Struct* content = (CtrlItem_Struct*)GetItemData(iItem);
 
 	// to collapse/expand files when one of its source is selected
-	if (bCollapseSource && content->parent != NULL)
+	if (content != NULL && bCollapseSource && content->parent != NULL)
 	{
 		content=content->parent;
 		
@@ -1968,7 +1968,7 @@ void CDownloadListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 	if (iSel != -1)
 	{
 		const CtrlItem_Struct* content = (CtrlItem_Struct*)GetItemData(iSel);
-		if (content->type == FILE_TYPE)
+		if (content != NULL && content->type == FILE_TYPE)
 		{
 			// get merged settings
 			bool bFirstItem = true;
@@ -2005,7 +2005,7 @@ void CDownloadListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 			while (pos)
 			{
 				const CtrlItem_Struct* pItemData = (CtrlItem_Struct*)GetItemData(GetNextSelectedItem(pos));
-				if (pItemData->type != FILE_TYPE)
+				if (pItemData == NULL || pItemData->type != FILE_TYPE)
 					continue;
 				const CPartFile* pFile = (CPartFile*)pItemData->value;
 				if (bFirstItem)
@@ -2336,7 +2336,7 @@ void CDownloadListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 			}
 			//MORPH END   - Added by SiRoB, Khaos Category
 
-			bool bToolbarItem = !thePrefs.IsDownloadToolbarEnabled() || (m_pRelatedToolbar != NULL && m_pRelatedToolbar->IsWindowVisible() == FALSE);
+			bool bToolbarItem = !thePrefs.IsDownloadToolbarEnabled();
 			if (bToolbarItem)
 			{
 				m_FileMenu.AppendMenu(MF_SEPARATOR);
@@ -2544,13 +2544,13 @@ void CDownloadListCtrl::FillCatsMenu(CTitleMenu& rCatsMenu, int iFilesInCats)
 		if (iSel != -1)
 		{
 			const CtrlItem_Struct* content = (CtrlItem_Struct*)GetItemData(iSel);
-			if (content->type == FILE_TYPE)
+			if (content != NULL && content->type == FILE_TYPE)
 			{
 				POSITION pos = GetFirstSelectedItemPosition();
 				while (pos)
 				{
 					const CtrlItem_Struct* pItemData = (CtrlItem_Struct*)GetItemData(GetNextSelectedItem(pos));
-					if (pItemData->type != FILE_TYPE)
+					if (pItemData == NULL || pItemData->type != FILE_TYPE)
 						continue;
 					const CPartFile* pFile = (CPartFile*)pItemData->value;
 					iFilesInCats += (!pFile->HasDefaultCategory()) ? 1 : 0; 
@@ -2596,14 +2596,14 @@ CTitleMenu* CDownloadListCtrl::GetPrioMenu()
 	if (iSel != -1)
 	{
 		const CtrlItem_Struct* content = (CtrlItem_Struct*)GetItemData(iSel);
-		if (content->type == FILE_TYPE)
+		if (content != NULL && content->type == FILE_TYPE)
 		{
 			bool bFirstItem = true;	
 			POSITION pos = GetFirstSelectedItemPosition();
 			while (pos)
 			{
 				const CtrlItem_Struct* pItemData = (CtrlItem_Struct*)GetItemData(GetNextSelectedItem(pos));
-				if (pItemData->type != FILE_TYPE)
+				if (pItemData == NULL || pItemData->type != FILE_TYPE)
 					continue;
 				const CPartFile* pFile = (CPartFile*)pItemData->value;
 				UINT uCurPrioMenuItem = 0;
@@ -2658,7 +2658,7 @@ BOOL CDownloadListCtrl::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 	if (iSel != -1)
 	{
 		const CtrlItem_Struct* content = (CtrlItem_Struct*)GetItemData(iSel);
-		if (content->type == FILE_TYPE)
+		if (content != NULL && content->type == FILE_TYPE)
 		{
 			//for multiple selections 
 			UINT selectedCount = 0;
@@ -3083,7 +3083,7 @@ BOOL CDownloadListCtrl::OnCommand(WPARAM wParam, LPARAM /*lParam*/)
 					while (!selectedList.IsEmpty()){
 						if (!str.IsEmpty())
 							str += _T("\r\n");
-						str += CreateED2kLink(selectedList.GetHead());
+						str += ((CAbstractFile*)selectedList.GetHead())->GetED2kLink();
 						selectedList.RemoveHead();
 					}
 					theApp.CopyTextToClipboard(str);
@@ -3698,7 +3698,7 @@ void CDownloadListCtrl::OnListModified(NMHDR *pNMHDR, LRESULT * /*pResult*/)
 	BOOL notLast = pNMListView->iItem + 1 != GetItemCount();
 	BOOL notFirst = pNMListView->iItem != 0;
 	RedrawItems(pNMListView->iItem - (int)notFirst, pNMListView->iItem + (int)notLast);
-	ReportAvailableCommands(true);
+	m_availableCommandsDirty = true;
 }
 
 int CDownloadListCtrl::Compare(const CPartFile *file1, const CPartFile *file2, LPARAM lParamSort)
@@ -4399,20 +4399,23 @@ void CDownloadListCtrl::ShowSelectedFileDetails()
 	SetSelectionMark(it);   // display selection mark correctly! 
 
 	CtrlItem_Struct* content = (CtrlItem_Struct*)GetItemData(GetSelectionMark());
-	if (content->type == FILE_TYPE)
+	if (content != NULL)
 	{
-		CPartFile* file = (CPartFile*)content->value;
-		if (thePrefs.ShowRatingIndicator() 
-			&& (file->HasComment() || file->HasRating() || file->IsKadCommentSearchRunning()) 
-			&& pt.x >= sm_iIconOffset + theApp.GetSmallSytemIconSize().cx 
-			&& pt.x <= sm_iIconOffset + theApp.GetSmallSytemIconSize().cx + RATING_ICON_WIDTH)
-			ShowFileDialog(IDD_COMMENTLST);
+		if (content->type == FILE_TYPE)
+		{
+			CPartFile* file = (CPartFile*)content->value;
+			if (thePrefs.ShowRatingIndicator() 
+				&& (file->HasComment() || file->HasRating() || file->IsKadCommentSearchRunning()) 
+				&& pt.x >= sm_iIconOffset + theApp.GetSmallSytemIconSize().cx 
+				&& pt.x <= sm_iIconOffset + theApp.GetSmallSytemIconSize().cx + RATING_ICON_WIDTH)
+				ShowFileDialog(IDD_COMMENTLST);
+			else
+				ShowFileDialog(0);
+		}
 		else
-			ShowFileDialog(0);
-	}
-	else
-	{
-		ShowClientDialog((CUpDownClient*)content->value);
+		{
+			ShowClientDialog((CUpDownClient*)content->value);
+		}
 	}
 }
 
@@ -4714,7 +4717,7 @@ void CDownloadListCtrl::ShowFileDialog(UINT uInvokePage)
 		if (iItem != -1)
 		{
 			const CtrlItem_Struct* pCtrlItem = (CtrlItem_Struct*)GetItemData(iItem);
-			if (pCtrlItem->type == FILE_TYPE)
+			if (pCtrlItem != NULL && pCtrlItem->type == FILE_TYPE)
 				aFiles.Add((CPartFile*)pCtrlItem->value);
 		}
 	}
@@ -4754,7 +4757,7 @@ CObject* CDownloadListListCtrlItemWalk::GetPrevSelectableItem()
 				iItem--;
 
 				const CtrlItem_Struct* ctrl_item = (CtrlItem_Struct*)m_pDownloadListCtrl->GetItemData(iItem);
-				if (ctrl_item->type == m_eItemType || (m_eItemType != FILE_TYPE && ctrl_item->type != FILE_TYPE))
+				if (ctrl_item != NULL && (ctrl_item->type == m_eItemType || (m_eItemType != FILE_TYPE && ctrl_item->type != FILE_TYPE)))
 				{
 					m_pDownloadListCtrl->SetItemState(iCurSelItem, 0, LVIS_SELECTED | LVIS_FOCUSED);
 					m_pDownloadListCtrl->SetItemState(iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
@@ -4788,7 +4791,7 @@ CObject* CDownloadListListCtrlItemWalk::GetNextSelectableItem()
 				iItem++;
 
 				const CtrlItem_Struct* ctrl_item = (CtrlItem_Struct*)m_pDownloadListCtrl->GetItemData(iItem);
-				if (ctrl_item->type == m_eItemType || (m_eItemType != FILE_TYPE && ctrl_item->type != FILE_TYPE))
+				if (ctrl_item != NULL && (ctrl_item->type == m_eItemType || (m_eItemType != FILE_TYPE && ctrl_item->type != FILE_TYPE)))
 				{
 					m_pDownloadListCtrl->SetItemState(iCurSelItem, 0, LVIS_SELECTED | LVIS_FOCUSED);
 					m_pDownloadListCtrl->SetItemState(iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
@@ -4819,7 +4822,7 @@ CImageList *CDownloadListCtrl::CreateDragImage(int /*iItem*/, LPPOINT lpPoint)
 	{
 		int iItem = GetNextSelectedItem(pos);
 		const CtrlItem_Struct *pCtrlItem = (CtrlItem_Struct *)GetItemData(iItem);
-		if (pCtrlItem && pCtrlItem->type == FILE_TYPE)
+		if (pCtrlItem != NULL && pCtrlItem && pCtrlItem->type == FILE_TYPE)
 		{
 			CRect rcLabel;
 			GetItemRect(iItem, rcLabel, LVIR_LABEL);
@@ -4907,13 +4910,13 @@ CImageList *CDownloadListCtrl::CreateDragImage(int /*iItem*/, LPPOINT lpPoint)
 	return pimlDrag;
 }
 
-void CDownloadListCtrl::ReportAvailableCommands(bool bForce)
+bool CDownloadListCtrl::ReportAvailableCommands(CList<int>& liAvailableCommands)
 {
-	if (m_pRelatedToolbar == NULL || (m_dwLastAvailableCommandsCheck > ::GetTickCount() - SEC2MS(3) && !bForce))
-		return;
+	if ((m_dwLastAvailableCommandsCheck > ::GetTickCount() - SEC2MS(3) && !m_availableCommandsDirty))
+		return false;
 	m_dwLastAvailableCommandsCheck = ::GetTickCount();
+	m_availableCommandsDirty = false;
 
-	CList<int> liAvailableCommands;
 	int iSel = GetNextItem(-1, LVIS_SELECTED);
 	if (iSel != -1)
 	{
@@ -4935,7 +4938,7 @@ void CDownloadListCtrl::ReportAvailableCommands(bool bForce)
 			while (pos)
 			{
 				const CtrlItem_Struct* pItemData = (CtrlItem_Struct*)GetItemData(GetNextSelectedItem(pos));
-				if (pItemData->type != FILE_TYPE)
+				if (pItemData == NULL || pItemData->type != FILE_TYPE)
 					continue;
 				const CPartFile* pFile = (CPartFile*)pItemData->value;
 				iSelectedItems++;
@@ -4983,5 +4986,5 @@ void CDownloadListCtrl::ReportAvailableCommands(bool bForce)
 		liAvailableCommands.AddTail(MP_CLEARCOMPLETED);
 	if (GetItemCount() > 0)
 		liAvailableCommands.AddTail(MP_FIND);
-	m_pRelatedToolbar->OnAvailableCommandsChanged(&liAvailableCommands);
+	return true;
 }

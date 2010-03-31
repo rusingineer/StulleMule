@@ -1839,7 +1839,9 @@ void CemuleDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CTrayDialog::OnSize(nType, cx, cy);
 	SetStatusBarPartsSize();
-	transferwnd->VerifyCatTabSize();
+	// we might receive this message during shutdown -> bad
+	if (transferwnd != NULL)
+		transferwnd->VerifyCatTabSize();
 }
 
 void CemuleDlg::ProcessED2KLink(LPCTSTR pszData)
@@ -2009,16 +2011,19 @@ LRESULT CemuleDlg::OnWMData(WPARAM /*wParam*/, LPARAM lParam)
 		if (clcommand==_T("connect")) {StartConnection(); return true;}
 		if (clcommand==_T("disconnect")) {theApp.serverconnect->Disconnect(); return true;}
 		if (clcommand==_T("resume")) {theApp.downloadqueue->StartNextFile(); return true;}
-		/* MORPH START  do not ask exit from command prompt.
-		if (clcommand==_T("exit")) {OnClose(); return true;}
+		//MORPH uninstall run as a service from installer
+		/*
+		if (clcommand==_T("exit"))
 		*/
 		if (clcommand==_T("exit")  ||
-			clcommand==_T("uninstall")) { // MORPH uninstall run as a service from installer. 
-		     theApp.m_app_state = APP_STATE_SHUTTINGDOWN; // do no ask to close
-			 OnClose(); 
-			 return true;}
+			clcommand==_T("uninstall"))
+		//MORPH uninstall run as a service from installer
+		{
+			theApp.m_app_state = APP_STATE_SHUTTINGDOWN; // do no ask to close
+			OnClose(); 
+			return true;
+		}
 		if (clcommand==_T("reload")) {theApp.sharedfiles->Reload(); return true;} // morph relaod shared files
-		// MORPH END	  do not ask exit from command prompt.
 		if (clcommand==_T("restore")) {RestoreWindow();return true;}
 		if (clcommand==_T("reloadipf")) {theApp.ipfilter->LoadFromDefaultFile(); return true;}
 		if (clcommand.Left(7).MakeLower()==_T("limits=") && clcommand.GetLength()>8) {
@@ -2031,6 +2036,8 @@ LRESULT CemuleDlg::OnWMData(WPARAM /*wParam*/, LPARAM lParam)
 			}
 			if (down.GetLength()>0) thePrefs.SetMaxDownload(_tstoi(down));
 			if (up.GetLength()>0) thePrefs.SetMaxUpload(_tstoi(up));
+
+			theApp.scheduler->SaveOriginals(); //MORPH - Added by Stulle, Don't reset Connection Settings without reason
 
 			return true;
 		}
@@ -2146,7 +2153,7 @@ LRESULT CemuleDlg::OnPartHashedOK(WPARAM wParam,LPARAM lParam)
 	//MORPH END   - Added by SiRoB, Fix crash at shutdown
 	CPartFile* pOwner = (CPartFile*)lParam;
 	if (theApp.downloadqueue->IsPartFile(pOwner)){	// could have been canceled
-		pOwner->PartHashFinished((uint16)wParam, false, false);
+		pOwner->PartHashFinished((UINT)wParam, false, false);
 		pOwner->UpdateDisplayedInfo()  ; //MORPH Display update (if IsPartFile! )
 	}
 	return 0;
@@ -2160,7 +2167,7 @@ LRESULT CemuleDlg::OnPartHashedCorrupt(WPARAM wParam,LPARAM lParam)
 	//MORPH END   - Added by SiRoB, Fix crash at shutdown
 	CPartFile* pOwner = (CPartFile*)lParam;
 	if (theApp.downloadqueue->IsPartFile(pOwner))	// could have been canceled
-		pOwner->PartHashFinished((uint16)wParam, false, true);
+		pOwner->PartHashFinished((UINT)wParam, false, true);
 	return 0;
 }
 
@@ -2172,7 +2179,7 @@ LRESULT CemuleDlg::OnPartHashedOKAICHRecover(WPARAM wParam,LPARAM lParam)
 	//MORPH END   - Added by SiRoB, Fix crash at shutdown
 	CPartFile* pOwner = (CPartFile*)lParam;
 	if (theApp.downloadqueue->IsPartFile(pOwner)){	// could have been canceled
-		pOwner->PartHashFinishedAICHRecover((uint16)wParam, false);
+		pOwner->PartHashFinishedAICHRecover((UINT)wParam, false);
 		pOwner->UpdateDisplayedInfo()  ; //MORPH Display update  (if IsPartFile! )
 	}
 	return 0;
@@ -2186,7 +2193,7 @@ LRESULT CemuleDlg::OnPartHashedCorruptAICHRecover(WPARAM wParam,LPARAM lParam)
 	//MORPH END   - Added by SiRoB, Fix crash at shutdown
 	CPartFile* pOwner = (CPartFile*)lParam;
 	if (theApp.downloadqueue->IsPartFile(pOwner)) {	// could have been canceled
-		pOwner->PartHashFinishedAICHRecover((uint16)wParam, true);
+		pOwner->PartHashFinishedAICHRecover((UINT)wParam, true);
 		pOwner->UpdateDisplayedInfo()  ; //MORPH Display update  (if IsPartFile! )
 	}
 
@@ -3911,7 +3918,7 @@ LRESULT CemuleDlg::OnVersionCheckResponse(WPARAM /*wParam*/, LPARAM lParam)
 					Log(LOG_SUCCESS|LOG_STATUSBAR,GetResString(IDS_NEWVERSIONAVLBETA));
 					if (AfxMessageBox(GetResString(IDS_NEWVERSIONAVLBETA)+GetResString(IDS_VISITVERSIONCHECK),MB_OK)==IDOK) {
 						CString theUrl;
-						theUrl.Format(_T("/en/download.php?version=%i&language=%i"),theApp.m_uCurVersionCheck,thePrefs.GetLanguageID());
+						theUrl = _T("/beta");
 						theUrl = thePrefs.GetVersionCheckBaseURL()+theUrl;
 						ShellExecute(NULL, NULL, theUrl, NULL, thePrefs.GetMuleDirectory(EMULE_EXECUTEABLEDIR), SW_SHOWDEFAULT);
 					}
@@ -5090,7 +5097,7 @@ void CemuleDlg::OnTBBPressed(UINT id)
 LRESULT CemuleDlg::OnTaskbarBtnCreated ( WPARAM , LPARAM  )
 {
 	// Sanity check that the OS is Win 7 or later
-	if (thePrefs.GetWindowsVersion() >= _WINVER_7_ )
+	if (thePrefs.GetWindowsVersion() >= _WINVER_7_ && IsRunning())
 	{
 		if (m_pTaskbarList)
 			m_pTaskbarList.Release();
