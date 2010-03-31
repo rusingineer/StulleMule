@@ -372,6 +372,7 @@ public:
 	void			DrawUpStatusBar(CDC* dc, RECT* rect, bool onlygreyrect, bool  bFlat) const;
 //MORPH START - Added by SiRoB, Display current uploading chunk
 	void			DrawUpStatusBarChunk(CDC* dc, RECT* rect, bool onlygreyrect, bool  bFlat) const;
+	float			GetUpChunkProgressPercent() const;
 //MORPH END   - Added by SiRoB, Display current uploading chunk
 	bool			IsUpPartAvailable(UINT iPart) const {
 						//MORPH - Changed by SiRoB, See chunk that we hide
@@ -461,6 +462,7 @@ public:
 	
 	//MORPH START - Downloading Chunk Detail Display
 	void			DrawStatusBarChunk(CDC* dc, LPCRECT rect,const CPartFile* file, bool  bFlat) const;
+	float			GetDownChunkProgressPercent() const;
 	UINT			GetCurrentDownloadingChunk() const { return (m_nLastBlockOffset!=(uint64)-1)?(UINT)(m_nLastBlockOffset/PARTSIZE):(UINT)-1;}
 	//MORPH END   - Downloading Chunk Detail Display
 	
