@@ -62,7 +62,6 @@
 #include "shahashset.h"
 #include "Log.h"
 #include "CaptchaGenerator.h"
-#include "libald.h" //MORPH - Added by Stulle, AppleJuice Detection [Xman]
 #include "AntiNick.h" // AntiNickThief Class - Stulle
 
 #ifdef _DEBUG
@@ -509,10 +508,6 @@ uint8 CUpDownClient::TestLeecher(){
 	// <== Leecher Name [Xman] - Stulle
 	// ==> Community Check [Xman] - Stulle
 	}else if(thePrefs.IsCommunityCheck()){
-	//MORPH START - Added by Stulle, AppleJuice Detection [Xman]
-		if(IsEmuleClient() && CheckUserHash())
-			return BAN_APPLE_JUICE;
-	//MORPH END   - Added by Stulle, AppleJuice Detection [Xman]
 		else if(IsSnakeOrGamer(m_pszUsername))
 			return BAN_COMMUNITY;
 		// ==> New United Community Detection [Xman] - Stulle
@@ -5401,52 +5396,6 @@ float CUpDownClient::GetModVersion(CString modversion) const
 	return (float)_tstof(modversion.Mid(theApp.m_uModLength));
 }
 //MORPH END   - Anti ModID Faker [Xman]
-
-//MORPH START - Added by Stulle, AppleJuice Detection [Xman]
-#define AJ_MD5_BUFFER_SIZE	92				// The buffer is always this length exactly
-
-bool CUpDownClient::CheckUserHash()
-{
-	const PBYTE userhash=(PBYTE)GetUserHash();
-	int buflen;
-	BOOL bIsApplejuice = FALSE;
-	BYTE AJByte;
-	BYTE md5_hashval[16];
-	BYTE buffer[AJ_MD5_BUFFER_SIZE + 2];	// Need 2 extra bytes because _tprintf()
-	_TCHAR FormatString[] =	L"@ppl"			// adds a terminating UNICODE NULL char
-		L"%.2X%.2X%.2X%.2X%.2X%.2X%.2X%.2X"
-		L" uf€ablE "
-		L"%.2X%.2X%.2X%.2X%.2X%.2X%.2X"
-		L" 89";
-
-
-	buflen = _stprintf(	(TCHAR *) buffer,
-		FormatString,
-		userhash[0], userhash[1], userhash[2], userhash[3],
-		userhash[4], userhash[5], userhash[6], userhash[7],
-		userhash[9], userhash[10], userhash[11], userhash[12],
-		userhash[13], userhash[14], userhash[15]
-		);
-
-
-		// Hash the data in the buffer using the MD5 algorithm
-
-		if (MD5_FUNCTION(buffer, buflen * sizeof(TCHAR), md5_hashval)) {
-
-
-			AJByte = ((md5_hashval[4] & 0x0F) << 4) | (md5_hashval[12] & 0x0F);
-
-
-			bIsApplejuice = (userhash[8] == AJByte);
-		}
-
-		//return bIsApplejuice;
-		if(bIsApplejuice)
-			return true;
-		else
-			return false;
-}
-//MORPH END   - Added by Stulle, AppleJuice Detection [Xman]
 
 // ==> Anti Uploader Ban - Stulle
 bool CUpDownClient::AntiUploaderBanActive()
