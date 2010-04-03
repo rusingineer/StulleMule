@@ -111,7 +111,12 @@ void CDirectDownloadDlg::OnOK()
 					//EastShare START - Modified by Pretender, [MoNKi: -Check already downloaded files-]
 					if(theApp.knownfiles->CheckAlreadyDownloadedFileQuestion(pLink->GetFileLink()->GetHashKey(),pLink->GetFileLink()->GetName()))
 					//EastShare END
-						theApp.downloadqueue->AddFileLinkToDownload(pFileLink, (thePrefs.GetCatCount()==0)?-1 : m_cattabs.GetCurSel(), true);
+					//khaos::categorymod+
+					/*
+					theApp.downloadqueue->AddFileLinkToDownload(pFileLink, (thePrefs.GetCatCount()==0)?-1 : m_cattabs.GetCurSel(), true);
+					*/
+					theApp.downloadqueue->AddFileLinkToDownload(pFileLink, (thePrefs.GetCatCount()==1)?-1 : m_cattabs.GetCurSel(), true);
+					//khaos::categorymod-
 					//MORPH END   - Changed by SiRoB, Selection category support khaos::categorymod-
 				}
 				else

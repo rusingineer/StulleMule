@@ -1111,7 +1111,12 @@ bool CSharedDirsTreeCtrl::FileSystemTreeHasSharedSubdirectory(CString strDir, bo
 	istr.MakeLower();
 	if (istr.Find(strDir) == 0 && strDir != istr)
 		return true;
+	//khaos::categorymod+
+	/*
 	for (int ix=1;ix<thePrefs.GetCatCount();ix++)
+	*/
+	for (int ix=0;ix<thePrefs.GetCatCount();ix++)
+	//khaos::categorymod-
 	{
 		istr = thePrefs.GetCatPath(ix);
 		if (istr.Right(1) != _T("\\"))
@@ -1242,7 +1247,12 @@ bool CSharedDirsTreeCtrl::FileSystemTreeIsShared(CString strDir, bool bCheckPare
 				istr += _T("\\");
 			if (istr.CompareNoCase(strDir) == 0)
 				return true;
+			//khaos::categorymod+
+			/*
 			for (int ix=1;ix<thePrefs.GetCatCount();ix++)
+			*/
+			for (int ix=0;ix<thePrefs.GetCatCount();ix++)
+			//khaos::categorymod-
 			{
 				istr = thePrefs.GetCatPath(ix);
 				if (istr.Right(1) != _T("\\"))
@@ -1560,7 +1570,12 @@ void CSharedDirsTreeCtrl::FetchSharedDirsList(){
 	}
 	// SLUGFILLER START: shareSubdir - unshare incoming dirs(already auto-shared)
 	RemoveSharedDirectory(thePrefs.GetMuleDirectory(EMULE_INCOMINGDIR), false);
+	//khaos::categorymod+
+	/*
 	for (int ix=1;ix<thePrefs.GetCatCount();ix++)
+	*/
+	for (int ix=0;ix<thePrefs.GetCatCount();ix++)
+	//khaos::categorymod-
 		RemoveSharedDirectory(thePrefs.GetCatPath(ix), false);
 	m_strliSharedDirsSubdir.RemoveAll();
 	pos = thePrefs.sharedsubdir_list.GetHeadPosition();

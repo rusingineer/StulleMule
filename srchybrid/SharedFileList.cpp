@@ -660,7 +660,12 @@ void CSharedFileList::FindSharedFiles()
 	}
 	// SLUGFILLER EMD: shareSubdir
 
+	//khaos::categorymod+
+	/*
 	for (int ix=1;ix<thePrefs.GetCatCount();ix++)
+	*/
+	for (int ix=0;ix<thePrefs.GetCatCount();ix++)
+	//khaos::categorymod-
 	{
 		tempDir=CString( thePrefs.GetCatPath(ix) );
 		if (tempDir.Right(1)!=_T("\\"))
@@ -1818,7 +1823,12 @@ bool CSharedFileList::ShouldBeShared(CString strPath, CString strFilePath, bool 
 	if (CompareDirectories(strPath, thePrefs.GetMuleDirectory(EMULE_INCOMINGDIR)) == 0)
 		return true;
 
+	//khaos::categorymod+
+	/*
 	for (int ix=1;ix<thePrefs.GetCatCount();ix++)
+	*/
+	for (int ix=0;ix<thePrefs.GetCatCount();ix++)
+	//khaos::categorymod-
 	{
 		if (CompareDirectories(strPath, thePrefs.GetCatPath(ix)) == 0)
 			return true;		

@@ -92,6 +92,7 @@ protected:
 	bool m_bSmallFileDLPush;
 	int m_iResumeFileInNewCat;
 	bool m_bUseAutoCat;
+	bool m_bAddRemovedInc;
 	bool m_bUseSLS;
 	// khaos::accuratetimerem+
 	int m_iTimeRemainingMode;
@@ -199,6 +200,7 @@ protected:
 	HTREEITEM m_htiSmallFileDLPush;
 	HTREEITEM m_htiResumeFileInNewCat;
 	HTREEITEM m_htiUseAutoCat;
+	HTREEITEM m_htiAddRemovedInc;
 	HTREEITEM m_htiUseSLS;
 	// khaos::accuratetimerem+
 	HTREEITEM m_htiTimeRemainingMode;
