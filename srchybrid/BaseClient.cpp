@@ -508,7 +508,7 @@ uint8 CUpDownClient::TestLeecher(){
 	// <== Leecher Name [Xman] - Stulle
 	// ==> Community Check [Xman] - Stulle
 	}else if(thePrefs.IsCommunityCheck()){
-		else if(IsSnakeOrGamer(m_pszUsername))
+		if(IsSnakeOrGamer(m_pszUsername))
 			return BAN_COMMUNITY;
 		// ==> New United Community Detection [Xman] - Stulle
 		else if(m_bUnitedComm)

@@ -491,10 +491,18 @@ void CToolbarWnd::OnBtnDropDown(NMHDR *pNMHDR, LRESULT *pResult)
 		CRect rc;
 		m_btnBar->GetItemRect(m_btnBar->CommandToIndex(MP_NEWCAT), rc);
 		m_btnBar->ClientToScreen(rc);
+		// ==> XP Style Menu [Xanatos] - Stulle
+		/*
 		CMenu menu;
 		menu.CreatePopupMenu();
+		*/
+		CTitleMenu menu;
+		menu.CreatePopupMenu();
+		menu.AddMenuTitle(GetResString(IDS_CAT), false, true);
+		// <== XP Style Menu [Xanatos] - Stulle
 		m_pCommandTargetWnd->FillCatsMenu(menu);
 		menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, rc.left, rc.bottom, this);
+		VERIFY( menu.DestroyMenu() ); // XP Style Menu [Xanatos] - Stulle
 	}
 	else
 		ASSERT( false );

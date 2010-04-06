@@ -2558,7 +2558,12 @@ void CDownloadListCtrl::FillCatsMenu(CTitleMenu& rCatsMenu, int iFilesInCats)
 			}
 		}
 	}
+	// ==> more icons - Stulle
+	/*
 	rCatsMenu.AppendMenu(MF_STRING, MP_NEWCAT, GetResString(IDS_NEW) + _T("..."));	
+	*/
+	rCatsMenu.AppendMenu(MF_STRING, MP_NEWCAT, GetResString(IDS_NEW) + _T("..."), _T("CATADD"));
+	// <== more icons - Stulle
 	//MORPH START - Changed By SiRoB, Khaos Category
 	// We don't use the Unassign menu item, we use the default cat
 	/*
