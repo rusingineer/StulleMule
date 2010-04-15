@@ -3729,6 +3729,345 @@ IDS_TAB_NT_SERVICE "系统服务"
    IDS_CHECK_FILE_OPEN_TIP  "通过eMule打开文件时要求确认."
 END
 
+STRINGTABLE
+BEGIN
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+   IDS_FILTER_CLIENTFAILEDDOWN        "剔除多次下载失败的客户端"
+   IDS_FILTER_CLIENTFAILEDDOWN_TIP    "剔除传输速度小于每分钟12kB并且下载失败超过3次的客户端.\n默认: 开启"
+   //MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
+   IDS_TCP_CONS             "TCP链接数"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_EASTSHARE           "EastShare"
+    IDS_FINECS              "Fine信用系统 (防止信用作弊, 起点: 4 段)"
+    IDS_PUSH                "优先上传设定" // push files - Stulle
+    IDS_MISC                "杂项"
+// ==> push small files [sivka] - Stulle
+    IDS_PUSH_SMALL          "优先上传小文件"
+    IDS_SMALL               "小"
+    IDS_PUSH_SMALL_BOOST    "优先上传小文件力度"
+// <== push small files [sivka] - Stulle
+// ==> push rare file - Stulle
+    IDS_PUSH_RARE           "优先上传稀有文件"
+    IDS_RARE                "稀有"
+// <== push rare file - Stulle
+// ==> Show sources on title - Stulle
+    IDS_SHOWSRCONTITLE      "在标题栏显示来源"
+    IDS_SHOWSRCSTRING       "来源:"
+// <== Show sources on title - Stulle
+    IDS_SHOWOVERHEADONTITLE "在标题栏显示额外开销带宽"// show overhead on title - Stulle
+// ==> ZZ Ratio Activation Changes - Stulle
+    IDS_ZZRATIO_CHECK5_NEW  "平均上传 < 10KB/秒且上传上限 < 12"
+    IDS_ZZRATIO_CHECK6      "启用zzRatio直到进程终止"
+    IDS_ZZRATIO_CHECK8      "平均上传 < 8KB/秒"
+// <== ZZ Ratio Activation Changes - Stulle
+    IDS_AVG_QUEUE           "平均队列位置" // Average Queue Ranking [Xman] - Stulle
+// ==> Sivka-Ban [cyrex2001] - Stulle
+    IDS_SIVKA_ASK_COUNTER   "在指定时间段不得超过请求数 [5-15]"
+    IDS_SIVKA_ASK_LOG       "记录被封杀的客户"
+    IDS_SIVKA_ASK_TIME      "用于考察的时间段 [5-10 分钟]"
+    IDS_SIVKA_BAN_CONTROL   "Sivka-ban控制(封杀请求速度过快的客户端)"
+    IDS_SIVKA_BAN           "启用sivka-ban控制"
+// <== Sivka-Ban [cyrex2001] - Stulle
+// ==> ban systems optional - Stulle
+    IDS_BAD_NICK_BAN        "封杀不良昵称"
+    IDS_ANTI_MOD_FAKER      "封杀伪装客户端"
+    IDS_ANTI_NICK_THIEF     "封杀昵称窃用"
+    IDS_BAD_MOD_STRING      "封杀不良Mod String"
+    IDS_GHOST_MOD           "封杀幽灵Mod"
+    IDS_EMPTY_NICK          "封杀空白昵称"
+    IDS_FAKE_EMULE          "封杀虚假eMule"
+    IDS_ANTI_LEECHER_GROUP  "反吸血骡控制"
+    IDS_HIDDEN_STR          "封杀隐藏Modstring的客户端"
+    IDS_LEECHER_NAME        "封杀属于吸血骡的用户名"
+    IDS_COMMUNITY_CHECK     "小圈子客户端检查"
+    IDS_HEX_CHECK           "16进制检查"
+    IDS_EMCRYPT             "eMCrypt检查"
+    IDS_BAD_INFO            "eMuleInfo检查"
+    IDS_BAD_HELLO           "可疑欢迎信息检查"
+    IDS_SNAFU               "SNAFU Opcode检查"
+    IDS_EXTRA_BYTES         "多余字节检查"
+    IDS_NICK_CHANGER        "昵称变换检查"
+    IDS_FILEFAKER           "文件伪装检查"
+// <== ban systems optional - Stulle
+    IDS_CON_TWEAKS          "连接调节"
+// ==> Inform Clients after IP Change - Stulle
+    IDS_RSAIC               "IP变化时重新请求来源"
+    IDS_IQCAOC              "IP变化时通知队列中的客户"
+// <== Inform Clients after IP Change - Stulle
+    IDS_REASK_FILE_SRC      "重新请求文件来源时间 [29-55 分钟]" // Timer for ReAsk File Sources - Stulle
+// ==> new credit system - Stulle
+    IDS_SIVKA_CREDIT        "Sivka系统"
+    IDS_SWAT_CREDIT         "S.W.A.T.系统"
+//    IDS_MA_CREDIT           "Magic Angel系统"
+//    IDS_MAPLUS_CREDIT       "Magic Angel+ 系统"
+    IDS_TK4_CREDIT          "TK4系统"
+    IDS_XTREME_CREDIT       "Xtreme系统"
+    IDS_ZZUL_CREDIT         "ZZUL系统"
+// <== new credit system - Stulle
+// ==> Quick start [TPT] - Stulle
+    IDS_QUICK_START_GROUP   "快速启动"
+    IDS_QUICK_START         "启用快速启动"
+    IDS_QUICK_START_MAX_TIME "快速启动时间 [8-18 分钟]"
+    IDS_QUICK_START_MAX_CONN_PER_FIVE "每5秒最大连接数"
+    IDS_QUICK_START_MAX_CONN "最大连接数"
+    IDS_QUICK_START_AFTER_IP_CHANGE "IP变化时启用快速启动"
+    IDS_QUICK_START_MAX_CONN_PER_FIVE_BACK "返回每5秒最大连接数"
+    IDS_QUICK_START_MAX_CONN_BACK "返回最大连接数"
+// <== Quick start [TPT] - Stulle
+// ==> FunnyNick Tag - Stulle
+    IDS_FN_TAG              "智能昵称标签"
+    IDS_NO_TAG              "禁用"
+    IDS_SHORT_TAG           "[FN]"
+    IDS_FULL_TAG            "[FunnyNick]"
+    IDS_CUSTOM_TAG          "自定义标签"
+    IDS_SET_CUSTOM_TAG      "设定自定义标签"
+    IDS_FN_TAG_AT_END       "标签显示于末尾"
+// <== FunnyNick Tag - Stulle
+// ==> Pay Back First for insecure clients - Stulle
+    IDS_PAYBACKFIRST2       "对未通过身份认证的客户也启用优先回报功能"
+    IDS_PAYBACKFIRSTLIMIT2  "触发数据量 (默认为 50MB)"
+// <== Pay Back First for insecure clients - Stulle
+    IDS_CLIENT_BAN_TIME     "封杀时间(1-10小时)" // adjust ClientBanTime - Stulle
+// ==> drop sources - Stulle
+    IDS_NNS_TIMERLABEL      "NNS自动计时 0...60 秒"
+    IDS_REMOVENNSLIMITLABEL "下载超过指定百分比后开始放弃NNS"
+    IDS_FQS_TIMERLABEL      "FQS自动计时 0...60 秒"
+    IDS_REMOVEFQSLIMITLABEL "下载超过指定百分比后开始放弃FQS"
+    IDS_HQRS_TIMERLABEL     "HQRS自动计时 0...60 秒"
+    IDS_REMOVEQRSLABEL      "最大队列位置 <= X"
+    IDS_REMOVEQRSLIMITLABEL "下载超过指定百分比后开始放弃HQRS"
+    IDS_AUTO_NNS            "启用自动NNS(不需要的来源)放弃"
+    IDS_AUTO_FQS            "启用自动FullQS(队列已满的来源)放弃"
+    IDS_AUTO_QRS            "启用自动HighQS(排队位置极其靠后的来源)放弃"
+    IDS_SIVKAFILESETTINGS   "Sivka - File(s) Settings"
+    IDS_HARDLIMIT_LABEL     "硬性限制 (0=使用默认设置)"
+    IDS_DROP_DEFAULTS       "来源放弃设置"
+// <== drop sources - Stulle
+    IDS_SHOW_GLOBAL_HL      "显示全局硬性限制" // show global HL - Stulle
+    IDS_SHOW_DROPPED_SRC    "放弃的来源数" // show # of dropped sources - Stulle
+// ==> TBH: minimule - Stulle
+    IDS_MM_SHOW             "改用TBH迷你骡"
+    IDS_MM_LIVES            "保持迷你骡更新"
+    IDS_MM_UPDATE_TIME      "迷你骡更新时间(秒)"
+    IDS_MM_TRANS            "迷你骡透明度(1-255)"
+    IDS_MM_ACTDL            "活动的下载: %i"
+    IDS_MM_DATA             "上传: %s | 下载: %s"
+    IDS_MM_UPDOWN           "上传: %s(%.1f) | 下载: %s(%.1f)"
+    IDS_MM_COMPL            "在进程中显示已完成的文件"
+    IDS_MM_RATIO            "上传:下载 :"
+    IDS_MM_OPEN             "最小化到系统托盘时自动开启迷你骡"
+// <== TBH: minimule - Stulle
+    IDS_SHOWINMSN7          "在MSN7(或更高版本)中显示eMule状态" //Show in MSN7 [TPT] - Stulle
+// ==> Anti Uploader Ban - Stulle
+    IDS_UNBAN_UPLOADER      "上传指定数据量(MB)后可免于封杀 [0=禁用]"
+    IDS_ANTI_CASE_1         "上传 >= 限量"
+    IDS_ANTI_CASE_2         "上传-下载 >= 限量"
+    IDS_ANTI_CASE_3         "上传-下载 >= 限量 直到 1:1"
+// <== Anti Uploader Ban - Stulle
+// ==> Spread Credits Slot - Stulle
+    IDS_SPREAD_CREDITS_SLOT "高积分用户绿色通道(SCS)"
+    IDS_SPREAD_CREDITS_SLOT_COUNTER "每隔指定数量的通道就开放一个绿色通道"
+    IDS_SPREAD_CREDITS_SLOT_PS "绿色通道优先级等于强力分享通道"
+// <== Spread Credits Slot - Stulle
+// ==> Source Graph - Stulle
+    IDS_SRCGRAPH            "绘制来源图表"
+    IDS_STATIC_STATSHL      "统计图表的下限/上限:"
+    IDS_SP_SRCGRAPH         "来源图表"
+// <== Source Graph - Stulle
+    IDS_SHOW_FILE_HL_CONST  "持续显示文件连接数" // show HL per file constantly
+    IDS_FD_AVGDL            "平均上传速度:" // Average download speed - Stulle
+// ==> BMI calculator - Stulle
+    IDS_BMI_WND             "测测体重, 哈哈"
+    IDS_BMI_HEAD            "输入身高/体重，以磅/英寸或者公斤/米为单位"
+    IDS_BMI_WEIGHT_LABEL    "体重(使用小数点, 不要用逗号orz)"
+    IDS_BMI_HEIGHT_LABEL    "身高(要求同上)"
+    IDS_BMI_ENGLISH         "得出结果(磅/英寸)"
+    IDS_BMI_METRIC          "得出结果(公斤/米)"
+    IDS_BMI_RESULT_LABEL    "您的体重/身高比:"
+    IDS_BMI_RESULT          "还没算出结果"
+    IDS_BMI_RESULT1         "您貌似有点瘦, 请多保重"
+    IDS_BMI_RESULT2         "您的身材很标准, 是MM不?"
+    IDS_BMI_RESULT3         "您需要控制一下体重了..."
+    IDS_BMI_RESULT4         "坦率地说, 您...太肥了..."
+// <== BMI calculator - Stulle
+    IDS_TRAY_COMPLETE       "在系统托盘显示已完成下载" // Completed in Tray - Stulle
+    IDS_ANTI_XS_EXPLOITER   "封杀反复请求新来源的客户" // Anti-XS-Exploit [Xman] - Stulle
+    IDS_SPAM_BAN            "启用垃圾信息封杀" // Spam Ban [Xman] - Stulle
+// ==> Global Source Limit (customize for files) - Stulle
+    IDS_GLOBAL_HL_DEFAULT   "对文件默认启用全局硬性限制"
+    IDS_GLOBAL_HL_ALL       "对所有文件启用"
+// <== Global Source Limit (customize for files) - Stulle
+// ==> StulleMule Version Check - Stulle
+    IDS_VISITSVERSIONCHECK  "\n\n是否访问 StulleMule 主页?"
+    IDS_SVERSIONCHECK       "&版本检测 (StulleMule)"
+    IDS_NONEWSVERVERSION    "没有发现新版本的StulleMule."
+    IDS_NEWSVERSIONAVL      "发现新版本的StulleMule! 请访问软件主页获取更多信息."
+    IDS_NEWSVERSIONAVLPOPUP "已有新版的StulleMule. 点击了解新版本的信息!"
+// <== StulleMule Version Check - Stulle
+// ==> Emulate others [WiZaRd/Spike/shadow2004] - Stulle
+    IDS_EMULATOR_GROUP      "模拟其它客户端"
+    IDS_EMULATE_ML          "模拟MLDonkeys"
+    IDS_EMULATE_DONK        "模拟eDonkeys"
+    IDS_EMULATE_DONK_HYB    "模拟eDonkey-hybrids"
+    IDS_EMULATE_SHA         "模拟Sharezas"
+    IDS_EMULATE_PHANT       "模拟lPhants"
+    IDS_EMULATE_LOG         "记录模拟行为"
+// <== Emulate others [WiZaRd/Spike/shadow2004] - Stulle
+// ==> Release Bonus [sivka] - Stulle
+    IDS_RELEASE_BONUS_GROUP "发布奖励(对正在发布的文件, 假定客户已经排队一定时间)"
+    IDS_RELEASE_BONUS_EDIT  "奖励天数"
+// <== Release Bonus [sivka] - Stulle
+    IDS_RELEASE_SCORE_ASSURANCE "保证下载发布中的文件的客户的初始积分" // Release Score Assurance - Stulle
+// ==> CPU/MEM usage [$ick$/Stulle] - Stulle
+    IDS_SYS_INFO_GROUP      "系统信息"
+    IDS_SYS_INFO_GLOBAL     "启用全局信息"
+// <== CPU/MEM usage [$ick$/Stulle] - Stulle
+// ==> Connection Checker [eWombat/WiZaRd] - Stulle
+    IDS_CONCHECK            "检测连接状况"
+    IDS_ENABLE_ICMP         "启用 ICMP 协议或 RAW"
+    IDS_PING_TIME_OUT       "Ping 超时(1-20秒)"
+    IDS_PING_TTL            "Ping TTL (8-64)"
+// <== Connection Checker [eWombat/WiZaRd] - Stulle
+// ==> Reduce Score for leecher - Stulle
+    IDS_PUNISHMENT          "吸血骡制裁措施"
+    IDS_PUNISHMENT_BAN      "禁止连接"
+    IDS_PUNISHMENT_REDUCE   "减少积分"
+    IDS_PUNISHMENT_PERCENT  "减为 %"
+	IDS_BANREASON           "封杀理由:"
+    IDS_GOOD_GUY            "好人"
+    IDS_BAN_FAKE_MOD            "虚假MODSTRING"
+    IDS_BAN_HIDDEN_MOD          "隐藏MODSTRING"
+    IDS_BAN_MORPH_LEECHER       "吸血骡变种"
+    IDS_BAN_FAKE_NICK           "虚假昵称"
+    IDS_BAN_LEECHER_NICK        "使用吸血骡的用户名"
+    IDS_BAN_COMMUNITY           "小圈子客户端"
+    IDS_BAN_WRONG_HASHSIZE      "错误hash大小"
+    IDS_BAN_HEX_CHECK           "16进制Check"
+    IDS_BAN_BAD_MOD             "不良MODSTRING"
+    IDS_BAN_BAD_NICK            "不良用户名"
+    IDS_BAN_GHOST               "幽灵MOD"
+    IDS_BAN_FAKE_VER            "虚假emule版本"
+    IDS_BAN_EMPTY_NICK          "空白昵称"
+    IDS_BAN_NICK_CHANGER        "昵称变化"
+    IDS_BAN_BAD_INFO            "不良eMuleInfo标签"
+    IDS_BAN_BAD_HELLO           "可疑欢迎标签"
+    IDS_BAN_SNAFU               "S.N.A.F.U."
+    IDS_BAN_EXTRABYTE           "多余字节"
+    IDS_BAN_CREDIT_HACK         "反信用窃取"
+    IDS_BAN_FRIEND_SHARING      "检测到好友通道"
+    IDS_BAN_SIVKA               "Sivka-Ban"
+    IDS_BAN_SPAMMER             "垃圾信息"
+    IDS_BAN_FILEFAKER           "伪装文件"
+    IDS_BAN_APPLE_JUICE         "AppleJuice"
+    IDS_VAGAA "检测哇嘎"
+    IDS_MM_GROUP "TBH 迷你骡"
+    IDS_RELEASE_BONUS_12 "12小时"
+    IDS_BAN_VAGAA "哇嘎"
+// <== Reduce Score for leecher - Stulle
+    IDS_MOD_STATS               "Mod 统计信息" // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+// ==> Limit PS by amount of data uploaded - Stulle
+    IDS_PS_AMOUNT_LIMIT         "以上传的数据量为限"
+    IDS_PS_AMOUNT_LIMIT_LABEL   "以上传数据的百分比为限(最大值 10000%)"
+    IDS_PS_AMOUNT_LIMIT_WRONG   "输入数值无效."
+// <== Limit PS by amount of data uploaded - Stulle
+    IDS_NO_BAD_PUSHING          "对吸血骡禁用强力分享/优先回报" // Disable PS/PBF for leechers [Stulle/idea by sfrqlxert] - Stulle
+// ==> Design Settings [eWombat/Stulle] - Stulle
+    IDS_COLOR_MASTER1       "客户"
+    IDS_COLOR_MASTER2       "下载中的文件"
+    IDS_COLOR_MASTER3       "共享文件"
+    IDS_COLOR_BOX           "色彩风格设计"
+    IDS_COLOR_FONT_LABEL    "字体颜色"
+    IDS_COLOR_BACK_LABEL    "背景颜色"
+    IDS_COLOR_C1            "好友"
+    IDS_COLOR_S1            "正在下载的"
+    IDS_COLOR_S2            "强力分享的"
+    IDS_COLOR_C2            "正在请求强力分享文件的"
+    IDS_COLOR_C3            "正在从其下载的"
+    IDS_COLOR_C4            "正在向其上传的"
+    IDS_COLOR_C5            "吸血骡"
+    IDS_COLOR_B1            "已知客户"
+    IDS_COLOR_MASTER5       "背景色"
+    IDS_COLOR_B2            "正在下载的客户"
+    IDS_COLOR_B3            "正在等待的客户"
+    IDS_COLOR_B4            "正在上传的客户"
+    IDS_COLOR_B5            "正在下载的文件"
+    IDS_COLOR_B6            "共享的文件"
+    IDS_COLOR_C6            "LowID"
+    IDS_COLOR_C7            "积极评价"
+    IDS_COLOR_ON            "启用"
+    IDS_COLOR_OFF           "关闭"
+    IDS_COLOR_PERM          "权限"
+    IDS_COLOR_AUTOCHECK     "MorphXT开始上传即启用彩色文字"
+    IDS_COLOR_MASTER4       "服务器"
+    IDS_COLOR_SE1           "当前已连接的服务器"
+    IDS_COLOR_SE2           "静态服务器"
+    IDS_COLOR_SE3           "被过滤的服务器"
+    IDS_COLOR_SE4           "无响应的服务器"
+    IDS_COLOR_SE5           "不可靠的服务器"
+    IDS_COLOR_W1            "Kad窗口"
+    IDS_COLOR_W2            "服务器窗口"
+    IDS_COLOR_W3            "传输窗口"
+    IDS_COLOR_W4            "搜索窗口"
+    IDS_COLOR_W5            "共享文件窗口"
+    IDS_COLOR_W6            "消息窗口"
+    IDS_COLOR_W7            "IRC窗口"
+    IDS_COLOR_W8            "统计信息窗口"
+    IDS_COLOR_W9            "状态栏"
+    IDS_COLOR_MASTER6       "窗口风格"
+    IDS_COLOR_W10           "工具条"
+    IDS_COLOR_S3            "可共享的"
+// <== Design Settings [eWombat/Stulle] - Stulle
+// ==> Automatic shared files updater [MoNKi] - Stulle
+    IDS_AUTO_SHARED_UPDATER "自动刷新共享文件"
+    IDS_ASFU_RELOADTIME     "检测到共享文件夹中的变动, 在 %d 秒之后刷新共享文件..."
+    IDS_ASFU_DELAY          "检测到正在完成中的文件, 暂停刷新..."
+    IDS_ASFU_RELOAD         "检测到共享文件夹中的变动. 刷新共享文件..."
+    IDS_ASFU_RELOADING      "正在刷新..."
+    IDS_ASFU_SINGLE         "监视只有单个共享文件的文件夹"
+    IDS_ASFU_TIMEBETWEEN    "自动刷新共享目录的时间间隔 [单位: 秒]"
+// <== Automatic shared files updater [MoNKi] - Stulle
+// ==> Control download priority [tommy_gun/iONiX] - Stulle
+    IDS_AUTO_DOWN_GROUP     "下载优先级控制"
+    IDS_AUTO_DOWN_PERC      "通过完成百分比控制"
+    IDS_AUTO_DOWN_PERC_VAL  "完成百分比"
+    IDS_AUTO_DOWN_SIZE      "通过剩余数据大小控制"
+    IDS_AUTO_DOWN_SIZE_VAL  "剩余数据大小 (MB)"
+    IDS_AUTO_DOWN_PRIO      "优先级改变为"
+// <== Control download priority [tommy_gun/iONiX] - Stulle
+    IDS_SHOW_SPEED_METER    "在工具栏显示速度图表" // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
+// ==> Enforce Ratio - Stulle
+    IDS_RATIO_GROUP         "上传下载比例"
+    IDS_ENFORCE_RATIO       "总是强制保持比例"
+    IDS_RATIO_VALUE         "最大比例 1"
+    IDS_ZZRATIO_CHECK1_NEW  "达到比例"
+    IDS_ZZRATIO_CHECK9      "强制保持比例"
+// <== Enforce Ratio - Stulle
+// ==> XP Style Menu [Xanatos] - Stulle
+    IDS_MENU_PREVIEW        "预览"
+    IDS_HISTORY             "历史任务"
+    IDS_COLUMNS             "分栏"
+    IDS_PS_LIMITED_SRC      "以来源数为限"
+    IDS_PS_LIMITED_AMNT     "以数据量为限"
+    IDS_FUNCTION            "功能"
+    IDS_RELEASER            "发布功能"
+// <== XP Style Menu [Xanatos] - Stulle
+// ==> Adjustable NT Service Strings - Stulle
+    IDS_SERVICE_STR_GROUP   "NT 服务字符串 (留空 = 默认)"
+    IDS_SERVICE_NAME        "服务名字 (安装时使用)"
+    IDS_SERVICE_DISP_NAME   "服务显示名称"
+    IDS_SERVICE_DESCR       "服务的描述"
+    IDS_SERVICE_NAME_CHANGED "你修改了一个已安装的 NT 服务的名字.\n为了使得改动生效, eMule会重新安装这个服务.\n要继续吗?"
+    IDS_SERVICE_STR_CHANGED "NT 服务字符串改变了"
+    IDS_SERVICE_DISP_CHANGED "你改变了 NT 服务的显示名称或者描述.\n这虽然不是重要的设置, 但是要生效就必须重新安装服务.\n现在就重新安装服务吗? 取消就重置所有改动."
+    IDS_SERVICE_UNINSTALL_FAIL "NT 服务卸载失败.\n请检查你的日志.\n所有改动都已重置."
+    IDS_SERVICE_UNINSTALL_TITLE "服务卸载失败"
+    IDS_SERVICE_INSTALL_FAIL "NT 服务安装失败.\n请检查你的日志并在尝试在 NT 服务面板重新安装本服务."
+    IDS_SERVICE_INSTALL_TITLE "服务安装失败"
+// <== Adjustable NT Service Strings - Stulle
+END
 #endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////
 

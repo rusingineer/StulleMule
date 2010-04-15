@@ -3739,6 +3739,337 @@ BEGIN
    IDS_CHECK_FILE_OPEN_TIP  "Enables prompt before opening a file via eMule."
 END
 
+STRINGTABLE 
+BEGIN
+    IDS_EASTSHARE           "EastShare"
+    IDS_FINECS              "Fine Credit System (Threshold: 4 chunks)"
+    IDS_PUSH                "Öncelik ayarlarý" // push files - Stulle
+    IDS_MISC                "Muhtelif Seçenekler"
+// ==> push small files [sivka] - Stulle
+    IDS_PUSH_SMALL          "Küçük dosya önceliði"
+    IDS_SMALL               "Küçüklük"
+    IDS_PUSH_SMALL_BOOST    "Küçük dosya iteleme katsayýsý"
+// <== push small files [sivka] - Stulle
+// ==> push rare file - Stulle
+    IDS_PUSH_RARE           "Nadir dosya önceliði"
+    IDS_RARE                "Nadirlik"
+// <== push rare file - Stulle
+// ==> Show sources on title - Stulle
+    IDS_SHOWSRCONTITLE      "Kaynaðý baþlýkta göster"
+    IDS_SHOWSRCSTRING       "Kaynak:"
+// <== Show sources on title - Stulle
+    IDS_SHOWOVERHEADONTITLE "Ek-yük deðerini baþlýkta göster"// show overhead on title - Stulle
+// ==> ZZ Ratio Activation Changes - Stulle
+    IDS_ZZRATIO_CHECK5_NEW  "Ortalama GÖN < 10KB/s ve GÖN sýnýrý < 12"
+    IDS_ZZRATIO_CHECK6      "zzRatio oturum boyunca aktif"
+    IDS_ZZRATIO_CHECK8      "Ortalama GÖN < 8KB/s"
+// <== ZZ Ratio Activation Changes - Stulle
+    IDS_AVG_QUEUE           "Ort. Sýra" // Average Queue Ranking [Xman] - Stulle
+// ==> Sivka-Ban [cyrex2001] - Stulle
+    IDS_SIVKA_ASK_COUNTER   "Yasaklanmadan önce sorgu sayýsý [5-15]"
+    IDS_SIVKA_ASK_LOG       "Yasaklanan istemcileri günlükle"
+    IDS_SIVKA_ASK_TIME      "Yasaklanmadan önce sorgu süresi [5-10 dk.]"
+    IDS_SIVKA_BAN_CONTROL   "Sivka-yasaklý denetimi"
+    IDS_SIVKA_BAN           "Sivka-yasaklý denetimi aktif"
+// <== Sivka-Ban [cyrex2001] - Stulle
+// ==> ban systems optional - Stulle
+    IDS_BAD_NICK_BAN        "Enable Bad Nick ban"
+    IDS_ANTI_MOD_FAKER      "Enable Anti-Mod-Faker"
+    IDS_ANTI_NICK_THIEF     "Enable Anti-Nick-Thief"
+    IDS_BAD_MOD_STRING      "Enable Bad Mod String ban"
+    IDS_GHOST_MOD           "Enable Ghost Mod ban"
+    IDS_EMPTY_NICK          "Enable Empty Nick ban"
+    IDS_FAKE_EMULE          "Enable Fake eMule ban"
+    IDS_ANTI_LEECHER_GROUP  "Sülük-korumasý denetimi"
+    IDS_HIDDEN_STR          "Enable Hidden Modstring ban"
+    IDS_LEECHER_NAME        "Enable Leecher Name ban"
+    IDS_COMMUNITY_CHECK     "Enable Community Check"
+    IDS_HEX_CHECK           "Enable Hex Check"
+    IDS_EMCRYPT             "Enable eMCrypt Detection"
+    IDS_BAD_INFO            "Enable BadType eMuleInfo Check"
+    IDS_BAD_HELLO           "Enable Suspect Hello-Tag Check"
+    IDS_SNAFU               "Enable SNAFU Opcode Check"
+    IDS_EXTRA_BYTES         "Enable Extra Bytes Check"
+    IDS_NICK_CHANGER        "Enable Nick Changer Check"
+    IDS_FILEFAKER           "Enable File Faker Check"
+    IDS_VAGAA               "Enable Vagaa Check"
+// <== ban systems optional - Stulle
+    IDS_CON_TWEAKS          "Baðlantý Ýnce Ayarlarý"
+// ==> Inform Clients after IP Change - Stulle
+    IDS_RSAIC               "IP deðiþimi ardýndan kaynaklarý tekrar sor"
+    IDS_IQCAOC              "IP deðiþimini sýradaki istemcilere bildir"
+// <== Inform Clients after IP Change - Stulle
+    IDS_REASK_FILE_SRC      "Kaynaklarý yeniden sorgulama zamaný [29-55 dk.]" // Timer for ReAsk File Sources - Stulle
+// ==> new credit system - Stulle
+    IDS_SIVKA_CREDIT        "Sivka Credit"
+    IDS_SWAT_CREDIT         "S.W.A.T. Credit"
+//    IDS_MA_CREDIT           "Magic Angel Credit"
+//    IDS_MAPLUS_CREDIT       "Magic Angel+ Credit"
+    IDS_TK4_CREDIT          "TK4 Credit"
+    IDS_XTREME_CREDIT       "Xtreme Credit"
+    IDS_ZZUL_CREDIT         "ZZUL Credit"
+// <== new credit system - Stulle
+// ==> Quick start [TPT] - Stulle
+    IDS_QUICK_START_GROUP   "Quickstart"
+    IDS_QUICK_START         "Enable Quickstart"
+    IDS_QUICK_START_MAX_TIME "Time for Quickstart [8-18 min.]"
+    IDS_QUICK_START_MAX_CONN_PER_FIVE "max. con./5sec"
+    IDS_QUICK_START_MAX_CONN "max. con."
+    IDS_QUICK_START_AFTER_IP_CHANGE "Enable Quickstart after IP Change"
+    IDS_QUICK_START_MAX_CONN_PER_FIVE_BACK "Return to max. con./5sec"
+    IDS_QUICK_START_MAX_CONN_BACK "Return to max. con."
+// <== Quick start [TPT] - Stulle
+// ==> FunnyNick Tag - Stulle
+    IDS_FN_TAG              "Komik takma-ad etiketi"
+    IDS_NO_TAG              "Etiket yok"
+    IDS_SHORT_TAG           "[FN]"
+    IDS_FULL_TAG            "[FunnyNick]"
+    IDS_CUSTOM_TAG          "Özel etiket"
+    IDS_SET_CUSTOM_TAG      "Özel etiket ayarla"
+    IDS_FN_TAG_AT_END       "Etiketi sonda göster"
+// <== FunnyNick Tag - Stulle
+// ==> Pay Back First for insecure clients - Stulle
+    IDS_PAYBACKFIRST2       "PBF for clients without SUI"
+    IDS_PAYBACKFIRSTLIMIT2  "Amount before triggering (Default 50MB)"
+// <== Pay Back First for insecure clients - Stulle
+    IDS_CLIENT_BAN_TIME     "Tek bir istemci için yasaklanma süresi(saat)" // adjust ClientBanTime - Stulle
+// ==> drop sources - Stulle
+    IDS_NNS_TIMERLABEL      "AutoNNS Timer 0...60 sec"
+    IDS_REMOVENNSLIMITLABEL "Start droping NNS > X%"
+    IDS_FQS_TIMERLABEL      "AutoFQS Timer 0...60 sec"
+    IDS_REMOVEFQSLIMITLABEL "Start droping FullQS > X%"
+    IDS_HQRS_TIMERLABEL     "AutoHQRS Timer 0...60 sec"
+    IDS_REMOVEQRSLABEL      "Maximum allowed QR <= X"
+    IDS_REMOVEQRSLIMITLABEL "Start droping HighQRS > X%"
+    IDS_AUTO_NNS            "Enable auto drop NNS"
+    IDS_AUTO_FQS            "Enable auto drop FullQS"
+    IDS_AUTO_QRS            "Enable auto drop HighQS"
+    IDS_SIVKAFILESETTINGS   "Sivka - Dosya(lar) Ayarlarý"
+    IDS_HARDLIMIT_LABEL     "Sabit Sýnýr (0=Varsayýlaný kullan)"
+    IDS_DROP_DEFAULTS       "Drop default settings"
+// <== drop sources - Stulle
+    IDS_SHOW_GLOBAL_HL      "Genel sabit sýnýrý göster" // show global HL - Stulle
+    IDS_SHOW_DROPPED_SRC    "Dropped sources" // show # of dropped sources - Stulle
+// ==> TBH: minimule - Stulle
+    IDS_MM_SHOW             "Use TBH Mini-Mule instead"
+    IDS_MM_LIVES            "Keep Mini-Mule updated"
+    IDS_MM_UPDATE_TIME      "Mini-Mule update Time (in sec)"
+    IDS_MM_TRANS            "Mini-Mule Transparency (1-255)"
+    IDS_MM_ACTDL            "Active Downloads: %i"
+    IDS_MM_DATA             "Up: %s | Down: %s"
+    IDS_MM_UPDOWN           "Up: %s(%.1f) | Down: %s(%.1f)"
+    IDS_MM_COMPL            "Show completed files in session"
+    IDS_MM_RATIO            "UL:DL :"
+    IDS_MM_OPEN             "Open Mini-Mule on minimize to tray"
+    IDS_MM_GROUP            "TBH Mini-Mule"
+// <== TBH: minimule - Stulle
+    IDS_SHOWINMSN7          "eMule durumunu MSN7(ya da yukarýsý) iletisine yansýt" //Show in MSN7 [TPT] - Stulle
+// ==> Anti Uploader Ban - Stulle
+    IDS_UNBAN_UPLOADER      "Yasaklý muhafiyet sýnýrý(MB) [0=devre dýþý]"
+    IDS_ANTI_CASE_1         "GÖN >= Sýnýr"
+    IDS_ANTI_CASE_2         "GÖN-ÝND >= Sýnýr"
+    IDS_ANTI_CASE_3         "GÖN-ÝND >= Sýnýr 1:1 olana dek"
+// <== Anti Uploader Ban - Stulle
+// ==> Spread Credits Slot - Stulle
+    IDS_SPREAD_CREDITS_SLOT "Kredi daðýtma slotu (SCS)"
+    IDS_SPREAD_CREDITS_SLOT_COUNTER "Her X slotda bir Kredi daðýtma slotu"
+    IDS_SPREAD_CREDITS_SLOT_PS "SCS statüsündeki istemcileri PS kipinde deðerlendir"
+// <== Spread Credits Slot - Stulle
+// ==> Source Graph - Stulle
+    IDS_SRCGRAPH            "Kaynak grafiðini göster"
+    IDS_STATIC_STATSHL      "Grafik için Asgari/ Azami kaynak deðerleri:"
+    IDS_SP_SRCGRAPH         "Kaynak Grafiði"
+// <== Source Graph - Stulle
+    IDS_SHOW_FILE_HL_CONST  "Dosya baþýna Sabit Sýnýrý sürekli göster" // show HL per file constantly
+    IDS_FD_AVGDL            "Ort. ÝND hýzý:" // Average download speed - Stulle
+// ==> BMI calculator - Stulle
+    IDS_BMI_WND             "BMI calculator"
+    IDS_BMI_HEAD            "Type values either in pound/inch or kilogramm/meter"
+    IDS_BMI_WEIGHT_LABEL    "Weight (use . instead of ,)"
+    IDS_BMI_HEIGHT_LABEL    "Height (use . instead of ,)"
+    IDS_BMI_ENGLISH         "Result (lb/in)"
+    IDS_BMI_METRIC          "Result (kg/m)"
+    IDS_BMI_RESULT_LABEL    "Your BMI is:"
+    IDS_BMI_RESULT          "No result"
+    IDS_BMI_RESULT1         "Your weight status is underweight"
+    IDS_BMI_RESULT2         "Your weight status is normal"
+    IDS_BMI_RESULT3         "Your weight status is overweight"
+    IDS_BMI_RESULT4         "Your weight status is obese"
+// <== BMI calculator - Stulle
+    IDS_TRAY_COMPLETE       "Tamamlanmýþ dosyalarý sistem tabla simgesinde göster" // Completed in Tray - Stulle
+    IDS_ANTI_XS_EXPLOITER   "Enable Anti-XS-Exploit" // Anti-XS-Exploit [Xman] - Stulle
+    IDS_SPAM_BAN            "Enable Spam Ban" // Spam Ban [Xman] - Stulle
+// ==> Global Source Limit (customize for files) - Stulle
+    IDS_GLOBAL_HL_DEFAULT   "Genel SS tüm dosyalar için varsayýlan"
+    IDS_GLOBAL_HL_ALL       "Tüm dosyalarý dahil et"
+// <== Global Source Limit (customize for files) - Stulle
+// ==> StulleMule Version Check - Stulle
+    IDS_VISITSVERSIONCHECK  "\n\nStulleMule ana sayfasýný ziyaret etmek ister misiniz?"
+    IDS_SVERSIONCHECK       "&Versioncheck (StulleMule)"
+    IDS_NONEWSVERVERSION    "Yeni bir StulleMule sürümü saptanamadý."
+    IDS_NEWSVERSIONAVL      "Yeni bir eMule StulleMule sürümü mevcut! Daha fazla bilgi için proje ana sayfasýný ziyaret ediniz."
+    IDS_NEWSVERSIONAVLPOPUP "Yeni bir eMule StulleMule sürümü mevcut. Yeni sürüm hakkýnda bilgi almak için buraya týklayýnýz!"
+// <== StulleMule Version Check - Stulle
+// ==> Emulate others [WiZaRd/Spike/shadow2004] - Stulle
+    IDS_EMULATOR_GROUP      "Emulate other clients"
+    IDS_EMULATE_ML          "Emulate MLDonkeys"
+    IDS_EMULATE_DONK        "Emulate eDonkeys"
+    IDS_EMULATE_DONK_HYB    "Emulate eDonkey-hybrids"
+    IDS_EMULATE_SHA         "Emulate Sharezas"
+    IDS_EMULATE_PHANT       "Emulate lPhants"
+    IDS_EMULATE_LOG         "Log emulations"
+// <== Emulate others [WiZaRd/Spike/shadow2004] - Stulle
+// ==> Release Bonus [sivka] - Stulle
+    IDS_RELEASE_BONUS_GROUP "Release Bonus"
+    IDS_RELEASE_BONUS_EDIT  "Set bonus days"
+    IDS_RELEASE_BONUS_12    "12h"
+// <== Release Bonus [sivka] - Stulle
+    IDS_RELEASE_SCORE_ASSURANCE "Assure default score for release files" // Release Score Assurance - Stulle
+// ==> CPU/MEM usage [$ick$/Stulle] - Stulle
+    IDS_SYS_INFO_GROUP      "Sistem bilgisi"
+    IDS_SYS_INFO_GLOBAL     "Genel bilgi"
+// <== CPU/MEM usage [$ick$/Stulle] - Stulle
+// ==> Connection Checker [eWombat/WiZaRd] - Stulle
+    IDS_CONCHECK            "Baðlantý Kontrolü"
+    IDS_ENABLE_ICMP         "Enable ICMP otherwise RAW"
+    IDS_PING_TIME_OUT       "Ping zaman aþýmý (1-20sn.)"
+    IDS_PING_TTL            "Ping TTL (8-64)"
+// <== Connection Checker [eWombat/WiZaRd] - Stulle
+// ==> Reduce Score for leecher - Stulle
+    IDS_PUNISHMENT          "Sülük cezalandýrma"
+    IDS_PUNISHMENT_BAN      "Yasakla"
+    IDS_PUNISHMENT_REDUCE   "Skor düþür"
+    IDS_PUNISHMENT_PERCENT  "%'ye düþür"
+	IDS_BANREASON           "Yasaklanma sebebi:"
+    IDS_GOOD_GUY            "Ýyi kullanýcý"
+    IDS_BAN_FAKE_MOD            "Sahte ModEtiketi"
+    IDS_BAN_HIDDEN_MOD          "Gizli ModEtiketi"
+    IDS_BAN_MORPH_LEECHER       "MORPH Leecher"
+    IDS_BAN_FAKE_NICK           "Sahte Ýsim"
+    IDS_BAN_LEECHER_NICK        "Sülük Kullanýcý Ýsmi"
+    IDS_BAN_COMMUNITY           "Grup"
+    IDS_BAN_WRONG_HASHSIZE      "Hatalý adresleme boyutu"
+    IDS_BAN_HEX_CHECK           "Hex Check"
+    IDS_BAN_BAD_MOD             "Kötü ModEtiketi"
+    IDS_BAN_BAD_NICK            "Kötü Kullanýcý ismi"
+    IDS_BAN_GHOST               "Ghost MOD"
+    IDS_BAN_FAKE_VER            "Sahte eMuleSürümü"
+    IDS_BAN_EMPTY_NICK          "Boþ Ýsim"
+    IDS_BAN_NICK_CHANGER        "Ýsim Deðiþtirici"
+    IDS_BAN_BAD_INFO            "BadType eMuleInfo-Tag"
+    IDS_BAN_BAD_HELLO           "Suspect Hello-Tag"
+    IDS_BAN_SNAFU               "S.N.A.F.U."
+    IDS_BAN_EXTRABYTE           "ExtraBytes"
+    IDS_BAN_CREDIT_HACK         "Anti Credit Hack"
+    IDS_BAN_FRIEND_SHARING      "Friend Sharing detected"
+    IDS_BAN_SIVKA               "Sivka-Yasaðý"
+    IDS_BAN_SPAMMER             "Spammer"
+    IDS_BAN_FILEFAKER           "FileFaker"
+    IDS_BAN_APPLE_JUICE         "AppleJuice"
+    IDS_BAN_VAGAA               "Vagaa"
+// <== Reduce Score for leecher - Stulle
+    IDS_MOD_STATS               "Mod Ýstatistikleri" // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+// ==> Limit PS by amount of data uploaded - Stulle
+    IDS_PS_AMOUNT_LIMIT         "Gönderilen veri miktarýyla sýnýrla"
+    IDS_PS_AMOUNT_LIMIT_LABEL   "Gönderilen veri miktarýyla sýnýrla (azami 10000%)"
+    IDS_PS_AMOUNT_LIMIT_WRONG   "Geçersiz deðer girildi."
+// <== Limit PS by amount of data uploaded - Stulle
+    IDS_NO_BAD_PUSHING          "Sülükleri PS/ PBF statülerinden mahrum et" // Disable PS/PBF for leechers [Stulle/idea by sfrqlxert] - Stulle
+// ==> Design Settings [eWombat/Stulle] - Stulle
+    IDS_COLOR_MASTER1       "Ýstemci biçemi"
+    IDS_COLOR_MASTER2       "Ýndirilen dosya biçemi"
+    IDS_COLOR_MASTER3       "Paylaþýlan dosyalar biçemi"
+    IDS_COLOR_BOX           "Tasarým seçenekleri"
+    IDS_COLOR_FONT_LABEL    "Metin rengi"
+    IDS_COLOR_BACK_LABEL    "Arka plan rengi"
+    IDS_COLOR_C1            "Arkadaþlar"
+    IDS_COLOR_S1            "Hâlen indirilmekte"
+    IDS_COLOR_S2            "Powershare kipinde"
+    IDS_COLOR_C2            "PowerShare dosyasý talep eden"
+    IDS_COLOR_C3            "Ýndirmekte olduðumuz"
+    IDS_COLOR_C4            "Göndermekte olduðumuz"
+    IDS_COLOR_C5            "Sülük"
+    IDS_COLOR_B1            "Tanýnan Ýstemciler"
+    IDS_COLOR_MASTER5       "Arka plan renkleri"
+    IDS_COLOR_B2            "Ýndiren Ýstemciler"
+    IDS_COLOR_B3            "Beklemedeki Ýstemciler"
+    IDS_COLOR_B4            "Gönderilen Ýstemciler"
+    IDS_COLOR_B5            "Ýndirilen Dosyalar"
+    IDS_COLOR_B6            "Paylaþýlan Dosyalar"
+    IDS_COLOR_C6            "DüþükID"
+    IDS_COLOR_C7            "Positive Rating"
+    IDS_COLOR_ON            "Açýk"
+    IDS_COLOR_OFF           "Kapalý"
+    IDS_COLOR_PERM          "Ýzin"
+    IDS_COLOR_AUTOCHECK     "Enable text colors due to MorphXT upload"
+    IDS_COLOR_MASTER4       "Sunucu biçemleri"
+    IDS_COLOR_SE1           "Þu an baðlý olunan"
+    IDS_COLOR_SE2           "Sabit sunucu"
+    IDS_COLOR_SE3           "Süzülmüþ sunucu"
+    IDS_COLOR_SE4           "Ölü sunucu"
+    IDS_COLOR_SE5           "Güvenilmez sunucu"
+    IDS_COLOR_W1            "Kademlia penceresi"
+    IDS_COLOR_W2            "Sunucu penceresi"
+    IDS_COLOR_W3            "Aktarýmlar penceresi"
+    IDS_COLOR_W4            "Arama penceresi"
+    IDS_COLOR_W5            "Paylaþýlanlar penceresi"
+    IDS_COLOR_W6            "Mesajlar penceresi"
+    IDS_COLOR_W7            "IRC penceresi"
+    IDS_COLOR_W8            "Ýstatistik penceresi"
+    IDS_COLOR_W9            "Statusbar"
+    IDS_COLOR_MASTER6       "Window styles"
+    IDS_COLOR_W10           "Araç Çubuðu"
+    IDS_COLOR_S3            "Shareable"
+// <== Design Settings [eWombat/Stulle] - Stulle
+// ==> Automatic shared files updater [MoNKi] - Stulle
+    IDS_AUTO_SHARED_UPDATER "Paylaþýlanlarý otomatik yenile"
+    IDS_ASFU_RELOADTIME     "ASFU: Paylaþýlan dizinlerde deðiþiklik tespit edildi, %d saniye içerisinde paylaþýlanlar yeniden yüklenecek..."
+    IDS_ASFU_DELAY          "ASFU: Tamamlanmakta olan bir dosya tespit edildi, yeniden yükleme iþlemi erteleniyor..."
+    IDS_ASFU_RELOAD         "Paylaþýlan dizinlerde deðiþiklik tespit edildi. Paylaþýlanlar yeniden yükleniyor..."
+    IDS_ASFU_RELOADING      "ASFU: Yeniden yükleniyor..."
+    IDS_ASFU_SINGLE         "Tek dosya paylaþýmý içeren klasörleri izle"
+    IDS_ASFU_TIMEBETWEEN    "Ýki yenileme arasýnda geçecek zaman [sn]"
+// <== Automatic shared files updater [MoNKi] - Stulle
+// ==> Control download priority [tommy_gun/iONiX] - Stulle
+    IDS_AUTO_DOWN_GROUP     "Ýndirme Öncelikleri"
+    IDS_AUTO_DOWN_PERC      "Tamamlanmýþ yüzdeye göre"
+    IDS_AUTO_DOWN_PERC_VAL  "Tamamlanmýþ yüzde"
+    IDS_AUTO_DOWN_SIZE      "Kalan boyuta göre"
+    IDS_AUTO_DOWN_SIZE_VAL  "Kalan boyut miktarý (MB)"
+    IDS_AUTO_DOWN_PRIO      "Önceliði deðiþtir"
+// <== Control download priority [tommy_gun/iONiX] - Stulle
+    IDS_SHOW_SPEED_METER    "Araç çubuðunda hýz grafiði göster" // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
+// ==> Enforce Ratio - Stulle
+    IDS_RATIO_GROUP         "GÖN:ÝND Oraný"
+    IDS_ENFORCE_RATIO       "Always enforce ratio"
+    IDS_RATIO_VALUE         "Azami oran 1"
+    IDS_ZZRATIO_CHECK1_NEW  "Orana eriþildi"
+    IDS_ZZRATIO_CHECK9      "Enforce Ratio"
+// <== Enforce Ratio - Stulle
+// ==> XP Style Menu [Xanatos] - Stulle
+    IDS_MENU_PREVIEW        "Preview"
+    IDS_HISTORY             "History Tasks"
+    IDS_COLUMNS             "Columns"
+    IDS_PS_LIMITED_SRC      "Kaynaða göre sýnýr"
+    IDS_PS_LIMITED_AMNT     "Miktara göre sýnýr"
+    IDS_FUNCTION            "Function"
+    IDS_RELEASER            "Sunum özellikleri"
+// <== XP Style Menu [Xanatos] - Stulle
+// ==> Adjustable NT Service Strings - Stulle
+    IDS_SERVICE_STR_GROUP   "NT Hizmet girdileri (boþ = öntanýmlý)"
+    IDS_SERVICE_NAME        "Ýsim (ekleme için)"
+    IDS_SERVICE_DISP_NAME   "Görünen isim"
+    IDS_SERVICE_DESCR       "Görünen açýklama"
+    IDS_SERVICE_NAME_CHANGED "Zaten eklenmiþ durumdaki NT Hizmetinin ismini deðiþtirdiniz.\nYaptýðýnýz deðiþikliklerin uygulanabilmesi için eMule bu hizmeti tekrar ekleyecek.\nDevam etmek istiyor musunuz?"
+    IDS_SERVICE_STR_CHANGED "NT Hizmet girdisi deðiþti"
+    IDS_SERVICE_DISP_CHANGED "NT Hizmetinin görünen ismini ya da açýklamasýný deðiþtirdiniz.\nCiddi bir ayar olmasa dahi yapýlan deðiþikliklerin geçerli olabilmesi için hizmetin yeniden yüklenmesi gerekli.\nHizmet yeniden yüklensin mi? Deðiþiklikleri sýfýrlamak için iptale basýn."
+    IDS_SERVICE_UNINSTALL_FAIL "NT Hizmetini kaldýrma baþarýsýz.\nLütfen günlük mesajlarýný kontrol ediniz.\nTüm deðiþiklikler sýfýrlandý."
+    IDS_SERVICE_UNINSTALL_TITLE "Kaldýrma baþarýsýz"
+    IDS_SERVICE_INSTALL_FAIL "NT Hizmeti ekleme baþarýsýz.\nLütfen günlük mesajlarýný kontrol ediniz ve NT Hizmet bölümünden hizmeti tekrar yüklemeyi deneyiniz."
+    IDS_SERVICE_INSTALL_TITLE "Ekleme baþarýsýz"
+// <== Adjustable NT Service Strings - Stulle
+END
+
 #endif    // Turkish resources
 /////////////////////////////////////////////////////////////////////////////
 

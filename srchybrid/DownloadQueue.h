@@ -293,7 +293,6 @@ private:
 	uint32	m_uFailedTCPFileReask;
         //MORPH END   - Added by schnulli900, count failed TCP/IP connections [Xman]
 
-private:
 	uint32 GlobalHardLimitTemp; // show global HL - Stulle
 
 // ==> Quick start [TPT] - Stulle

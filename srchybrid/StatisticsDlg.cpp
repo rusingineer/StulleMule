@@ -3187,7 +3187,7 @@ void CStatisticsDlg::ShowStatistics(bool forceUpdate)
 		//MORPH END   - Added by IceCream, secure/leecher client in stats
 
 		// ==> Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
-#ifndef GLOBAL_MOD_STATS
+#ifdef GLOBAL_MOD_STATS
 		CRBMap<CString, int> pureMods;
 		CRBMultiMap<int,CString> SortedByValuePureMods;
 		theApp.clientlist->GetModPureStats(&pureMods);

@@ -3206,7 +3206,6 @@ UINT AFX_CDECL CSaveSettingsThread::RunProc(LPVOID pParam)
 
 UINT CSaveSettingsThread::RunInternal()
 {
-	AddDebugLogLine(false,_T("CSaveSettingsThread started"));
 	while (bDoWait)
 	{
 		if(m_dwLastWait == 0) // initial wait
@@ -3220,17 +3219,9 @@ UINT CSaveSettingsThread::RunInternal()
 				m_SettingsSaver.SaveSettings(); // save!
 		}
 	}
-	AddDebugLogLine(false,_T("CSaveSettingsThread finished waiting"));
 
 	while(bDoRun) 
 	{
-		/*
-		if(bWait)
-			Sleep(SEC2MS(SAVE_WAIT_TIME));
-
-		bWait = false; // no more waiting henceforth
-		*/
-
 		if(m_SettingsSaver.SaveSettings()) // if this fails we need to run again
 		{
 			Pause(true);
@@ -3240,7 +3231,6 @@ UINT CSaveSettingsThread::RunInternal()
 	}
 
 	threadEndedEvent->SetEvent();
-	AddDebugLogLine(false,_T("CSaveSettingsThread ended"));
 
 	return 0;
 }

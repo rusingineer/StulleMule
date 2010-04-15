@@ -50,7 +50,9 @@ protected:
 	bool m_bEnableAntiCreditHack; //MORPH - Added by IceCream, enable Anti-CreditHack
 	bool m_bAntiXsExploiter; // Anti-XS-Exploit [Xman] - Stulle
 	bool m_bSpamBan; // Spam Ban [Xman] - Stulle
-	bool m_bFilterClientFailedDown; // filter clients with failed downloads [Xman]
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	bool m_bFilterClientFailedDown; 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	int m_iClientBanTime; // adjust ClientBanTime - Stulle
 
 	// ==> push small files [sivka] - Stulle
@@ -164,6 +166,7 @@ protected:
 #ifdef ASFU
 	bool m_bAutoSharedUpdater;
 	bool m_bSingleSharedDirUpdater;
+	int m_iTimeBetweenReloads;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 
@@ -209,7 +212,9 @@ protected:
 	HTREEITEM m_htiEnableAntiCreditHack; //MORPH - Added by IceCream, enable Anti-CreditHack
 	HTREEITEM m_htiAntiXsExploiter; // Anti-XS-Exploit [Xman] - Stulle
 	HTREEITEM m_htiSpamBan; // Spam Ban [Xman] - Stulle
-	HTREEITEM m_htiFilterClientFailedDown; // filter clients with failed downloads [Xman]
+	//MORPH START - Added by schnulli900, filter clients with failed downloads [Xman]
+	HTREEITEM m_htiFilterClientFailedDown; 
+	//MORPH END   - Added by schnulli900, filter clients with failed downloads [Xman]
 	HTREEITEM m_htiClientBanTime; // adjust ClientBanTime - Stulle
 
 	HTREEITEM m_htiPush; // push files - Stulle
@@ -352,6 +357,7 @@ protected:
 	HTREEITEM m_htiAutoSharedGroup;
 	HTREEITEM m_htiAutoSharedUpdater;
 	HTREEITEM m_htiSingleSharedDirUpdater;
+	HTREEITEM m_htiTimeBetweenReloads;
 #endif
 	// <== Automatic shared files updater [MoNKi] - Stulle
 

@@ -3684,6 +3684,334 @@ BEGIN
     IDS_CHECK_FILE_OPEN_TIP  "Activa un mensaje antes de abrir un archivo desde eMule."
 END
 
+STRINGTABLE
+BEGIN
+// ==> push small files [sivka] - Stulle
+    IDS_PUSH_SMALL          "Impulsar archivos pequeños"
+	IDS_SMALL               "Pequeño"
+	IDS_PUSH_SMALL_BOOST    "Mayor Impulso de archivos pequeños"
+// <== push small files [sivka] - Stulle
+// ==> push rare file - Stulle
+    IDS_PUSH_RARE           "Impulsar archivos raros"
+	IDS_RARE                "Raro"
+// <== push rare file - Stulle
+// ==> Show sources on title - Stulle
+    IDS_SHOWSRCONTITLE      "Mostrar las fuentes en el título"
+    IDS_SHOWSRCSTRING       "Fuentes:"
+// <== Show sources on title - Stulle
+	IDS_SHOWOVERHEADONTITLE "Mostrar excedente en el título"// show overhead on title - Stulle
+// ==> ZZ Ratio Activation Changes - Stulle
+	IDS_ZZRATIO_CHECK5_NEW  "Subida media < 10KB/s y Límite de Subida < 12KB/s"
+	IDS_ZZRATIO_CHECK6      "Activado zzRatio hasta que finalice la sesión"
+	IDS_ZZRATIO_CHECK8      "Subida media < 8KB/s"
+// <== ZZ Ratio Activation Changes - Stulle
+	IDS_AVG_QUEUE           "C E MED" // Average Queue Ranking [Xman] - Stulle
+// ==> Sivka-Ban [cyrex2001] - Stulle
+    IDS_SIVKA_ASK_COUNTER   "Contar de pregunta, antes de banear [5-15]"
+    IDS_SIVKA_ASK_LOG       "Registro de clientes baneados"
+    IDS_SIVKA_ASK_TIME      "Tiempo de pregunta, antes de banear [5-10 min.]"
+    IDS_SIVKA_BAN_CONTROL   "Control de Baneo de Sivka"
+    IDS_SIVKA_BAN           "Activar el Control de Baneo Sivka"
+// <== Sivka-Ban [cyrex2001] - Stulle
+// ==> ban systems optional - Stulle
+	IDS_BAD_NICK_BAN        "Activar Baneo Bad Nick"
+    IDS_ANTI_MOD_FAKER      "Activar Anti-Mod-Faker"
+    IDS_ANTI_NICK_THIEF     "Activar Anti-Ladrón de Nick"
+	IDS_BAD_MOD_STRING      "Activar Baneo Nombre de Mod No Válido"
+	IDS_GHOST_MOD           "Activar Baneo Mod Fantasma"
+	IDS_EMPTY_NICK          "Activar Baneo Nick Vacío"
+	IDS_FAKE_EMULE          "Activar Baneo Falso eMule"
+	IDS_ANTI_LEECHER_GROUP  "Control Anti-Leechers"
+	IDS_HIDDEN_STR          "Activar Baneo Nombre de Mod Oculto"
+	IDS_LEECHER_NAME        "Activar Baneo Nombre Leecher"
+	IDS_COMMUNITY_CHECK     "Activar Comprobación de Comunidad"
+    IDS_HEX_CHECK           "Activar Comprobación Hexadecimal"
+	IDS_EMCRYPT             "Activar Detección eMCrypt"
+    IDS_BAD_INFO            "Activar Comprobación Tipo de Información de eMule no Válido"
+    IDS_BAD_HELLO           "Activar Comprobación Etiqueta 'Hola' Sospechosa"
+    IDS_SNAFU               "Activar Comprobación SNAFU Opcode"
+    IDS_EXTRA_BYTES         "Activar Comprobación Bytes Extra"
+    IDS_NICK_CHANGER        "Activar Comprobación Nick Cambiante"
+    IDS_FILEFAKER           "Activar Comprobación de archivos falsos"
+    IDS_VAGAA               "Activar la comprobación Vagaa"
+// <== ban systems optional - Stulle
+    IDS_CON_TWEAKS          "Ajustes de Conexión"
+// ==> Inform Clients after IP Change - Stulle
+    IDS_RSAIC               "Volver a consultar fuentes después de un cambio de IP"
+    IDS_IQCAOC              "Informar a los clientes el la cola de espera después de un cambio de IP"
+// <== Inform Clients after IP Change - Stulle
+    IDS_REASK_FILE_SRC      "Volver a consultar a las fuentes, el tiempo por archivo [29-55 min.]" // Timer for ReAsk File Sources - Stulle
+// ==> new credit system - Stulle
+	IDS_SIVKA_CREDIT        "Crédito Sivka"
+	IDS_SWAT_CREDIT         "Crédito S.W.A.T."
+//    IDS_MA_CREDIT           "Crédito Magic Angel"
+//    IDS_MAPLUS_CREDIT       "CréditoMagic Angel+"
+    IDS_TK4_CREDIT          "Crédito TK4"
+    IDS_XTREME_CREDIT       "Crédito Xtreme"
+    IDS_ZZUL_CREDIT         "Crédito ZZUL"
+// <== new credit system - Stulle
+// ==> Quick start [TPT] - Stulle
+    IDS_QUICK_START_GROUP   "Inicio Rápido"
+    IDS_QUICK_START         "Activar el Inicio Rápido"
+    IDS_QUICK_START_MAX_TIME "Duración del Inicio Rápido [8-18 min.]"
+    IDS_QUICK_START_MAX_CONN_PER_FIVE "Max. con./5sec"
+    IDS_QUICK_START_MAX_CONN "Max. con."
+    IDS_QUICK_START_AFTER_IP_CHANGE "Activar el Inicio Rápido después de un cambio de IP"
+	IDS_QUICK_START_MAX_CONN_PER_FIVE_BACK "Volver a max. con./5sec"
+    IDS_QUICK_START_MAX_CONN_BACK "Volver a max. con."
+// <== Quick start [TPT] - Stulle
+// ==> FunnyNick Tag - Stulle
+    IDS_FN_TAG              "Etiqueta FunnyNick"
+    IDS_NO_TAG              "Sin etiqueta"
+    IDS_SHORT_TAG           "[FN]"
+    IDS_FULL_TAG            "[FunnyNick]"
+	IDS_CUSTOM_TAG          "Etiqueta personalizada"
+	IDS_SET_CUSTOM_TAG      "Configurar etiqueta personalizada"
+	IDS_FN_TAG_AT_END       "Mostrar etiqueta al finalizar"
+// <== FunnyNick Tag - Stulle
+// ==> Pay Back First for insecure clients - Stulle
+    IDS_PAYBACKFIRST2       "PBF para clientes sin SUI"
+    IDS_PAYBACKFIRSTLIMIT2  "Cantidad antes de desencadenar (Por defecto 50MB)"
+// <== Pay Back First for insecure clients - Stulle
+	IDS_CLIENT_BAN_TIME     "Tiempo que el cliente es baneado en horas" // adjust ClientBanTime - Stulle
+// ==> drop sources - Stulle
+    IDS_NNS_TIMERLABEL      "Tiempo AutoNNS 0...60 sec"
+    IDS_REMOVENNSLIMITLABEL "Empezar a desechar por NNS > X%"
+    IDS_FQS_TIMERLABEL      "AutoFQS Timer 0...60 sec"
+    IDS_REMOVEFQSLIMITLABEL "Empezar a desechar por FullQS > X%"
+    IDS_HQRS_TIMERLABEL     "Tiempo AutoHQRS 0...60 sec"
+    IDS_REMOVEQRSLABEL      "Máximo Permitido QR <= X"
+    IDS_REMOVEQRSLIMITLABEL "Empezar a desechar por HighQRS > X%"
+	IDS_AUTO_NNS            "Activar Auto desechar por NNS"
+	IDS_AUTO_FQS            "Activar Auto desechar por FullQS"
+	IDS_AUTO_QRS            "Activar Auto desechar por HighQS"
+    IDS_SIVKAFILESETTINGS   "Sivka - Archivo(s) Opciones"
+    IDS_HARDLIMIT_LABEL     "Límite de fuentes Global (0 = usar por defecto)"
+	IDS_DROP_DEFAULTS       "Ajustar valores por defecto"
+// <== drop sources - Stulle
+	IDS_SHOW_GLOBAL_HL      "Mostrar Límite Global" // show global HL - Stulle
+	IDS_SHOW_DROPPED_SRC    "Fuentes desechadas" // show # of dropped sources - Stulle
+	// ==> TBH: minimule - Stulle
+	IDS_MM_SHOW             "Usar TBH en lugar de Mini-Mule"
+	IDS_MM_LIVES            "Mantener actualizado el Mini-Mule"
+	IDS_MM_UPDATE_TIME      "Tiempo de Actualización del Mini-Mule (en seg)"
+	IDS_MM_TRANS            "Nivel de Transparencia del Mini-Mule (1-255)"
+    IDS_MM_ACTDL            "Descargas Activas: %i"
+    IDS_MM_DATA             "Su: %s | DE: %s"
+    IDS_MM_UPDOWN           "Su: %s(%.1f) | DE: %s(%.1f)"
+	IDS_MM_COMPL            "Mostrar archivos completados durante la sesión"
+	IDS_MM_RATIO            "SU:DE :"
+	IDS_MM_OPEN             "Abrir el Mini-Mule cuando se minimiza a la bandeja del sistema"
+    IDS_MM_GROUP            "TBH Mini-Mule"
+	// <== TBH: minimule - Stulle
+	IDS_SHOWINMSN7          "Mostrar el estado del eMule en el campo del mensaje del MSN7 (o superior)" //Show in MSN7 [TPT] - Stulle
+	// ==> Anti Uploader Ban - Stulle
+    IDS_UNBAN_UPLOADER      "Límite de prevención de Baneo en MB [0 = Desactivado]"
+    IDS_ANTI_CASE_1         "Subida >= Límite"
+    IDS_ANTI_CASE_2         "SU-DE >= Límite"
+    IDS_ANTI_CASE_3         "SU-DE >= Límite hasta 1:1"
+	// <== Anti Uploader Ban - Stulle
+	// ==> Spread Credits Slot - Stulle
+    IDS_SPREAD_CREDITS_SLOT "Extensión de Créditos de Slots (SCS)"
+	IDS_SPREAD_CREDITS_SLOT_COUNTER "Extensión de Créditos de Slots cada X slots"
+    IDS_SPREAD_CREDITS_SLOT_PS "Añadir SPS clientes a PS tipo de subida"
+	// <== Spread Credits Slot - Stulle
+	// ==> Source Graph - Stulle
+    IDS_SRCGRAPH            "Dibujar el gráfico de las fuentes"
+    IDS_STATIC_STATSHL      "Min/ Max valor global del límite para el gráfico:"
+	IDS_SP_SRCGRAPH         "Gráfico de fuentes"
+	// <== Source Graph - Stulle
+    IDS_SHOW_FILE_HL_CONST  "Mostrar el límite global por archivo constantemente" // show HL per file constantaniously - Stulle
+	IDS_FD_AVGDL            "Velocidad media de DES:" // Average download speed - Stulle
+    // ==> BMI calculator - Stulle
+    IDS_BMI_WND             "Calculador BMI"
+    IDS_BMI_HEAD            "Tipo de valores entre Libras/Pulgadas ó Kilogramos/Metros"
+    IDS_BMI_WEIGHT_LABEL    "Peso (usa . en vez de ,)"
+    IDS_BMI_HEIGHT_LABEL    "Altura (usa . en vez de ,)"
+    IDS_BMI_ENGLISH         "Resultado (lb/in)"
+    IDS_BMI_METRIC          "Resultado (kg/m)"
+    IDS_BMI_RESULT_LABEL    "Tu BMI es:"
+    IDS_BMI_RESULT          "No hay resultados"
+    IDS_BMI_RESULT1         "Tu peso está por debajo de la media"
+    IDS_BMI_RESULT2         "Tu peso es normal"
+    IDS_BMI_RESULT3         "Tu peso está por encima de la media"
+    IDS_BMI_RESULT4         "Tu peso es obeso"
+    // <== BMI calculator - Stulle
+	IDS_TRAY_COMPLETE       "Mostrar las descargas completadas en la bandeja del sistema" // Completed in Tray - Stulle
+	IDS_ANTI_XS_EXPLOITER   "Activar Anti-XS-Exploit" // Anti-XS-Exploit [Xman] - Stulle
+	IDS_SPAM_BAN            "Activar el Baneo de Spam" // Spam Ban [Xman] - Stulle
+    // ==> Global Source Limit (customize for files) - Stulle
+    IDS_GLOBAL_HL_DEFAULT   "Límite Global por defecto para los archivos"
+    IDS_GLOBAL_HL_ALL       "Usar para todos los archivos"
+    // <== Global Source Limit (customize for files) - Stulle
+    // ==> StulleMule Version Check - Stulle
+    IDS_VISITSVERSIONCHECK  "\n\n¿Quiere visitar la web de StulleMule?"
+    IDS_SVERSIONCHECK       "&Comprobar versión (StulleMule)"
+    IDS_NONEWSVERVERSION    "No se ha detectado ninguna nueva versión de StulleMule."
+    IDS_NEWSVERSIONAVL      "¡Hay una nueva versión de StulleMule disponible! Compruebe la web del proyecto para más información"
+    IDS_NEWSVERSIONAVLPOPUP "Una nueva versión de StulleMule está disponible. !Pulsa aquí para leer lo nuevo de la nueva versión!"
+    // <== StulleMule Version Check - Stulle
+    // ==> Emulate others [WiZaRd/Spike/shadow2004] - Stulle
+    IDS_EMULATOR_GROUP      "Emular otros clientes"
+    IDS_EMULATE_ML          "Emular MLDonkeys"
+    IDS_EMULATE_DONK        "Emular eDonkeys"
+    IDS_EMULATE_DONK_HYB    "Emular eDonkey-hybrids"
+    IDS_EMULATE_SHA         "Emular Sharezas"
+    IDS_EMULATE_PHANT       "Emular lPhants"
+    IDS_EMULATE_LOG         "Registro de emulaciones"
+// <== Emulate others [WiZaRd/Spike/shadow2004] - Stulle
+// ==> Release Bonus [sivka] - Stulle
+    IDS_RELEASE_BONUS_GROUP "Liberar Bonus"
+    IDS_RELEASE_BONUS_EDIT  "Configurar los días bonus"
+    IDS_RELEASE_BONUS_12    "12h"
+// <== Release Bonus [sivka] - Stulle
+    IDS_RELEASE_SCORE_ASSURANCE "Asegurar la puntuación por defecto para archivos nuevos" // Release Score Assurance - Stulle
+// ==> CPU/MEM usage [$ick$/Stulle] - Stulle
+    IDS_SYS_INFO_GROUP      "Información del Sistema"
+    IDS_SYS_INFO_GLOBAL     "Activar la Información Global"
+// <== CPU/MEM usage [$ick$/Stulle] - Stulle
+// ==> Connection Checker [eWombat/WiZaRd] - Stulle
+    IDS_CONCHECK            "Comprobar la Conexión"
+    IDS_ENABLE_ICMP         "Activar ICMP en vez de RAW"
+    IDS_PING_TIME_OUT       "Desconexión del Ping (1-20seg.)"
+    IDS_PING_TTL            "TTL del Ping (8-64)"
+// <== Connection Checker [eWombat/WiZaRd] - Stulle
+// ==> Reduce Score for leecher - Stulle
+    IDS_PUNISHMENT          "Castigo al Leecher"
+    IDS_PUNISHMENT_BAN      "Banear"
+    IDS_PUNISHMENT_REDUCE   "Reducir puntuación"
+    IDS_PUNISHMENT_PERCENT  "Reducir a %"
+	IDS_BANREASON           "Razón del Baneo:"
+    IDS_GOOD_GUY            "Buen tipo"
+    IDS_BAN_FAKE_MOD            "Falso MODSTRING"
+    IDS_BAN_HIDDEN_MOD          "Oculto MODSTRING"
+    IDS_BAN_MORPH_LEECHER       "MORPH Leecher"
+    IDS_BAN_FAKE_NICK           "Falso NICK"
+    IDS_BAN_LEECHER_NICK        "Leecher-Username"
+    IDS_BAN_COMMUNITY           "Comunidad"
+    IDS_BAN_WRONG_HASHSIZE      "WRONG tamaño del Hash"
+    IDS_BAN_HEX_CHECK           "Comprobación Hexadecimal"
+    IDS_BAN_BAD_MOD             "MODSTRING No Válido"
+    IDS_BAN_BAD_NICK            "USERNAME No Válido"
+    IDS_BAN_GHOST               "MOD Fantasma"
+    IDS_BAN_FAKE_VER            "Versión del eMule Falsa"
+    IDS_BAN_EMPTY_NICK          "Nick Vacío"
+    IDS_BAN_NICK_CHANGER        "Nick CHANGER"
+    IDS_BAN_BAD_INFO            "Etiqueta eMuleInfo No Válida"
+    IDS_BAN_BAD_HELLO           "Etiqueta 'Hola' Sospechosa"
+    IDS_BAN_SNAFU               "S.N.A.F.U."
+    IDS_BAN_EXTRABYTE           "ExtraBytes"
+    IDS_BAN_CREDIT_HACK         "Anti-Hack de Créditos"
+    IDS_BAN_FRIEND_SHARING      "Compartición Amigable detectado"
+    IDS_BAN_SIVKA               "Sivka-Baneo"
+    IDS_BAN_SPAMMER             "Spammer"
+    IDS_BAN_FILEFAKER           "Archivo Falso"
+    IDS_BAN_APPLE_JUICE         "AppleJuice"
+    IDS_BAN_VAGAA               "Vagaa"
+// <== Reduce Score for leecher - Stulle
+    IDS_MOD_STATS               "Estadísticas de Mod" // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
+// ==> Limit PS by amount of data uploaded - Stulle
+    IDS_PS_AMOUNT_LIMIT         "Limitar por cantidad de datos subidos"
+    IDS_PS_AMOUNT_LIMIT_LABEL   "Limitar por cantidad de datos subidos (max. 10000%)"
+    IDS_PS_AMOUNT_LIMIT_WRONG   "Valor introducido no válido"
+// <== Limit PS by amount of data uploaded - Stulle
+    IDS_NO_BAD_PUSHING          "Desactivar PS/ PBF a leechers" // Disable PS/PBF for leechers [Stulle/idea by sfrqlxert] - Stulle
+    // ==> Design Settings [eWombat/Stulle] - Stulle
+    IDS_COLOR_MASTER1       "Estilos del cliente"
+    IDS_COLOR_MASTER2       "Estilos de archivos descargándose"
+    IDS_COLOR_MASTER3       "Estilos de archivos compartidos"
+    IDS_COLOR_BOX           "Configuración del diseño"
+    IDS_COLOR_FONT_LABEL    "Color de la fuente"
+    IDS_COLOR_BACK_LABEL    "Color de fondo"
+//    IDS_COLOR_PREVIEW       "Vista previa"
+    IDS_COLOR_C1            "Amigos"
+    IDS_COLOR_S1            "Descargándose aún"
+    IDS_COLOR_S2            "PowerShared"
+    IDS_COLOR_C2            "Peticiones de archivo en PowerShare"
+    IDS_COLOR_C3            "Descargado de"
+    IDS_COLOR_C4            "Subido a"
+    IDS_COLOR_C5            "Leecher"
+    IDS_COLOR_B1            "Clientes conocidos"
+    IDS_COLOR_MASTER5       "Colores de fondo"
+    IDS_COLOR_B2            "Clientes en descargas"
+    IDS_COLOR_B3            "Clientes en espera"
+    IDS_COLOR_B4            "Clientes en subidas"
+    IDS_COLOR_B5            "Descargando archivos"
+    IDS_COLOR_B6            "Archivos compartidos"
+    IDS_COLOR_C6            "ID Baja"
+    IDS_COLOR_C7            "Ratio Positivo"
+    IDS_COLOR_ON            "ON"
+    IDS_COLOR_OFF           "OFF"
+    IDS_COLOR_PERM          "Permiso"
+    IDS_COLOR_AUTOCHECK     "Activar texto en colores debido a una subida a MorphXT"
+    IDS_COLOR_MASTER4       "Estilo de los servidores"
+    IDS_COLOR_SE1           "Servidor conectado actualmente"
+    IDS_COLOR_SE2           "Servidor estático"
+    IDS_COLOR_SE3           "Servidores filtrados"
+    IDS_COLOR_SE4           "Servidores muertos"
+    IDS_COLOR_SE5           "Servidores irrealizables"
+    IDS_COLOR_W1            "Ventana de KaDemlia"
+    IDS_COLOR_W2            "Ventana de Servidores"
+    IDS_COLOR_W3            "Ventana de Transferencias"
+    IDS_COLOR_W4            "Ventana de Búsquedas"
+    IDS_COLOR_W5            "Ventana de Compartidos"
+    IDS_COLOR_W6            "Ventana de Mensajes"
+    IDS_COLOR_W7            "Ventana de IRC"
+    IDS_COLOR_W8            "Ventana de Estadísticas"
+    IDS_COLOR_W9            "Barra de Estado"
+    IDS_COLOR_MASTER6       "Estilo de ventanas"
+    IDS_COLOR_W10           "Barra de Herramientas"
+    IDS_COLOR_S3            "Compartido"
+// <== Design Settings [eWombat/Stulle] - Stulle
+// ==> Automatic shared files updater [MoNKi] - Stulle
+    IDS_AUTO_SHARED_UPDATER "Recargar automáticamente los archivos compartidos (ASFU)"
+    IDS_ASFU_RELOADTIME     "ASFU: Detectado cambio en los archivos compartidos, recarga de los archivos compartidos en  %d segundos..."
+    IDS_ASFU_DELAY          "ASFU: Detectado un archivo con estado 'Completando', retrasando la recarga..."
+    IDS_ASFU_RELOAD         "Cambio detectado en la carpeta de archivos compartidos. Recargando archivos compartidos..."
+    IDS_ASFU_RELOADING      "ASFU: Recargando..."
+    IDS_ASFU_SINGLE         "Monitorizar carpetas con un único archivo compartido"
+    IDS_ASFU_TIMEBETWEEN    "Tiempo entre dos recargas automáticas [seg]"
+// <== Automatic shared files updater [MoNKi] - Stulle
+// ==> Control download priority [tommy_gun/iONiX] - Stulle
+    IDS_AUTO_DOWN_GROUP     "Control de Prioridad de Descargas"
+    IDS_AUTO_DOWN_PERC      "Por porcentaje completado"
+    IDS_AUTO_DOWN_PERC_VAL  "Porcentaje completado"
+    IDS_AUTO_DOWN_SIZE      "Por tamaño restante"
+    IDS_AUTO_DOWN_SIZE_VAL  "Tamaño restante (MB)"
+    IDS_AUTO_DOWN_PRIO      "Cambiar la prioridad a"
+// <== Control download priority [tommy_gun/iONiX] - Stulle
+    IDS_SHOW_SPEED_METER    "Muestra un gráfico de velocidades en la barra de herramientas" // High resulution speedmeter on toolbar [eFMod/Stulle] - Stulle
+// ==> Enforce Ratio - Stulle
+    IDS_RATIO_GROUP             "SU:DE Ratio"
+    IDS_ENFORCE_RATIO           "Forzar siempre el ratio"
+    IDS_RATIO_VALUE             "Max ratio 1"
+    IDS_ZZRATIO_CHECK1_NEW      "Ratio alcanzado"
+    IDS_ZZRATIO_CHECK9          "Imponiendo Ratio"
+// <== Enforce Ratio - Stulle
+// ==> XP Style Menu [Xanatos] - Stulle
+    IDS_MENU_PREVIEW        "Previsualización"
+    IDS_HISTORY             "Historial de Tareas"
+    IDS_COLUMNS             "Columnas"
+    IDS_PS_LIMITED_SRC      "Limitado por fuentes"
+    IDS_PS_LIMITED_AMNT     "Limitado por acumulación"
+    IDS_FUNCTION            "Función"
+    IDS_RELEASER            "Opciones de lanzador"
+// <== XP Style Menu [Xanatos] - Stulle
+// ==> Adjustable NT Service Strings - Stulle
+    IDS_SERVICE_STR_GROUP   "Cadenas del Servicio NT (Por defecto = vacío)"
+    IDS_SERVICE_NAME        "Nombre (para instalar)"
+    IDS_SERVICE_DISP_NAME   "Nombre a mostrar"
+    IDS_SERVICE_DESCR       "Descripción a mostrar"
+    IDS_SERVICE_NAME_CHANGED "Has cambiado el nombre con el cuál el Servicio NT ha sido instalado.\nPara hacer efectivos los cambios, eMule debe reinstalar el servicio.\n¿Quieres continuar?"
+    IDS_SERVICE_STR_CHANGED "Has cambiado la cadena del Servicio NT"
+    IDS_SERVICE_DISP_CHANGED "Has cambiado el nombre a mostrar o la descripción del Servicio NT.\nNo es una opción crítica pero afecta para que el servicio sea reinstalado.\n¿Debe reinstalarse el servicio? Pulsa Calcelar para resetear los cambios."
+    IDS_SERVICE_UNINSTALL_FAIL "La desinstalación del Servicio NT ha fallado.\nPor favor, comprueba el registro.\nTodos los cambios han sido reseteados."
+    IDS_SERVICE_UNINSTALL_TITLE "Desinstalación fallida"
+    IDS_SERVICE_INSTALL_FAIL "La instalación del Servicio NT ha fallado.\nPor favor, comprueba el registro e intenta reinstalar el servicio de nuevo en el panel del Servicio NT."
+    IDS_SERVICE_INSTALL_TITLE "Instalación fallida"
+// <== Adjustable NT Service Strings - Stulle
+END
+
 #endif    // Spanish (Castilian) resources
 /////////////////////////////////////////////////////////////////////////////
 
