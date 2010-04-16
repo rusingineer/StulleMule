@@ -142,7 +142,7 @@ protected:
 #ifndef ATWL
 	void	ShowSplitWindow(bool bReDraw = false);
 #else
-	void	ShowSplitWindow(bool bReDraw, uint32 dwListIDC);
+	void	ShowSplitWindow(bool bReDraw, uint32 dwListIDC, bool bInitSplitted = false);
 #endif
 	// <== Advanced Transfer Window Layout - Stulle
 	void	LocalizeToolbars();
@@ -174,6 +174,7 @@ protected:
 	afx_msg void OnWnd1BtnDropDown(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnWnd2BtnDropDown(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnPaint();
+	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	// ==> XP Style Menu [Xanatos] - Stulle
 	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	// <== XP Style Menu [Xanatos] - Stulle
