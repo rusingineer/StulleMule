@@ -22,6 +22,7 @@ ADD: Display progress percentage for chunk details and sort chunk details by the
 		does not download blocks sequentially.
 ADD: Chunk details column in DownloadClientsListCtrl [SiRoB/JvA (idea)/Stulle]
 ADD: Possibility to directly add incoming of removed cat to shared folders [Stulle]
+ADD: New preferences.ini-only settings to Advanced Preferences [Officials/Stulle]
 CHANGE: Disable FollowTheMajority if file is renamed in Shared Files Dialog [Stulle]
 CHANGE: General settings dialog has been revised to achieve original layout [Stulle]
 CHANGE: Reduced CPU usage in CUInt128::ToHexString [netfinity]
@@ -68,6 +69,10 @@ REMOVED: New official Ask-On-Exit Dialog in favor of Morph's one (NTService) [St
 REMOVED: "MorphXT 9.7" workaround [Stulle]
 REMOVED: Unusued ressource strings [Stulle]
 REMOVED: AppleJuice detection [Xman/Anonymous Anti-Leecher]
+REMOVED: ZZUL addition that sometimes caused crashes on receiving OP_FILESTATUS [Stulle]
+
+Note: Following languages updated: German [Stulle]; French [Nicolas_FR]; Chinese (P.R.C.) [zz_fly]; 
+	Chinese (Taiwan) [AndCycle]; Italian [v-x-vendetta]; Turkish [omeringen]; Spanish [guijarrelson]
 
 
 --------------------------------------
