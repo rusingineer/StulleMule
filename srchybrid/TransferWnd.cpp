@@ -2837,6 +2837,7 @@ void CTransferWnd::ShowSplitWindow(bool bReDraw, uint32 dwListIDC, bool bInitSpl
 			downloadlistctrl.ShowFilesCount();
 			SetWnd1Icon(w1iDownloadFiles);
 			m_btnWnd1->CheckButton(MP_VIEW1_DOWNLOADS);
+			VerifyCatTabSize();
 			break;
 	}
 	GetDlgItem(IDC_QUEUE_REFRESH_BUTTON)->ShowWindow((m_uWnd2 == wnd2OnQueue || m_dwTopListIDC == IDC_QUEUELIST) ? SW_SHOW : SW_HIDE);

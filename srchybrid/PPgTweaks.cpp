@@ -106,7 +106,7 @@ CPPgTweaks::CPPgTweaks()
 	*/
 	// End emulEspaña
 	m_iLogLevel = 0;
-	// ==> removed - Stulle
+	//MORPH START - Removed by Stulle, Removed dupe USS settings
 	/*
     m_bDynUpEnabled = false;
     m_iDynUpMinUpload = 0;
@@ -115,7 +115,7 @@ CPPgTweaks::CPPgTweaks()
     m_iDynUpGoingDownDivider = 0;
     m_iDynUpNumberOfPings = 0;
 	*/
-	// <== removed - Stulle
+	//MORPH END   - Removed by Stulle, Removed dupe USS settings
     m_bA4AFSaveCpu = false;
 	m_iExtractMetaData = 0;
 	m_bAutoArchDisable = true;
@@ -163,7 +163,7 @@ CPPgTweaks::CPPgTweaks()
 	*/
 	// End emulEspaña
 	m_htiLogLevel = NULL;
-	// ==> removed - Stulle
+	//MORPH START - Removed by Stulle, Removed dupe USS settings
 	/*
     m_htiDynUp = NULL;
 	m_htiDynUpEnabled = NULL;
@@ -177,7 +177,7 @@ CPPgTweaks::CPPgTweaks()
     m_htiDynUpGoingDownDivider = NULL;
     m_htiDynUpNumberOfPings = NULL;
 	*/
-	// <== removed - Stulle
+	//MORPH END   - Removed by Stulle, Removed dupe USS settings
     m_htiA4AFSaveCpu = NULL;
 	m_htiLogA4AF = NULL;
 	m_htiExtractMetaData = NULL;
@@ -295,11 +295,11 @@ void CPPgTweaks::DoDataExchange(CDataExchange* pDX)
 	{
 		int iImgBackup = 8; // default icon
 		int iImgLog = 8;
-		// ==> removed - Stulle
+		//MORPH START - Removed by Stulle, Removed dupe USS settings
 		/*
 		int iImgDynyp = 8;
 		*/
-		// <== removed - Stulle
+		//MORPH END   - Removed by Stulle, Removed dupe USS settings
 		int iImgConnection = 8;
 		int iImgA4AF = 8;
 		int iImgMetaData = 8;
@@ -308,11 +308,11 @@ void CPPgTweaks::DoDataExchange(CDataExchange* pDX)
 		if (piml){
 			iImgBackup =	piml->Add(CTempIconLoader(_T("Harddisk")));
 			iImgLog =		piml->Add(CTempIconLoader(_T("Log")));
-			// ==> removed - Stulle
+			//MORPH START - Removed by Stulle, Removed dupe USS settings
 			/*
 			iImgDynyp =		piml->Add(CTempIconLoader(_T("upload")));
 			*/
-			// <== removed - Stulle
+			//MORPH END   - Removed by Stulle, Removed dupe USS settings
 			iImgConnection=	piml->Add(CTempIconLoader(_T("connection")));
             iImgA4AF =		piml->Add(CTempIconLoader(_T("Download")));
             iImgMetaData =	piml->Add(CTempIconLoader(_T("MediaInfo")));
@@ -399,7 +399,7 @@ void CPPgTweaks::DoDataExchange(CDataExchange* pDX)
 			// End emulEspaña
 		}
 
-		// ==> removed - Stulle
+		//MORPH START - Removed by Stulle, Removed dupe USS settings
 		/*
 		/////////////////////////////////////////////////////////////////////////////
 		// USS group
@@ -422,7 +422,7 @@ void CPPgTweaks::DoDataExchange(CDataExchange* pDX)
         m_htiDynUpNumberOfPings = m_ctrlTreeOptions.InsertItem(GetResString(IDS_DYNUP_NUMBEROFPINGS), TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT, m_htiDynUp);
 		m_ctrlTreeOptions.AddEditBox(m_htiDynUpNumberOfPings, RUNTIME_CLASS(CNumTreeOptionsEdit));
 		*/
-		// <== removed - Stulle
+		//MORPH END   - Removed by Stulle, Removed dupe USS settings
 
 		/////////////////////////////////////////////////////////////////////////////
 		// eMule Shared User
@@ -544,12 +544,12 @@ void CPPgTweaks::DoDataExchange(CDataExchange* pDX)
 		    m_ctrlTreeOptions.Expand(m_htiVerboseGroup, TVE_EXPAND);
 		m_ctrlTreeOptions.Expand(m_htiCommit, TVE_EXPAND);
 		m_ctrlTreeOptions.Expand(m_htiCheckDiskspace, TVE_EXPAND);
-		// ==> removed - Stulle
+		//MORPH START - Removed by Stulle, Removed dupe USS settings
 		/*
 		m_ctrlTreeOptions.Expand(m_htiDynUp, TVE_EXPAND);
         m_ctrlTreeOptions.Expand(m_htiDynUpPingToleranceGroup, TVE_EXPAND);
 		*/
-		// <== removed - Stulle
+		//MORPH END   - Removed by Stulle, Removed dupe USS settings
 		m_ctrlTreeOptions.Expand(m_htiExtractMetaData, TVE_EXPAND);
 		m_ctrlTreeOptions.Expand(m_htiShareeMule, TVE_EXPAND);
         m_ctrlTreeOptions.SendMessage(WM_VSCROLL, SB_TOP);
@@ -639,7 +639,7 @@ void CPPgTweaks::DoDataExchange(CDataExchange* pDX)
 	// End emulEspaña
 
 
-	// ==> removed - Stulle
+	//MORPH START - Removed by Stulle, Removed dupe USS settings
 	/*
 	/////////////////////////////////////////////////////////////////////////////
 	// USS group
@@ -659,7 +659,7 @@ void CPPgTweaks::DoDataExchange(CDataExchange* pDX)
     DDX_TreeEdit(pDX, IDC_EXT_OPTS, m_htiDynUpNumberOfPings, m_iDynUpNumberOfPings);
 	DDV_MinMaxInt(pDX, m_iDynUpNumberOfPings, 1, INT_MAX);
 	*/
-	// <== removed - Stulle
+	//MORPH END   - Removed by Stulle, Removed dupe USS settings
     // MORPH START leuk_he Advanced official preferences.
 	if (m_hti_bMiniMuleAutoClose) DDX_TreeCheck(pDX, IDC_EXT_OPTS,m_hti_bMiniMuleAutoClose,bMiniMuleAutoClose);
 	if (m_hti_iMiniMuleTransparency) {DDX_TreeEdit(pDX, IDC_EXT_OPTS, m_hti_iMiniMuleTransparency, iMiniMuleTransparency);
@@ -795,7 +795,7 @@ BOOL CPPgTweaks::OnInitDialog()
 	// End emulEspaña
 	m_bAutoArchDisable = !thePrefs.m_bAutomaticArcPreviewStart;
 
-    // ==> removed - Stulle
+    //MORPH START - Removed by Stulle, Removed dupe USS settings
     /*
     m_bDynUpEnabled = thePrefs.m_bDynUpEnabled;
     m_iDynUpMinUpload = thePrefs.GetMinUpload();
@@ -806,7 +806,7 @@ BOOL CPPgTweaks::OnInitDialog()
     m_iDynUpGoingDownDivider = thePrefs.GetDynUpGoingDownDivider();
     m_iDynUpNumberOfPings = thePrefs.GetDynUpNumberOfPings();
     */
-    // <== removed - Stulle
+    //MORPH END   - Removed by Stulle, Removed dupe USS settings
 
 
 	m_iShareeMule = thePrefs.m_nCurrentUserDirMode;
@@ -1047,7 +1047,7 @@ BOOL CPPgTweaks::OnApply()
 	*/
 	// End emulEspaña
 
-	// ==> removed - Stulle
+	//MORPH START - Removed by Stulle, Removed dupe USS settings
 	/*
     thePrefs.m_bDynUpEnabled = m_bDynUpEnabled;
     thePrefs.minupload = (uint16)m_iDynUpMinUpload;
@@ -1058,7 +1058,7 @@ BOOL CPPgTweaks::OnApply()
     thePrefs.m_iDynUpGoingDownDivider = m_iDynUpGoingDownDivider;
     thePrefs.m_iDynUpNumberOfPings = m_iDynUpNumberOfPings;
 	*/
-	// <== removed - Stulle
+	//MORPH END   - Removed by Stulle, Removed dupe USS settings
 	thePrefs.m_bAutomaticArcPreviewStart = !m_bAutoArchDisable;
 
 
@@ -1224,7 +1224,7 @@ void CPPgTweaks::Localize(void)
 		if (m_htiFirewallStartup) m_ctrlTreeOptions.SetItemText(m_htiFirewallStartup, GetResString(IDS_FO_PREF_STARTUP));
 		*/
 		// End emulEspaña
-		// ==> removed - Stulle
+		//MORPH START - Removed by Stulle, Removed dupe USS settings
 		/*
         if (m_htiDynUp) m_ctrlTreeOptions.SetItemText(m_htiDynUp, GetResString(IDS_DYNUP));
 		if (m_htiDynUpEnabled) m_ctrlTreeOptions.SetItemText(m_htiDynUpEnabled, GetResString(IDS_DYNUPENABLED));
@@ -1234,7 +1234,7 @@ void CPPgTweaks::Localize(void)
         if (m_htiDynUpGoingDownDivider) m_ctrlTreeOptions.SetEditLabel(m_htiDynUpGoingDownDivider, GetResString(IDS_DYNUP_GOINGDOWNDIVIDER));
         if (m_htiDynUpNumberOfPings) m_ctrlTreeOptions.SetEditLabel(m_htiDynUpNumberOfPings, GetResString(IDS_DYNUP_NUMBEROFPINGS));
 		*/
-		// <== removed - Stulle
+		//MORPH END   - Removed by Stulle, Removed dupe USS settings
         if (m_htiA4AFSaveCpu) m_ctrlTreeOptions.SetItemText(m_htiA4AFSaveCpu, GetResString(IDS_A4AF_SAVE_CPU));
         if (m_htiFullAlloc) m_ctrlTreeOptions.SetItemText(m_htiFullAlloc, GetResString(IDS_FULLALLOC));
 		if (m_htiAutoArch) m_ctrlTreeOptions.SetItemText(m_htiAutoArch, GetResString(IDS_DISABLE_AUTOARCHPREV));
@@ -1452,7 +1452,7 @@ void CPPgTweaks::OnDestroy()
 	m_htiFirewallStartup = NULL;
 	*/
 	// End emulEspaña
-	// ==> removed - Stulle
+	//MORPH START - Removed by Stulle, Removed dupe USS settings
 	/*
     m_htiDynUp = NULL;
 	m_htiDynUpEnabled = NULL;
@@ -1466,7 +1466,7 @@ void CPPgTweaks::OnDestroy()
     m_htiDynUpGoingDownDivider = NULL;
     m_htiDynUpNumberOfPings = NULL;
 	*/
-	// <== removed - Stulle
+	//MORPH END   - Removed by Stulle, Removed dupe USS settings
     m_htiA4AFSaveCpu = NULL;
 	m_htiExtractMetaData = NULL;
 	m_htiExtractMetaDataNever = NULL;
