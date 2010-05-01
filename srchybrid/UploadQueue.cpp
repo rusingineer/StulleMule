@@ -1090,39 +1090,39 @@ void CUploadQueue::Process() {
 	//MORPH START - Upload Splitting Class
 	uint32 needToaddmoreslot = false;
 	for (uint32 classID = 0; classID < NB_SPLITTING_CLASS; classID++) {
-	//Morph Start - changed by AndCycle, Dont Remove Spare Trickle Slot
-	/*
-	if(::GetTickCount()-m_nLastStartUpload > SEC2MS(20) && GetEffectiveUploadListCount() > 0 && GetEffectiveUploadListCount() > m_MaxActiveClientsShortTime+GetWantedNumberOfTrickleUploads() && AcceptNewClient(GetEffectiveUploadListCount()-1) == false) {
-	*/
+		//Morph Start - changed by AndCycle, Dont Remove Spare Trickle Slot
+		/*
+		if(::GetTickCount()-m_nLastStartUpload > SEC2MS(20) && GetEffectiveUploadListCount() > 0 && GetEffectiveUploadListCount() > m_MaxActiveClientsShortTime+GetWantedNumberOfTrickleUploads() && AcceptNewClient(GetEffectiveUploadListCount()-1) == false) {
+		*/
 		if(thePrefs.DoRemoveSpareTrickleSlot() && ::GetTickCount()-m_nLastStartUpload > SEC2MS(20) && GetEffectiveUploadListCount(classID) > 0 && GetEffectiveUploadListCount(classID) > m_MaxActiveClientsShortTimeClass[classID]+GetWantedNumberOfTrickleUploads(classID) && AcceptNewClient(GetEffectiveUploadListCount(classID)-1, classID) == false) {
-	//Morph End - changed by AndCycle, Dont Remove Spare Trickle Slot
-        // we need to close a trickle slot and put it back first on the queue
+		//Morph End - changed by AndCycle, Dont Remove Spare Trickle Slot
+			// we need to close a trickle slot and put it back first on the queue
 
-        POSITION lastpos = uploadinglist.GetTailPosition();
+			POSITION lastpos = uploadinglist.GetTailPosition();
 
-        CUpDownClient* lastClient = NULL;
-			//Loop to find the last trickle slot of the desired class
-			while (lastpos != NULL) {
-            lastClient = uploadinglist.GetPrev(lastpos);
-				if (lastClient->GetClassID()==classID)
-					break;
-				else
-					lastClient = NULL;
-        }
-        if(lastClient != NULL && !lastClient->IsScheduledForRemoval() /*lastClient->GetUpStartTimeDelay() > 3*1000*/) {
-            // There's too many open uploads (propably due to the user changing
-            // the upload limit to a lower value). Remove the last opened upload and put
-            // it back on the waitinglist. When it is put back, it get
-            // to keep its waiting time. This means it is likely to soon be
-            // choosen for upload again.
+			CUpDownClient* lastClient = NULL;
+				//Loop to find the last trickle slot of the desired class
+				while (lastpos != NULL) {
+				lastClient = uploadinglist.GetPrev(lastpos);
+					if (lastClient->GetClassID()==classID)
+						break;
+					else
+						lastClient = NULL;
+			}
+			if(lastClient != NULL && !lastClient->IsScheduledForRemoval() /*lastClient->GetUpStartTimeDelay() > 3*1000*/) {
+				// There's too many open uploads (propably due to the user changing
+				// the upload limit to a lower value). Remove the last opened upload and put
+				// it back on the waitinglist. When it is put back, it get
+				// to keep its waiting time. This means it is likely to soon be
+				// choosen for upload again.
 
-            // Remove from upload list.
-            ScheduleRemovalFromUploadQueue(lastClient, _T("Too many upload slots opened for current ul speed"), GetResString(IDS_UPLOAD_TOO_MANY_SLOTS), true /*, true*/);
+				// Remove from upload list.
+				ScheduleRemovalFromUploadQueue(lastClient, _T("Too many upload slots opened for current ul speed"), GetResString(IDS_UPLOAD_TOO_MANY_SLOTS), true /*, true*/);
 
-		    // add to queue again.
-            // the client is allowed to keep its waiting position in the queue, since it was pre-empted
-            //AddClientToQueue(lastClient,true, true);
-        }
+				// add to queue again.
+				// the client is allowed to keep its waiting position in the queue, since it was pre-empted
+				//AddClientToQueue(lastClient,true, true);
+			}
 		} else if (ForceNewClient(false, classID) && bCanAddNewSlot){
 			// There's not enough open uploads. Open another one.
 			needToaddmoreslot = true;
@@ -1172,13 +1172,7 @@ bool CUploadQueue::AcceptNewClient(uint32 classID)
 	uint32 curUploadSlots = (uint32)GetEffectiveUploadListCount(classID);
     return AcceptNewClient(curUploadSlots, classID);
 }
-//==MagicAngel=> Fix Completing Bug - Stulle idea :) - evcz
-/*
 bool CUploadQueue::AcceptNewClient(uint32 curUploadSlots, uint32 classID){
-*/
-bool CUploadQueue::AcceptNewClient(uint32 curUploadSlots, uint32 classID, bool bForceExtra){
-//<=MagicAngel== Fix Completing Bug - Stulle idea :) - evcz
-// check if we can allow a new client to start downloading from us
 /*
 bool CUploadQueue::AcceptNewClient(uint32 curUploadSlots, uint32 classID){
 */
@@ -1204,16 +1198,6 @@ bool CUploadQueue::AcceptNewClient(uint32 curUploadSlots, uint32 classID){
 	uint32 AllowedClientDatarate[NB_SPLITTING_CLASS];
 	theApp.lastCommonRouteFinder->GetClassByteToSend(AllowedDatarate,AllowedClientDatarate);
 	uint32 remaindatarateforcurrentclass = datarate_USS;   //datarate is too fast;
-	//<=MagicAngel== Fix Completing Bug - Stulle idea :) - evcz
-	uint32 TotalSlots =0;
-	for(uint32 i = 0; i < NB_SPLITTING_CLASS; i++)
-	{
-		if (i ==classID)
-			TotalSlots +=curUploadSlots;
-		else
-			TotalSlots +=GetEffectiveUploadListCount(i);  // this does not include completing slots ...
-	}
-	//==MagicAngel=> Fix Completing Bug - Stulle idea :) - evcz
 	 switch (classID) {
 		case 2:
 			if (remaindatarateforcurrentclass>powershareDatarate)
@@ -1237,10 +1221,7 @@ bool CUploadQueue::AcceptNewClient(uint32 curUploadSlots, uint32 classID){
 			curUploadSlots >= (AllowedDatarate[classID]/min(currentclientdatarateclass,UPLOAD_CLIENT_DATARATE)) //Limiting by alloweddatarate for a class
 		 ) ||
 		 
-		 //==MagicAngel=> Fix Completing Bug - Stulle idea :) - evcz
-		  (((thePrefs.GetSlotLimitNumB() && 	TotalSlots >= thePrefs.GetSlotLimitNum()) && !bForceExtra ) ||
-		   ((thePrefs.GetSlotLimitNumB() && TotalSlots >= thePrefs.GetSlotLimitNum()+1 && bForceExtra)))
-		 //<=MagicAngel== Fix Completing Bug - Stulle idea :) - evcz
+		  (thePrefs.GetSlotLimitNumB() && GetUploadQueueLength() >= thePrefs.GetSlotLimitNum())
        ) // max number of clients to allow for all circumstances
 	   return false;
 
@@ -1248,7 +1229,7 @@ bool CUploadQueue::AcceptNewClient(uint32 curUploadSlots, uint32 classID){
 }
 
 //MORPH START - Upload Splitting Class
-bool CUploadQueue::ForceNewClient(bool simulateScheduledClosingOfSlot, uint32 classID, bool bForceExtra) { // MORPH evcz try
+bool CUploadQueue::ForceNewClient(bool simulateScheduledClosingOfSlot, uint32 classID) {
 	//Get number of slot from above class and cur class
 	uint32 curUploadSlotsReal = m_aiSlotCounter[classID];
     if(!simulateScheduledClosingOfSlot || simulateScheduledClosingOfSlot && curUploadSlotsReal > 0) {
@@ -1260,10 +1241,7 @@ bool CUploadQueue::ForceNewClient(bool simulateScheduledClosingOfSlot, uint32 cl
 		//Simulate a removed slot
 		if (simulateScheduledClosingOfSlot)
     	    curUploadSlotsReal--;
-		//==MagicAngel=> Fix Completing Bug - Stulle idea :) - evcz
-		//if(!AcceptNewClient(curUploadSlots, classID) || !theApp.lastCommonRouteFinder->AcceptNewClient()) // UploadSpeedSense can veto a new slot if USS enabled
-		if(!AcceptNewClient(curUploadSlots, classID, bForceExtra) || !theApp.lastCommonRouteFinder->AcceptNewClient()) // UploadSpeedSense can veto a new slot if USS enabled
-		//<=MagicAngel== Fix Completing Bug - Stulle idea :) - evcz
+		if(!AcceptNewClient(curUploadSlots, classID) || !theApp.lastCommonRouteFinder->AcceptNewClient()) // UploadSpeedSense can veto a new slot if USS enabled
 			needtoaddslot = false;
 		else {
 			if (curUploadSlotsReal < m_iHighestNumberOfFullyActivatedSlotsSinceLastCallClass[classID] && AcceptNewClient(curUploadSlots/**(2-(classID/2))*/, classID) /*+1*/ ||
