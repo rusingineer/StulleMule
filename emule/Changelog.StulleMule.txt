@@ -9,6 +9,8 @@ based on eMule 0.50a MorphXT 12.0 compiled with vs2008 SP1
 Added: Tooltip for Show overhead on title [Stulle]
 
 Changed: Updated Enhanced Client Recognition to v2 (minor change) [Stulle/WiZaRd]
+Changed: Disable ASFU if too many folders are shared [Stulle]
+	+ fixes related crashes; increases ASFU version number to 3.5
 
 Fixed: Global Mod statistics were not displayed [Stulle]
 Fixed: Service was not stopped when it should be stopped on starting emule.exe [Stulle]

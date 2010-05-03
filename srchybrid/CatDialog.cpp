@@ -285,7 +285,6 @@ void CCatDialog::OnBnClickedOk()
 		theApp.emuledlg->sharedfileswnd->Reload();
 	// ==> Automatic shared files updater [MoNKi] - Stulle
 #ifdef ASFU
-		theApp.QueueDebugLogLine(false,_T("ResetDirectoryWatcher: CCatDialog::OnBnClickedOk()"));
 		if(thePrefs.GetDirectoryWatcher())
 			theApp.ResetDirectoryWatcher();
 	}
