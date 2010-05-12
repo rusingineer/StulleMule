@@ -15,6 +15,7 @@ Changed: Disable ASFU if too many folders are shared [Stulle]
 Fixed: Global Mod statistics were not displayed [Stulle]
 Fixed: Service was not stopped when it should be stopped on starting emule.exe [Stulle]
 	+ occured when service name was changed
+Fixed: Crashfix for reloading share via ASFU under certain circumstances [WiZaRd]
 
 
 eMule v0.49c StulleMule v6.2:
