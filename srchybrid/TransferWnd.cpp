@@ -162,15 +162,35 @@ void CTransferWnd::OnInitialUpdate()
 	// <== CPU/MEM usage [$ick$/Stulle] - Stulle
 
 	// ==> Advanced Transfer Window Layout - Stulle
-	//Fafner: init unsplitted and split later
-	//Fafner: always start with download list and switch later
-	//Fafner: by that trick we fix the 120 dpi fonts glitch
 #ifndef ATWL
 	switch (thePrefs.GetTransferWnd1()) {
 #else
-	bool bStartSplitted = thePrefs.GetSplitWindow();
 	UINT uTransferWnd1 = thePrefs.GetTransferWnd1();
-	ShowList(IDC_DOWNLOADLIST);
+//	ShowList(IDC_DOWNLOADLIST);
+	if (thePrefs.GetSplitWindow())
+	{
+		m_dwShowListIDC = IDC_DOWNLOADLIST + IDC_UPLOADLIST;
+		switch (uTransferWnd1)
+		{
+			default:
+			case 1:
+				m_dwTopListIDC = IDC_DOWNLOADLIST;
+				break;
+			case 2:
+				m_dwTopListIDC = IDC_UPLOADLIST;
+				break;
+			case 3:
+				m_dwTopListIDC = IDC_QUEUELIST;
+				break;
+			case 4:
+				m_dwTopListIDC = IDC_DOWNLOADCLIENTS;
+				break;
+			case 5:
+				m_dwTopListIDC = IDC_CLIENTLIST;
+				break;
+		}
+	}
+	else
 	switch (uTransferWnd1) {
 #endif
 	// <== Advanced Transfer Window Layout - Stulle
@@ -184,12 +204,7 @@ void CTransferWnd::OnInitialUpdate()
 #endif
 		// <== Advanced Transfer Window Layout - Stulle
 		case 1:
-			// ==> Advanced Transfer Window Layout - Stulle
-			//Fafner: already started with
-#ifndef ATWL
 			m_dwShowListIDC = IDC_DOWNLOADLIST;
-#endif
-			// <== Advanced Transfer Window Layout - Stulle
 			break;
 		case 2:
 			m_dwShowListIDC = IDC_UPLOADLIST;
@@ -282,32 +297,6 @@ void CTransferWnd::OnInitialUpdate()
 		GetDlgItem(IDC_QUEUE2)->ShowWindow(SW_HIDE);
 	}
 	//Commander - Added: ClientQueueProgressBar - End
-
-	// ==> Advanced Transfer Window Layout - Stulle //Fafner: moved & modded
-#ifdef ATWL
-	if (bStartSplitted) {
-		switch (thePrefs.GetTransferWnd1())
-		{
-			default:
-			case 1:
-				ShowSplitWindow(false,IDC_DOWNLOADLIST,true);
-				break;
-			case 2:
-				ShowSplitWindow(false,IDC_UPLOADLIST,true);
-				break;
-			case 3:
-				ShowSplitWindow(false,IDC_QUEUELIST,true);
-				break;
-			case 4:
-				ShowSplitWindow(false,IDC_DOWNLOADCLIENTS,true);
-				break;
-			case 5:
-				ShowSplitWindow(false,IDC_CLIENTLIST,true);
-				break;
-		}
-	}
-#endif
-	// <== Advanced Transfer Window Layout - Stulle
 }
 
 void CTransferWnd::ShowQueueCount(uint32 number)
