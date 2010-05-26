@@ -546,7 +546,25 @@ void CWebServer::ProcessURL(ThreadData Data)
 					{
 						Session ses;
 						ses.admin=Def.RightsToAddRemove;
-						ses.RightsToCategories=Def.RightsToCategories;
+						ses.RightsToCategories.push_back(0);
+						CString CatsList(Def.RightsToCategories);
+						for (int i = 1; i < thePrefs.GetCatCount(); i++)
+						{
+							int curPos=0;
+							if (CatsList.GetLength()>=2)
+							{
+								CString Cat=CatsList.Tokenize(_T("|"),curPos);
+								while (Cat!=_T(""))
+								{
+									if (Cat==thePrefs.GetCategory(i)->strTitle)
+									{
+										ses.RightsToCategories.push_back(i);
+										break;
+									}
+									Cat=CatsList.Tokenize(_T("|"),curPos);
+								}
+							}
+						}
 						ses.RightsToKad=Def.RightsToKad;
 						ses.RightsToServers=Def.RightsToServers;
 						ses.RightsToTransfered=Def.RightsToTransfered;
@@ -2525,20 +2543,17 @@ CString CWebServer::_GetTransferList(ThreadData Data)
 			if(thePrefs.UseIonixWebsrv())
 			{
 				bool Allowed=false;
-				int curPos=0;
-				if (Rights.RightsToCategories.GetLength()>=2)
+				if (Rights.RightsToCategories.size()>1)
 				{
-					CString Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
-					while (Cat!=_T(""))
+					for (int j = 0; j < (int)Rights.RightsToCategories.size(); j++)
 					{
-						if (Cat==thePrefs.GetCategory(pPartFile->GetCategory())->strTitle)
+						if (Rights.RightsToCategories.at(j)==(int)pPartFile->GetCategory())
 						{
 							Allowed=true;
 							break;
 						}
-						Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
 					}
-					if (!Allowed && pPartFile->GetCategory()!=0) //MORPH - Changed by Stulle, Allow to show Default tab seperately on Multi User Web Interface
+					if (!Allowed)
 						continue;
 				}
 			}
@@ -2737,7 +2752,12 @@ CString CWebServer::_GetTransferList(ThreadData Data)
 			dUser.sClientState = _T("connecting");
 		}
 
+		//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+		/*
 		dUser.sFileInfo = _SpecialChars(GetClientSummary(cur_client),false);
+		*/
+		dUser.sFileInfo = _SpecialChars(GetClientSummary(cur_client,Rights),false);
+		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		dUser.sFileInfo.Replace(_T("\\"),_T("\\\\"));
 		dUser.sFileInfo.Replace(_T("\n"), _T("<br />"));
 		dUser.sFileInfo.Replace(_T("'"),_T("&#8217;"));
@@ -2771,7 +2791,36 @@ CString CWebServer::_GetTransferList(ThreadData Data)
 			dUser.sUserName = _SpecialChars(cun.Left(SHORT_LENGTH_MIN-3)) + _T("...");
 		
 		CKnownFile* file = theApp.sharedfiles->GetFileByID(cur_client->GetUploadFileID() );
+		//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+		/*
 		if (file)
+		*/
+		int Allowed=0; //-1 = not allowed, 0 = not found, 1  = allowed
+		if(thePrefs.UseIonixWebsrv())
+		{
+			if (Rights.RightsToCategories.size()>1)
+			{
+				CString Path = file->GetPath();
+				Path = Path.Left(Path.GetLength()-1);
+				for (int i = 0; i < thePrefs.GetCatCount(); i++)
+				{
+					for (int j = 0; j < (int)Rights.RightsToCategories.size(); j++)
+					{
+						if (thePrefs.GetCategory(Rights.RightsToCategories.at(j))->strIncomingPath == Path)
+						{
+							Allowed=1;
+							break;
+						}
+					}
+					if (Allowed==1)
+						break;
+					if (thePrefs.GetCategory(i)->strIncomingPath == Path)
+						Allowed=-1;
+				}
+			}
+		}
+		if (file && Allowed>=0)
+		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 			dUser.sFileName = _SpecialChars(file->GetFileName());
 		else
 			dUser.sFileName = _GetPlainResString(IDS_REQ_UNKNOWNFILE);
@@ -2852,6 +2901,11 @@ CString CWebServer::_CreateTransferList(CString Out, CWebServer *pThis, ThreadDa
 
 	double fTotalSize = 0, fTotalTransferred = 0, fTotalSpeed = 0;
 
+	//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+	long lSession = _tstol(_ParseURL(Data->sURL, _T("ses")));
+	Session Rights = GetSessionByID(*Data, lSession);  
+	//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
+
 	CQArray<QueueUsers, QueueUsers> QueueArray;
 	for (POSITION pos = theApp.uploadqueue->waitinglist.GetHeadPosition(); pos != NULL;)
 	{
@@ -2887,7 +2941,36 @@ CString CWebServer::_CreateTransferList(CString Out, CWebServer *pThis, ThreadDa
 
 		dUser.sClientNameVersion = cur_client->GetClientSoftVer();
 		CKnownFile* file = theApp.sharedfiles->GetFileByID(cur_client->GetUploadFileID() );
+		//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+		/*
 		if (file)
+		*/
+		int Allowed=0; //-1 = not allowed, 0 = not found, 1  = allowed
+		if(thePrefs.UseIonixWebsrv())
+		{
+			if (Rights.RightsToCategories.size()>1)
+			{
+				CString Path = file->GetPath();
+				Path = Path.Left(Path.GetLength()-1);
+				for (int i = 0; i < thePrefs.GetCatCount(); i++)
+				{
+					for (int j = 0; j < (int)Rights.RightsToCategories.size(); j++)
+					{
+						if (thePrefs.GetCategory(Rights.RightsToCategories.at(j))->strIncomingPath == Path)
+						{
+							Allowed=1;
+							break;
+						}
+					}
+					if (Allowed==1)
+						break;
+					if (thePrefs.GetCategory(i)->strIncomingPath == Path)
+						Allowed=-1;
+				}
+			}
+		}
+		if (file && Allowed>=0)
+		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 			dUser.sFileName = _SpecialChars(file->GetFileName());
 		else
 			dUser.sFileName = _GetPlainResString(IDS_REQ_UNKNOWNFILE);
@@ -2950,11 +3033,6 @@ CString CWebServer::_CreateTransferList(CString Out, CWebServer *pThis, ThreadDa
 	AddDebugLogLine(false, _T("WebServer: Waitingqueue with %u elements sorted in %u ms"), QueueArray.GetSize(), ::GetTickCount()-dwStart);
 #endif
 	}
-
-//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
-	long lSession = _tstol(_ParseURL(Data->sURL, _T("ses")));
-	Session Rights = GetSessionByID(*Data, lSession);  
-//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 
 	for(int i = 0; i < FilesArray->GetCount(); i++)
 	{
@@ -3889,7 +3967,39 @@ CString CWebServer::_GetSharedFilesList(ThreadData Data)
 		SharedFiles dFile;
 		//dFile.sFileName = _SpecialChars(cur_file->GetFileName());
 		dFile.bIsPartFile = cur_file->IsPartFile();
+		//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+		/*
 		dFile.sFileName = cur_file->GetFileName();
+		*/
+		int Allowed=0; //-1 = not allowed, 0 = not found, 1  = allowed
+		if(thePrefs.UseIonixWebsrv())
+		{
+			if (Rights.RightsToCategories.size()>1)
+			{
+				CString Path = cur_file->GetPath();
+				Path = Path.Left(Path.GetLength()-1);
+				for (int i = 0; i < thePrefs.GetCatCount(); i++)
+				{
+					for (int j = 0; j < (int)Rights.RightsToCategories.size(); j++)
+					{
+						if (thePrefs.GetCategory(Rights.RightsToCategories.at(j))->strIncomingPath == Path)
+						{
+							Allowed=1;
+							break;
+						}
+					}
+					if (Allowed==1)
+						break;
+					if (thePrefs.GetCategory(i)->strIncomingPath == Path)
+						Allowed=-1;
+				}
+			}
+		}
+		if (Allowed>=0)
+			dFile.sFileName = cur_file->GetFileName();
+		else
+			dFile.sFileName = _T("???");
+		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		if(bPartFile)
 			dFile.sFileState = _T("filedown");
 		else
@@ -4893,6 +5003,9 @@ bool CWebServer::_RemoveSession(ThreadData Data, long lSession)
 	{
 		if(pThis->m_Params.Sessions[i].lSession == lSession && lSession != 0)
 		{
+			//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+			pThis->m_Params.Sessions.GetAt(i).RightsToCategories.clear();
+			//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 			pThis->m_Params.Sessions.RemoveAt(i);
 			CString t_ulCurIP;
 			t_ulCurIP.Format(_T("%u.%u.%u.%u"),(byte)pThis->m_ulCurIP,(byte)(pThis->m_ulCurIP>>8),(byte)(pThis->m_ulCurIP>>16),(byte)(pThis->m_ulCurIP>>24));
@@ -5417,7 +5530,12 @@ int CWebServer::UpdateSessionCount()
 	{
 		CTimeSpan ts = CTime::GetCurrentTime() - m_Params.Sessions[i].startTime;
 		if(thePrefs.GetWebTimeoutMins()>0 && ts.GetTotalSeconds() > thePrefs.GetWebTimeoutMins()*60 )
+		//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+		{
+			m_Params.Sessions.GetAt(i).RightsToCategories.clear();
+		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 			m_Params.Sessions.RemoveAt(i);
+		}//MORPH [ionix] - iONiX::Advanced WebInterface Account Management
 		else
 			i++;
 	}
@@ -5461,20 +5579,17 @@ void CWebServer::InsertCatBox(CString &Out,int preselect,CString boxlabel,bool j
 			if(thePrefs.UseIonixWebsrv())
 			{
 				bool Allowed=false;
-				int curPos=0;
-				if (Rights.RightsToCategories.GetLength()>=2)
+				if (Rights.RightsToCategories.size()>1)
 				{
-					CString Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
-					while (Cat!=_T(""))
+					for (int j = 0; j < (int)Rights.RightsToCategories.size(); j++)
 					{
-						if (Cat==thePrefs.GetCategory(i)->strTitle)
+						if (Rights.RightsToCategories.at(j)==i)
 						{
 							Allowed=true;
 							break;
 						}
-						Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
 					}
-					if (!Allowed && i!=0) //MORPH - Changed by Stulle, Allow to show Default tab seperately on Multi User Web Interface
+					if (!Allowed)
 						continue;
 				}
 			}
@@ -5531,21 +5646,17 @@ void CWebServer::InsertCatBox(CString &Out,int preselect,CString boxlabel,bool j
 			if(thePrefs.UseIonixWebsrv())
 			{
 				bool Allowed=false;
-				int curPos=0;
-
-				if (Rights.RightsToCategories.GetLength()>=2)
+				if (Rights.RightsToCategories.size()>1)
 				{
-					CString Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
-					while (Cat!=_T(""))
+					for (int j = 0; j < (int)Rights.RightsToCategories.size(); j++)
 					{
-						if (Cat==thePrefs.GetCategory(i)->strTitle)
+						if (Rights.RightsToCategories.at(j)==i)
 						{
 							Allowed=true;
 							break;
 						}
-						Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
 					}
-					if (!Allowed && i!=0) //MORPH - Changed by Stulle, Allow to show Default tab seperately on Multi User Web Interface
+					if (!Allowed)
 						continue;
 				}
 			}
@@ -5610,21 +5721,17 @@ void CWebServer::InsertCatBox(CString &Out,int preselect,CString boxlabel,bool j
 		if(thePrefs.UseIonixWebsrv())
 		{
 			bool Allowed=false;
-			int curPos=0;
-
-			if (Rights.RightsToCategories.GetLength()>=2)
+			if (Rights.RightsToCategories.size()>1)
 			{
-				CString Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
-				while (Cat!=_T(""))
+				for (int j = 0; j < (int)Rights.RightsToCategories.size(); j++)
 				{
-					if (Cat==thePrefs.GetCategory(i)->strTitle)
+					if (Rights.RightsToCategories.at(j)==i)
 					{
 						Allowed=true;
 						break;
 					}
-					Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
 				}
-				if (!Allowed && i!=0) //MORPH - Changed by Stulle, Allow to show Default tab seperately on Multi User Web Interface
+				if (!Allowed)
 					continue;
 			}
 		}
@@ -5844,7 +5951,12 @@ CString CWebServer::GetWebImageNameForFileType(CString filename)
 	}
 }
 
+//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+/*
 CString CWebServer::GetClientSummary(CUpDownClient* client) {
+*/
+CString CWebServer::GetClientSummary(CUpDownClient* client, const Session& Rights) {
+//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 
 	// name
 	CString buffer=	GetResString(IDS_CD_UNAME) + _T(" ") + client->GetUserName() + _T("\n");
@@ -5855,7 +5967,36 @@ CString CWebServer::GetClientSummary(CUpDownClient* client) {
 	buffer+= GetResString(IDS_CD_UPLOADREQ) + _T(" ");
 	CKnownFile* file = theApp.sharedfiles->GetFileByID(client->GetUploadFileID() );
 	ASSERT(file);
+	//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+	/*
 	if (file) {
+	*/
+	int Allowed=0; //-1 = not allowed, 0 = not found, 1  = allowed
+	if(thePrefs.UseIonixWebsrv())
+	{
+		if (Rights.RightsToCategories.size()>1)
+		{
+			CString Path = file->GetPath();
+			Path = Path.Left(Path.GetLength()-1);
+			for (int i = 0; i < thePrefs.GetCatCount(); i++)
+			{
+				for (int j = 0; j < (int)Rights.RightsToCategories.size(); j++)
+				{
+					if (thePrefs.GetCategory(Rights.RightsToCategories.at(j))->strIncomingPath == Path)
+					{
+						Allowed=1;
+						break;
+					}
+				}
+				if (Allowed==1)
+					break;
+				if (thePrefs.GetCategory(i)->strIncomingPath == Path)
+					Allowed=-1;
+			}
+		}
+	}
+	if (file && Allowed>=0) {
+	//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		buffer += file->GetFileName();
 	}
 	buffer+= _T("\n\n");
