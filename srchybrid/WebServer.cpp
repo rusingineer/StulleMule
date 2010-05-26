@@ -2526,9 +2526,9 @@ CString CWebServer::_GetTransferList(ThreadData Data)
 					}
 					Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
 				}
+					if (pPartFile->GetCategory()!=0 && !Allowed)
+						continue;
 			}
-			if (!Allowed && Rights.RightsToCategories.GetLength()>=2)
-				continue;
 			}
 //MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 			if (cat<0) {
@@ -2551,7 +2551,12 @@ CString CWebServer::_GetTransferList(ThreadData Data)
 					//JOHNTODO: Not too sure here.. I was going to add Collections but noticed something strange.. Are these supposed to match the list in PartFile around line 5132? Because they do not..
 				}
 			}
+			//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+			/*
 			else if (cat>0 && pPartFile->GetCategory() != (UINT)cat)
+			*/
+			else if (pPartFile->GetCategory() != (UINT)cat)
+			//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 				continue;
 
 			DownloadFiles dFile;
@@ -2749,32 +2754,7 @@ CString CWebServer::_GetTransferList(ThreadData Data)
 			dUser.sUserName = _SpecialChars(cun.Left(SHORT_LENGTH_MIN-3)) + _T("...");
 		
 		CKnownFile* file = theApp.sharedfiles->GetFileByID(cur_client->GetUploadFileID() );
-//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
-		// If the user is restricted to see all cats don't show the upload files, <-- prior 4.4
-		// but show the ones that are allowed <-- added in 4.4
-		bool bAllowed = true;
-		if(thePrefs.UseIonixWebsrv())
-		{
-			if(file->IsPartFile() && Rights.RightsToCategories.GetLength()>=2)
-			{
-				bAllowed = false;
-				int curPos=0;
-
-				CString Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
-				while (Cat!=_T(""))
-				{
-					if (Cat==thePrefs.GetCategory(((CPartFile*)file)->GetCategory())->strTitle)
-					{
-						bAllowed = true;
-						break;
-					}
-					Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
-				}
-			}
-		}
-		//if (file)
-		if (file && bAllowed)
-//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
+		if (file)
 			dUser.sFileName = _SpecialChars(file->GetFileName());
 		else
 			dUser.sFileName = _GetPlainResString(IDS_REQ_UNKNOWNFILE);
@@ -5465,10 +5445,9 @@ void CWebServer::InsertCatBox(CString &Out,int preselect,CString boxlabel,bool j
 					}
 					Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
 				}
+				if (i!=0 && !Allowed)
+					continue;
 			}
-
-			if (!Allowed && Rights.RightsToCategories.GetLength()>=2)
-				continue;
 		}
 //MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		CString strCategory = thePrefs.GetCategory(i)->strTitle;
@@ -5481,7 +5460,12 @@ void CWebServer::InsertCatBox(CString &Out,int preselect,CString boxlabel,bool j
 		{
 			tempBuf += _T("<option>-------------------</option>\n");
 		}
+		//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+		/*
 		for (int i = 1; i<16; i++)
+		*/
+		for (int i = 2; i<16; i++)
+		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		{
 			tempBuf.AppendFormat( _T("<option%s value=\"%i\">%s</option>\n") , (0-i == preselect) ? _T(" selected") : _T(""), 0-i, GetSubCatLabel(0-i));
 		}
@@ -5513,21 +5497,30 @@ void CWebServer::InsertCatBox(CString &Out,int preselect,CString boxlabel,bool j
 					}
 					Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
 				}
+				if (i!=0 && !Allowed)
+					continue;
 			}
-
-			if (!Allowed && Rights.RightsToCategories.GetLength()>=2)
-				continue;
 		}
 		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		if (i==preselect)
 		{
 			tempBuff3 = _T("checked.gif");
+			//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+			/*
 			tempBuff4 = (i==0)?GetResString(IDS_ALL):thePrefs.GetCategory(i)->strTitle;
+			*/
+			tempBuff4 = thePrefs.GetCategory(i)->strTitle;
+			//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		}
 		else
 			tempBuff3 = _T("checked_no.gif");
 
+		//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+		/*
 		strCategory = (i==0)?GetResString(IDS_ALL):thePrefs.GetCategory(i)->strTitle;
+		*/
+		strCategory = thePrefs.GetCategory(i)->strTitle;
+		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		strCategory.Replace(_T("'"),_T("\\'"));
 
 		tempBuff.AppendFormat(_T("<a href=&quot;/?ses=%s&w=transfer&cat=%d&quot;><div class=menuitems><img class=menuchecked src=%s>%s&nbsp;</div></a>"),
@@ -5536,7 +5529,12 @@ void CWebServer::InsertCatBox(CString &Out,int preselect,CString boxlabel,bool j
 	if (extraCats)
 	{
 		tempBuff.Append(_T("<div class=menuitems>&nbsp;------------------------------&nbsp;</div>"));
+		//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+		/*
 		for (int i = 1;i<16;i++)
+		*/
+		for (int i = 2;i<16;i++)
+		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		{
 			if ((0-i)==preselect)
 			{
@@ -5578,10 +5576,9 @@ void CWebServer::InsertCatBox(CString &Out,int preselect,CString boxlabel,bool j
 					}
 					Cat=Rights.RightsToCategories.Tokenize(_T("|"),curPos);
 				}
+				if (i!=0 && !Allowed)
+					continue;
 			}
-
-			if (!Allowed && Rights.RightsToCategories.GetLength()>=2)
-				continue;
 		}
 		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		CPartFile *found_file = NULL;
@@ -5600,7 +5597,12 @@ void CWebServer::InsertCatBox(CString &Out,int preselect,CString boxlabel,bool j
 		else
 			tempBuff3 = _T("checked_no.gif");
 
+		//MORPH START [ionix] - iONiX::Advanced WebInterface Account Management
+		/*
 		strCategory = (i == 0)? GetResString(IDS_CAT_UNASSIGN) : thePrefs.GetCategory(i)->strTitle;
+		*/
+		strCategory = thePrefs.GetCategory(i)->strTitle;
+		//MORPH END [ionix] - iONiX::Advanced WebInterface Account Management
 		strCategory.Replace(_T("'"),_T("\\'"));
 
 		tempBuff.AppendFormat(_T("<a href=&quot;/?ses=%s&w=transfer[CatSel]&op=setcat&file=%s&filecat=%d&quot;><div class=menuitems><img class=menuchecked src=%s>%s&nbsp;</div></a>"),

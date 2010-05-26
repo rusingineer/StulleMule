@@ -3783,6 +3783,10 @@ BEGIN
     IDS_KEEPUNAVAILABLEFIXEDSHAREDDIRS_TIP "通常當分享目錄無效的時候會被移除\n請用這個選項會保留無效的分享目錄,\n這樣當下次目錄又有效時會再次被分享\n\n預設: 停用"
     IDS_FORCESPEEDSTOKB     "以 KB/s 顯示所有的速度數據"
     IDS_FORCESPEEDSTOKB_TIP "eMule 根據不同的速度以不同的單位顯示速度數據\n這個選項強制所有的速度皆以 KB/s 顯示\n而非 KB/s, GB/s 或 TB/s."
+   IDS_AUTOUPCOUNTRYWEEK   "每週更新"
+   IDS_AUTOUPCOUNTRYWEEK_TIP "向?划任?中添加一?每周更新?家旗??据?的?目.\n必??用?划任?.\n注意: ??功能只?在 Morph ?行?生效.\n你可以在?划任??置中修改更新的??." //"Add an entry to the schedule to update the\ncountrylist from the url once every week.\nSchedule is activated. Note that this will\n only work if Morph is running at that time.\nYou can modify the time when it updates in\n the schedule preferences."
+   IDS_SCHED_UPDATE_COUNTRY "更新?家旗??据?" //"Update IP-TO-COUNTRY.CSV-file"
+   IDS_SCHED_UPDATE_COUNTRY_LOG "?划中的?家旗??据?更新已??" //"Scheduled IP-TO-COUNTRY.CSV-update initiated."
 END
 
 /////////////////////////////////////////////////////////////////////////////
