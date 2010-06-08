@@ -1137,6 +1137,8 @@ public:
 	static bool		m_bServiceStringsLoaded;
 	//MORPH END   - Added by Stulle, Adjustable NT Service Strings
 
+	static bool		m_bFakeAlyzerIndications; //MORPH - Added by Stulle, Fakealyzer [netfinity]
+
 	// ==> push small files [sivka] - Stulle
     static  bool	enablePushSmallFile;
     static	uint32	m_iPushSmallFiles;
@@ -2616,6 +2618,8 @@ public:
 	static void		SetUSSInitialTTL(uint8 i)		{ m_iUSSinitialTTL = i; }
 	static uint8	GetUSSInitialTTL()				{ return m_iUSSinitialTTL; }
 	// <== [MoNKi: -USS initial TTL-] - Stulle
+
+	static bool		GetFakeAlyzerIndications()		{ return m_bFakeAlyzerIndications; } //MORPH - Added by Stulle, Fakealyzer [netfinity]
 
 	// ==> push small files [sivka] - Stulle
 	static bool		GetEnablePushSmallFile()	{return enablePushSmallFile;}
