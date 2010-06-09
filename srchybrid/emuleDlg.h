@@ -312,7 +312,9 @@ protected:
 	afx_msg LRESULT OnHashFailed(WPARAM wParam,LPARAM lParam);
 	// SLUGFILLER: SafeHash
 	afx_msg LRESULT OnPartHashedOK(WPARAM wParam,LPARAM lParam);
+	afx_msg LRESULT OnPartHashedOKNoAICH(WPARAM wParam,LPARAM lParam);
 	afx_msg LRESULT OnPartHashedCorrupt(WPARAM wParam,LPARAM lParam);
+	afx_msg LRESULT OnPartHashedCorruptNoAICH(WPARAM wParam,LPARAM lParam);
 	afx_msg LRESULT OnPartHashedOKAICHRecover(WPARAM wParam,LPARAM lParam);
 	afx_msg LRESULT OnPartHashedCorruptAICHRecover(WPARAM wParam,LPARAM lParam);
 	// SLUGFILLER: SafeHash
@@ -465,7 +467,9 @@ enum EEMuleAppMsgs
 	TM_HASHFAILED,
 	// SLUGFILLER: SafeHash - new handling
 	TM_PARTHASHEDOK,
+	TM_PARTHASHEDOKNOAICH,
 	TM_PARTHASHEDCORRUPT,
+	TM_PARTHASHEDCORRUPTNOAICH,
 	TM_PARTHASHEDOKAICHRECOVER,
 	TM_PARTHASHEDCORRUPTAICHRECOVER,
 	// SLUGFILLER: SafeHash
