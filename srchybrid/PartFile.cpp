@@ -8520,6 +8520,11 @@ int CPartHashThread::SetFirstHash(CPartFile* pOwner)
 				else
 					md4cpy(cur_hash, pOwner->GetFileIdentifier().GetMD4Hash());
 			}
+			else
+			{
+				DebugLogError(_T("MD4 HashSet not present while veryfing part %u for file %s"), partnumber, m_pOwner->GetFileName());
+				m_pOwner->m_bMD4HashsetNeeded = true;
+			}
 
 			//AICH
 			CAICHHash cur_AICH_hash;
@@ -8590,6 +8595,11 @@ void CPartHashThread::SetSinglePartHash(CPartFile* pOwner, UINT part, bool ICHus
 		}
 		else
 			md4cpy(cur_hash, pOwner->GetFileIdentifier().GetMD4Hash());
+	}
+	else
+	{
+		DebugLogError(_T("MD4 HashSet not present while veryfing part %u for file %s"), partnumber, m_pOwner->GetFileName());
+		m_pOwner->m_bMD4HashsetNeeded = true;
 	}
 
 	//AICH
@@ -8678,11 +8688,6 @@ int CPartHashThread::Run()
 			{
 				bMD4Checked = true;
 				bMD4Error = md4cmp(hashresult,m_DesiredHashes[i]) != 0;
-			}
-			else
-			{
-				DebugLogError(_T("MD4 HashSet not present while veryfing part %u for file %s"), partnumber, m_pOwner->GetFileName());
-				m_pOwner->m_bMD4HashsetNeeded = true;
 			}
 
 			//AICH
