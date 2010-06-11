@@ -1136,7 +1136,9 @@ void CUpDownClient::SetDownloadState(EDownloadState nNewState, LPCTSTR pszReason
                 SetLastAskedTime();
                 //DontSwapTo(reqfile);
 
-			/*default:
+			//MORPH START - Changed by Stulle, Ensure we reset m_dwLastTriedToConnect for A4AF and more
+			//Note: I don't know why but this code is required for Morph... some more research may show why but I am not up for that right now.
+			default:
 				switch( m_nDownloadState )
 				{
 					case DS_WAITCALLBACK:
@@ -1146,7 +1148,8 @@ void CUpDownClient::SetDownloadState(EDownloadState nNewState, LPCTSTR pszReason
 						m_dwLastTriedToConnect = ::GetTickCount()-20*60*1000;
 						break;
 				}
-				break;*/
+				break;
+			//MORPH END   - Changed by Stulle, Ensure we reset m_dwLastTriedToConnect for A4AF and more
 		}
 
 		if (reqfile){
