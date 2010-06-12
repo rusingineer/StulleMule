@@ -4,7 +4,7 @@ eMule v0.50a StulleMule v7.0:
 ------------------------
 - XX.XX.2010 -
 -------------------------------------------------------------------------------
-based on eMule 0.50a MorphXT 12.0 compiled with vs2008 SP1
+based on eMule 0.50a MorphXT 12.3 compiled with vs2008 SP1
 
 Added: Tooltip for Show overhead on title [Stulle]
 
