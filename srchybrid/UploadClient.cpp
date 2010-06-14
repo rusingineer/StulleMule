@@ -905,7 +905,7 @@ bool CUpDownClient::IsMoreUpThanDown(const CKnownFile* file) const{
 	*/
 	return (!file->IsPartFile() &&
 		((credits->GetPayBackFirstStatus() && thePrefs.IsPayBackFirst() && IsSecure()) ||
-		(credits->GetPayBackFirstStatus2() && thePrefs.IsPayBackFirst2())));
+		(credits->GetPayBackFirstStatus2() && thePrefs.IsPayBackFirst2() && theApp.clientcredits->CryptoAvailable() && credits->GetCurrentIdentState(GetIP()) == IS_NOTAVAILABLE)));
 	// <== Pay Back First for insecure clients - Stulle
 }
 //MORPH END   - Added by SiRoB, Code Optimization
