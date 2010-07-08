@@ -1,9 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emule100", "emule100.vcxproj", "{584EA69D-3443-4197-8994-364880FC1B9B}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptlib100", "..\cryptopp\cryptlib100.vcxproj", "{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emule", "emule100.vcxproj", "{584EA69D-3443-4197-8994-364880FC1B9B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "id3lib100", "..\id3lib\id3lib100.vcxproj", "{119FB498-E3AC-49A5-A310-20E8B466B413}"
 EndProject
@@ -20,6 +18,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pthread100", "pthreads\pthreads\pthread100.vcxproj", "{98A1AD27-110A-4C3E-AF0C-4F967E536517}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "upnpLib100", "upnplib\win32project\upnpLib100.vcxproj", "{313EDA74-70F6-481B-8F05-C49A16481905}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptlib100", "..\cryptopp\cryptlib100.vcxproj", "{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,18 +40,6 @@ Global
 		{584EA69D-3443-4197-8994-364880FC1B9B}.Release|Win32.ActiveCfg = Release|Win32
 		{584EA69D-3443-4197-8994-364880FC1B9B}.Release|Win32.Build.0 = Release|Win32
 		{584EA69D-3443-4197-8994-364880FC1B9B}.Release|x64.ActiveCfg = Release|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Beta|Win32.ActiveCfg = Release|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Beta|Win32.Build.0 = Release|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Beta|x64.ActiveCfg = DLL-Import Debug|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Beta|x64.Build.0 = DLL-Import Debug|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.debug100|Win32.ActiveCfg = debug100|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.debug100|Win32.Build.0 = debug100|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.debug100|x64.ActiveCfg = debug100|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.debug100|x64.Build.0 = debug100|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|Win32.ActiveCfg = Release|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|Win32.Build.0 = Release|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|x64.ActiveCfg = Release|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|x64.Build.0 = Release|x64
 		{119FB498-E3AC-49A5-A310-20E8B466B413}.Beta|Win32.ActiveCfg = Release|Win32
 		{119FB498-E3AC-49A5-A310-20E8B466B413}.Beta|Win32.Build.0 = Release|Win32
 		{119FB498-E3AC-49A5-A310-20E8B466B413}.Beta|x64.ActiveCfg = debug100|Win32
@@ -124,6 +112,18 @@ Global
 		{313EDA74-70F6-481B-8F05-C49A16481905}.Release|Win32.ActiveCfg = Release|Win32
 		{313EDA74-70F6-481B-8F05-C49A16481905}.Release|Win32.Build.0 = Release|Win32
 		{313EDA74-70F6-481B-8F05-C49A16481905}.Release|x64.ActiveCfg = Release|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Beta|Win32.ActiveCfg = Release|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Beta|Win32.Build.0 = Release|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Beta|x64.ActiveCfg = Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Beta|x64.Build.0 = Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.debug100|Win32.ActiveCfg = debug100|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.debug100|Win32.Build.0 = debug100|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.debug100|x64.ActiveCfg = debug100|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.debug100|x64.Build.0 = debug100|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|Win32.ActiveCfg = Release|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|Win32.Build.0 = Release|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|x64.ActiveCfg = Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
