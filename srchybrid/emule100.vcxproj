@@ -197,7 +197,7 @@
     </Manifest>
     <PostBuildEvent>
       <Message>Inserting Vista application icon...</Message>
-      <Command>..\ReplaceVistaIcon\release\ReplaceVistaIcon "$(TargetPath)" "$(ProjectDir)res\MOD\Mule_Vista.ico" AAAEMULEAPP</Command>
+      <Command>..\ReplaceVistaIcon\release\ReplaceVistaIcon "$(TargetPath)" "$(ProjectDir)res\MOD\Stulle_Vista.ico" AAAEMULEAPP</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Beta|Win32'">
@@ -256,7 +256,7 @@
     </Manifest>
     <PostBuildEvent>
       <Message>Inserting Vista application icon...</Message>
-      <Command>..\ReplaceVistaIcon\release\ReplaceVistaIcon "$(TargetPath)" "$(ProjectDir)res\MOD\Mule_Vista.ico" AAAEMULEAPP
+      <Command>..\ReplaceVistaIcon\release\ReplaceVistaIcon "$(TargetPath)" "$(ProjectDir)res\MOD\Stulle_Vista.ico" AAAEMULEAPP
 del $(IntDir)emule.obj
 </Command>
     </PostBuildEvent>
