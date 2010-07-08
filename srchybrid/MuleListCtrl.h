@@ -3,7 +3,12 @@
 #include "resource.h"
 
 class CIni;
+//MORPH START - Changed by Stulle - Compiling with Visual Studio 2010
+/*
 class CMemDC;
+*/
+class CMemoryDC;
+//MORPH END   - Changed by Stulle - Compiling with Visual Studio 2010
 
 ///////////////////////////////////////////////////////////////////////////////
 // CMuleListCtrl
@@ -230,9 +235,19 @@ protected:
 	void DrawFocusRect(CDC *pDC, const CRect &rcItem, BOOL bItemFocused, BOOL bCtrlFocused, BOOL bItemSelected);
 	// ==> Design Settings [eWombat/Stulle] - Stulle
 #ifndef DESIGN_SETTINGS
+	//MORPH START - Changed by Stulle - Compiling with Visual Studio 2010
+	/*
 	void InitItemMemDC(CMemDC *dc, LPDRAWITEMSTRUCT lpDrawItemStruct, BOOL &bCtrlFocused);
+	*/
+	void InitItemMemDC(CMemoryDC *dc, LPDRAWITEMSTRUCT lpDrawItemStruct, BOOL &bCtrlFocused);
+	//MORPH END   - Changed by Stulle - Compiling with Visual Studio 2010
 #else
+	//MORPH START - Changed by Stulle - Compiling with Visual Studio 2010
+	/*
 	void InitItemMemDC(CMemDC *dc, LPDRAWITEMSTRUCT lpDrawItemStruct, BOOL &bCtrlFocused,int nList = -1);
+	*/
+	void InitItemMemDC(CMemoryDC *dc, LPDRAWITEMSTRUCT lpDrawItemStruct, BOOL &bCtrlFocused,int nList = -1);
+	//MORPH END   - Changed by Stulle - Compiling with Visual Studio 2010
 #endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 

@@ -69,7 +69,12 @@ void CSpeedGraph::OnPaint()
 	if(brushInitalized == FALSE)
 	{
 		CBitmap bmp;
+		//MORPH START - Changed by Stulle - Compiling with Visual Studio 2010
+		/*
 		CMemDC *memDC = new CMemDC(pDC);
+		*/
+		CMemoryDC *memDC = new CMemoryDC(pDC);
+		//MORPH END   - Changed by Stulle - Compiling with Visual Studio 2010
 		
 		RECT clipRect;
 		memDC->GetClipBox(&clipRect);
@@ -105,7 +110,12 @@ void CSpeedGraph::OnPaint()
 		COLORREF backcolor = GetSysColor(COLOR_BTNFACE);
 		
 		CBrush brush;
+		//MORPH START - Changed by Stulle - Compiling with Visual Studio 2010
+		/*
 		CMemDC *memDC = new CMemDC(pDC);
+		*/
+		CMemoryDC *memDC = new CMemoryDC(pDC);
+		//MORPH END   - Changed by Stulle - Compiling with Visual Studio 2010
 		
 		RECT clipRect;
 		memDC->GetClipBox(&clipRect);

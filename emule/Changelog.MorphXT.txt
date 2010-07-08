@@ -1,23 +1,42 @@
 --------------------------------------
-Changelog for eMule 0.50a MorphXT v12.3
+Changelog for eMule 0.50a MorphXT v12.4
 --------------------------------------
 XX-XX-2010
 
+ADD: Visual Studio 2010 project files and solution [Stulle]
+CHANGE: update cryptolib Version 5.6.0 (3/15/2009) [Stulle]
+CHANGE: update pugxml.h (http://www.codeproject.com/KB/cpp/JCraneArticle.aspx) [JCrane2/tychen]
+CHANGE: update zlib 1.2.5 [Stulle]
+CHANGE: update libpng 1.4.3 [Stulle]
+CHANGE: Rename CMemDC to CMemoryDC [Avi-3k]
+CHANGE: Some other minor changes to compile on VS 2010
+
+
+--------------------------------------
+Changelog for eMule 0.50a MorphXT v12.3
+--------------------------------------
+14-06-2010
+
 ADD: Option to enable background color FakeAlyzer indication for searches [Stulle]
 ADD: Some more countries to country flags feature [tomchen1989]
+ADD: Copy files from bin package config to used config dir [Stulle]
+ADD: Turkish translation for installer [omeringen]
+ADD: "No to all" option for backup nagging dialog in Backup window [Stulle]
 CHANGE: Made sorting for client status (QR,...) more like official [Stulle]
 CHANGE: Made SafeHash ready for new AICH based file identifier (like official) [Stulle]
 CHANGE: Don't assign downloads via watch clipboard feature using view filters [Stulle]
 	+ This caused own selection to be ignored!
 CHANGE: Don't block HTTP sources via DeadSourceList [Avi-3k]
+CHANGE: Increase space for strings in Morph Update windows [Stulle]
 FIX: Rehashing of file on receiving unusable AICH hashset reply [Stulle]
 FIX: Possible icon size related error when loading flag icons [WiZaRd]
 FIX: A4AF swapping aborted download and caused sources to not be reasked within 20 minutes [Stulle]
 FIX: Wrong file name mentioned in Startup sound error logging [Stulle]
+FIX: libpng warnings when compiling [moloko+]
+REMOVED: Some code around the sorting by score in QueueListCtrl [Stulle]
 
 Note: Following languages updated: German [Stulle]; French [jamjam]; Chinese (P.R.C.) [zz_fly]; 
-	Chinese (Taiwan) [AndCycle]; Italian [xilolee]; Turkish [omeringen];
-	Portuguese (Brazil) [Heiler]; Spanish [Rajil]
+	Chinese (Taiwan) [AndCycle]; Italian [xilolee]; Turkish [omeringen]; Spanish [Rajil]
 
 
 --------------------------------------
@@ -73,7 +92,7 @@ Changelog for eMule 0.50a MorphXT v12.0
 26-04-2010
 
 Merged to 0.50a [Stulle]
-CHANGE: update libping to 1.41 [Stulle]
+CHANGE: update libpng to 1.4.1 [Stulle]
 ADD: Visual Studio 2008 project files and solution [Stulle]
 ADD: ATL Server code for VS2008 compilation [Stulle]
 ADD: Settings removed from official eMule to Advanced Preferences [Officials/Stulle]
