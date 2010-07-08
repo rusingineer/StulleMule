@@ -1044,7 +1044,6 @@ del $(IntDir)emule.obj
     <ClInclude Include="Packets.h" />
     <ClInclude Include="PartFile.h" />
     <ClInclude Include="PartFileConvert.h" />
-    <ClInclude Include="PeerCacheClient.h" />
     <ClInclude Include="PeerCacheFinder.h" />
     <ClInclude Include="PeerCacheSocket.h" />
     <ClInclude Include="PerfLog.h" />
@@ -1062,7 +1061,6 @@ del $(IntDir)emule.obj
     <ClInclude Include="SafeFile.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="SearchFile.h" />
-    <ClInclude Include="SearchFrm.h" />
     <ClInclude Include="SearchList.h" />
     <ClInclude Include="SecRunAsUser.h" />
     <ClInclude Include="SendMail.h" />
@@ -1301,7 +1299,11 @@ del $(IntDir)emule.obj
   <ItemGroup>
     <ProjectReference Include="..\cryptopp\cryptlib100.vcxproj">
       <Project>{3423ec9a-52e4-4a4d-9753-edebc38785ef}</Project>
+      <Private>true</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\id3lib\id3lib100.vcxproj">
       <Project>{119fb498-e3ac-49a5-a310-20e8b466b413}</Project>
