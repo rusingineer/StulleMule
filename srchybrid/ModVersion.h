@@ -32,5 +32,5 @@
 // ==> Morph-Version-Check Changes for StulleMule - Stulle
 #define MOD_MORPH_VERSION_MJR		12
 #define MOD_MORPH_VERSION_MIN		4
-#define MOD_MORPH_VERSION_BUILD		1
+#define MOD_MORPH_VERSION_BUILD		2
 // <== Morph-Version-Check Changes for StulleMule - Stulle
