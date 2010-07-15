@@ -4822,6 +4822,12 @@ BOOL CPartFile::PerformFileComplete()
 		SetStatus(PS_ERROR);
 		m_bCompletionError = true;
 		SetFileOp(PFOP_NONE);
+
+		//MORPH START - Added by WiZaRd, FiX!
+		// explicitly unlock the file before posting something to the main thread.
+		sLock.Unlock();
+		//MORPH END   - Added by WiZaRd, FiX!
+
 		if (theApp.emuledlg && theApp.emuledlg->IsRunning())
 			VERIFY( PostMessage(theApp.emuledlg->m_hWnd, TM_FILECOMPLETED, FILE_COMPLETION_THREAD_FAILED, (LPARAM)this) );
 		return FALSE;
@@ -6354,10 +6360,13 @@ void CPartFile::FlushBuffer(bool forcewait, bool bForceICH, bool /*bNoAICH*/)
 	try
 	{
 		//MORPH START - Flush Thread
+		//WiZaRd: no need to double-parse... also, we are probably not supposed to call ParseICHResult if forcewait is false
+		/*
 		// SLUGFILLER: SafeHash
 		CSingleLock sLock(&ICH_mut,true);	// ICH locks the file - otherwise it may be written to while being checked
 		ParseICHResult();	// Check result from ICH
 		// SLUGFILLER: SafeHash
+		*/
 
 		//Creating the Thread to flush to disk
 		m_FlushSetting = new FlushDone_Struct;
