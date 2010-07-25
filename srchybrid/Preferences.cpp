@@ -835,6 +835,8 @@ bool CPreferences::m_bStaticIcon; //MORPH - Added, Static Tray Icon
 
 bool CPreferences::m_bFakeAlyzerIndications; //MORPH - Added by Stulle, Fakealyzer [netfinity]
 
+CString CPreferences::m_strBrokenURLs; //MORPH - Added by WiZaRd, Fix broken HTTP downloads
+
 // ==> [MoNKi: -USS initial TTL-] - Stulle
 uint8	CPreferences::m_iUSSinitialTTL;
 // <== [MoNKi: -USS initial TTL-] - Stulle
@@ -3077,6 +3079,7 @@ void CPreferences::SavePreferences()
 	//MORPH END leuk_he:run as ntservice v1..
 	ini.WriteBool(L"StaticIcon",m_bStaticIcon); //MORPH - Added, Static Tray Icon
 	ini.WriteBool(L"FakeAlyzerIndications",m_bFakeAlyzerIndications); //MORPH - Added by Stulle, Fakealyzer [netfinity]
+	ini.WriteString(L"BrokenURLs", m_strBrokenURLs); //MORPH - Added by WiZaRd, Fix broken HTTP downloads
 	// ==> [MoNKi: -USS initial TTL-] - Stulle
 	ini.WriteInt(L"USSInitialTTL", m_iUSSinitialTTL, L"StulleMule");
 	// <== [MoNKi: -USS initial TTL-] - Stulle
@@ -4366,6 +4369,7 @@ void CPreferences::LoadPreferences()
 	//MORPH END leuk_he:run as ntservice v1..
 	m_bStaticIcon = ini.GetBool(L"StaticIcon",false); //MORPH - Added, Static Tray Icon
 	m_bFakeAlyzerIndications = ini.GetBool(L"FakeAlyzerIndications",false); //MORPH - Added by Stulle, Fakealyzer [netfinity]
+	m_strBrokenURLs = ini.GetStringLong(L"BrokenURLs", L"sourceforge"); //MORPH - Added by WiZaRd, Fix broken HTTP downloads
 
 	// ==> [MoNKi: -USS initial TTL-] - Stulle
 	m_iUSSinitialTTL = (uint8)ini.GetInt(L"USSInitialTTL", 1,L"StulleMule");

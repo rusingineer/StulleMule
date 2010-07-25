@@ -1991,7 +1991,12 @@ void CDownloadListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 			int iFilesToCancel = 0;
 			int iFilesCanPauseOnPreview = 0;
 			int iFilesDoPauseOnPreview = 0;
+			//MORPH START - Changed By SiRoB, Khaos Category
+			/*
 			int iFilesInCats = 0;
+			*/
+			int iFilesInCats = -2;
+			//MORPH END   - Changed By SiRoB, Khaos Category
 			int iFileForceA4AF = 0; //MORPH - Added by SiRoB, A4AF
 			int iFileForceAllA4AF = 0; //MORPH - Added by SiRoB, A4AF
 			int iFileForceA4AFOff = 0; //MORPH - Added by SiRoB, A4AF
@@ -2034,7 +2039,15 @@ void CDownloadListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 				iFilesToPreview += pFile->IsReadyForPreview() ? 1 : 0;
 				iFilesCanPauseOnPreview += (pFile->IsPreviewableFileType() && !pFile->IsReadyForPreview() && pFile->CanPauseFile()) ? 1 : 0;
 				iFilesDoPauseOnPreview += (pFile->IsPausingOnPreview()) ? 1 : 0;
+				//MORPH START - Changed By SiRoB, Khaos Category
+				/*
 				iFilesInCats += (!pFile->HasDefaultCategory()) ? 1 : 0; 
+				*/
+				if (bFirstItem)
+					iFilesInCats = pFile->GetCategory();
+				else if (iFilesInCats != pFile->GetCategory())
+					iFilesInCats = -2;
+				//MORPH END   - Changed By SiRoB, Khaos Category
 				//MORPH START - Added by SiRoB, Only download complete files v2.1 (shadow)
 				iFileNotSeenCompleteSource += pFile->notSeenCompleteSource() && pFile->GetStatus() != PS_ERROR && !bFileDone;
 				//MORPH END   - Added by SiRoB, Only download complete files v2.1 (shadow)
@@ -2548,7 +2561,11 @@ void CDownloadListCtrl::FillCatsMenu(CTitleMenu& rCatsMenu, int iFilesInCats)
 	ASSERT(rCatsMenu.m_hMenu);
 	if (iFilesInCats == (-1))
 	{
+		//MORPH START - Changed By SiRoB, Khaos Category
+		/*
 		iFilesInCats = 0;
+		*/
+		//MORPH END   - Changed By SiRoB, Khaos Category
 		int iSel = GetNextItem(-1, LVIS_SELECTED);
 		if (iSel != -1)
 		{
@@ -2562,7 +2579,15 @@ void CDownloadListCtrl::FillCatsMenu(CTitleMenu& rCatsMenu, int iFilesInCats)
 					if (pItemData == NULL || pItemData->type != FILE_TYPE)
 						continue;
 					const CPartFile* pFile = (CPartFile*)pItemData->value;
+					//MORPH START - Changed By SiRoB, Khaos Category
+					/*
 					iFilesInCats += (!pFile->HasDefaultCategory()) ? 1 : 0; 
+					*/
+					if (iFilesInCats == -1)
+						iFilesInCats = pFile->GetCategory();
+					else if (iFilesInCats != pFile->GetCategory())
+						iFilesInCats = -2;
+					//MORPH END   - Changed By SiRoB, Khaos Category
 				}
 			}
 		}
@@ -2594,7 +2619,12 @@ void CDownloadListCtrl::FillCatsMenu(CTitleMenu& rCatsMenu, int iFilesInCats)
 		//MORPH END   - Changed By SiRoB, Khaos Category
 			label = thePrefs.GetCategory(i)->strTitle;
 			label.Replace(_T("&"), _T("&&") );
+			//MORPH START - Changed By SiRoB, Khaos Category
+			/*
 			rCatsMenu.AppendMenu(MF_STRING, MP_ASSIGNCAT + i, label);
+			*/
+			rCatsMenu.AppendMenu(MF_STRING | (iFilesInCats==i)?MF_CHECKED:MF_UNCHECKED, MP_ASSIGNCAT + i, label);
+			//MORPH END   - Changed By SiRoB, Khaos Category
 		}
 	}
 }

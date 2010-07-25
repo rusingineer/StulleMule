@@ -1,15 +1,27 @@
 --------------------------------------
 Changelog for eMule 0.50a MorphXT v12.4
 --------------------------------------
-XX-XX-2010
+26-07-2010
 
 ADD: Visual Studio 2010 project files and solution [Stulle]
+ADD: Display check mark next to currently assigned category [Stulle]
 CHANGE: update cryptolib Version 5.6.0 (3/15/2009) [Stulle]
 CHANGE: update pugxml.h (http://www.codeproject.com/KB/cpp/JCraneArticle.aspx) [JCrane2/tychen]
 CHANGE: update zlib 1.2.5 [Stulle]
 CHANGE: update libpng 1.4.3 [Stulle]
 CHANGE: Rename CMemDC to CMemoryDC [Avi-3k]
 CHANGE: Some other minor changes to compile on VS 2010
+CHANGE: Rewrote the passing of params for drawing country flags to work in VS10 [Stulle]
+	+ bug in VS10 MFC; fixed code not only for VS10, used in all solutions
+CHANGE: Also sort aMule for mods (if availablel) [Stulle]
+CHANGE: Added additional wait time and security checks for flush threads on exit [WiZaRd]
+	+ possible crashfix
+FIX: Sorting of client status (QR,...) to make sense at last [Stulle]
+FIX: Crash on shutdown in ipfilter [Xman]
+FIX: Force periodic updates was reset to previous state on applying [Stulle/thx Hiwi]
+FIX: Download from http sources (e.g. sourceforge) broken because of sending user-agent [WiZaRd]
+	+ Added option to maintain list of URLs that should not receive user-agents
+REMOVED: Display of session download in ChunkBar in DownloadClientsCtrl [Stulle]
 
 
 --------------------------------------

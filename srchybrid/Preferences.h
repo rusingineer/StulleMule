@@ -1139,6 +1139,8 @@ public:
 
 	static bool		m_bFakeAlyzerIndications; //MORPH - Added by Stulle, Fakealyzer [netfinity]
 
+	static	CString	m_strBrokenURLs; //MORPH - Added by WiZaRd, Fix broken HTTP downloads
+
 	// ==> push small files [sivka] - Stulle
     static  bool	enablePushSmallFile;
     static	uint32	m_iPushSmallFiles;
@@ -2620,6 +2622,11 @@ public:
 	// <== [MoNKi: -USS initial TTL-] - Stulle
 
 	static bool		GetFakeAlyzerIndications()		{ return m_bFakeAlyzerIndications; } //MORPH - Added by Stulle, Fakealyzer [netfinity]
+
+	//MORPH START - Added by WiZaRd, Fix broken HTTP downloads
+	static	CString	GetBrokenURLs()						{return m_strBrokenURLs;}
+	static	void	SetBrokenURLs(const CString& str)	{m_strBrokenURLs = str;}
+	//MORPH END   - Added by WiZaRd, Fix broken HTTP downloads
 
 	// ==> push small files [sivka] - Stulle
 	static bool		GetEnablePushSmallFile()	{return enablePushSmallFile;}
