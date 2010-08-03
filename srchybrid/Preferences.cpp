@@ -5484,7 +5484,7 @@ CString CPreferences::GetDefaultDirectory(EDefaultDirectory eDirectory, bool bCr
 		m_astrDefaultDirs[EMULE_TOOLBARDIR] = strSelectedExpansionBaseDirectory + _T("skins");
 		m_astrDefaultDirs[EMULE_EXPANSIONDIR] = strSelectedExpansionBaseDirectory; // has ending backslashes
 		m_astrDefaultDirs[EMULE_WAPSERVERDIR] = m_astrDefaultDirs[EMULE_EXECUTEABLEDIR] + _T("wapserver\\");
-		m_astrDefaultDirs[EMULE_FEEDSDIR] = m_astrDefaultDirs[EMULE_EXECUTEABLEDIR] + _T("feeds\\");
+		m_astrDefaultDirs[EMULE_FEEDSDIR] = strSelectedConfigBaseDirectory + _T("feeds\\");
 
 		/*CString strDebug;
 		for (int i = 0; i < 12; i++)
@@ -5519,6 +5519,8 @@ CString CPreferences::GetDefaultDirectory(EDefaultDirectory eDirectory, bool bCr
 		CopyFile(strProgDirConfigPath + _T("eMule Light.tmpl"), m_astrDefaultDirs[EMULE_CONFIGDIR] + _T("eMule Light.tmpl"),TRUE);
 		CopyFile(strProgDirConfigPath + _T("eMule.tmpl"), m_astrDefaultDirs[EMULE_CONFIGDIR] + _T("eMule.tmpl"),TRUE);
 		CopyFile(strProgDirConfigPath + _T("Multiuser eMule.tmpl"), m_astrDefaultDirs[EMULE_CONFIGDIR] + _T("Multiuser eMule.tmpl"),TRUE);
+		CopyFile(strProgDirConfigPath + _T("nodes.dat"), m_astrDefaultDirs[EMULE_CONFIGDIR] + _T("nodes.dat"),TRUE);
+		CopyFile(strProgDirConfigPath + _T("server.met"), m_astrDefaultDirs[EMULE_CONFIGDIR] + _T("server.met"),TRUE);
 		CopyFile(strProgDirConfigPath + _T("startup.wav"), m_astrDefaultDirs[EMULE_CONFIGDIR] + _T("startup.wav"),TRUE);
 		CopyFile(strProgDirConfigPath + _T("webservices.dat"), m_astrDefaultDirs[EMULE_CONFIGDIR] + _T("webservices.dat"),TRUE);
 		CopyFile(strProgDirConfigPath + _T("XMLNews.dat"), m_astrDefaultDirs[EMULE_CONFIGDIR] + _T("XMLNews.dat"),TRUE);
