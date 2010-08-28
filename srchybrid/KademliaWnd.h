@@ -78,7 +78,6 @@ protected:
 	// ==> Design Settings [eWombat/Stulle] - Stulle
 #ifdef DESIGN_SETTINGS
 	CBrush m_brMyBrush;
-	HBRUSH hbr;	
 	COLORREF crKadColor;
 public:
 	void OnBackcolor(); 

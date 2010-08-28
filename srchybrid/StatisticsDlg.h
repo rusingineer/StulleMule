@@ -163,7 +163,6 @@ protected:
 #ifdef DESIGN_SETTINGS
 protected:
 	CBrush m_brMyBrush;
-	HBRUSH hbr;	
 	COLORREF crStatsColor;
 public:
 	void OnBackcolor(); 

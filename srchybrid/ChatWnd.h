@@ -93,7 +93,6 @@ protected:
 #ifdef DESIGN_SETTINGS
 protected:
 	CBrush m_brMyBrush;
-	HBRUSH hbr;	
 	COLORREF clrChatColor;
 public:
 	void OnBackcolor(); 

@@ -40,4 +40,11 @@ protected:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnMeasureItem(int, LPMEASUREITEMSTRUCT);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT);
+
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+public:
+	COLORREF m_clrBack;
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 };

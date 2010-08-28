@@ -113,7 +113,6 @@ protected:
 		void OnBackcolor();
 	protected:
 		CBrush m_brMyBrush;
-		HBRUSH hbr;
 #endif
 		// <== Design Settings [eWombat/Stulle] - Stulle
 };

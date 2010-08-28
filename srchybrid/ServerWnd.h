@@ -166,7 +166,6 @@ protected:
 	// ==> Design Settings [eWombat/Stulle] - Stulle
 #ifdef DESIGN_SETTINGS
 	CBrush m_brMyBrush;
-	HBRUSH hbr;
 	COLORREF clrSrvColor;
 public:
 	void OnBackcolor();
