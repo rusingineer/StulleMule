@@ -21,6 +21,11 @@
 #include "MenuCmds.h"
 #include "UserMsgs.h"
 #include "VisualStylesXP.h"
+//MORPH START - Changed by Stulle, Visual Studio 2010 Compatibility
+#if _MSC_VER>=1600
+#include "Preferences.h"
+#endif
+//MORPH END   - Changed by Stulle, Visual Studio 2010 Compatibility
 #include "MenuXP.h" // XP Style Menu [Xanatos] - Stulle
 
 #ifdef _DEBUG
@@ -570,7 +575,7 @@ BOOL CClosableTabCtrl::OnEraseBkgnd(CDC* pDC)
 	// ==> Design Settings [eWombat/Stulle] - Stulle
 #ifndef DESIGN_SETTINGS
 	return CTabCtrl::OnEraseBkgnd(pDC);
-#else
+#else //DESIGN_SETTINGS
 	// Set brush to desired background color
 	CBrush backBrush((m_clrBack != CLR_DEFAULT)?m_clrBack:GetSysColor(COLOR_BTNFACE));
 
@@ -587,9 +592,14 @@ BOOL CClosableTabCtrl::OnEraseBkgnd(CDC* pDC)
 #endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 #else
-	// So it seems this finaly got broken on VS2010 for XP... so when we erase background now we just set it ourself now...
 	// ==> Design Settings [eWombat/Stulle] - Stulle
-#ifdef DESIGN_SETTINGS
+#ifndef DESIGN_SETTINGS
+	if(thePrefs.GetWindowsVersion() >= _WINVER_VISTA_)
+		return CTabCtrl::OnEraseBkgnd(pDC);
+#else //DESIGN_SETTINGS
+	if(thePrefs.GetWindowsVersion() >= _WINVER_VISTA_ && m_clrBack == CLR_DEFAULT)
+		return CTabCtrl::OnEraseBkgnd(pDC);
+
 	// Set brush to desired background color
 	CBrush backBrush((m_clrBack != CLR_DEFAULT)?m_clrBack:GetSysColor(COLOR_BTNFACE));
 
@@ -598,6 +608,7 @@ BOOL CClosableTabCtrl::OnEraseBkgnd(CDC* pDC)
 #endif
 	// <== Design Settings [eWombat/Stulle] - Stulle
 
+	// So it seems this finally got broken on VS2010 for XP... so when we erase background now we just set it ourself now...
 	CRect rect;
 	pDC->GetClipBox(&rect);     // Erase the area needed
 
