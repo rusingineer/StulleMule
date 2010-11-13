@@ -89,8 +89,12 @@ BOOL CFileDetailDialogInfo::OnInitDialog()
 	AddAnchor(IDC_HASHSET, TOP_LEFT, TOP_RIGHT);
 
 	AddAnchor(IDC_SOURCECOUNT, TOP_LEFT, TOP_RIGHT);
+	// ==> Average download speed - Stulle
+	/*
 	AddAnchor(IDC_DATARATE, TOP_LEFT, TOP_RIGHT);
-	AddAnchor(IDC_AVGDL, TOP_LEFT, TOP_RIGHT); // Average download speed - Stulle
+	*/
+	//AddAnchor(IDC_AVGDL, TOP_LEFT, TOP_RIGHT);
+	// <== Average download speed - Stulle
 
 	AddAnchor(IDC_FILECREATED, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(IDC_DL_ACTIVE_TIME, TOP_LEFT, TOP_RIGHT);
