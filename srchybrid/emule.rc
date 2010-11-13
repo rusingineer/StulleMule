@@ -7037,6 +7037,14 @@ BEGIN
     IDS_SIVKAFILESETTINGS   "Sivka - File(s) Settings"
     IDS_HARDLIMIT_LABEL     "Hard Limit (0=use default)"
     IDS_DROP_DEFAULTS       "Drop default settings"
+    IDS_DROPMENU_TITLE      "DROP"
+    IDS_DROPMENU_L2L        "Drop LowIP to LowIP Sources"
+    IDS_DROPMENU_UNK_ERR_BAN "Drop Unknown, Error and Banned Sources"
+    IDS_DROPMENU_NNS        "Drop Not Needed Sources"
+    IDS_DROPMENU_FQS        "Drop Full Queue Sources"
+    IDS_DROPMENU_HQRS       "Drop High Queue Rating Sources"
+    IDS_DROPMENU_ALL        "CleanUp => NNS, FQS, HQRS, UNK, ERR, BAN & L2L"
+    IDS_DROPMENU_LEECHER    "Drop Leecher Sources"
 // <== drop sources - Stulle
     IDS_SHOW_GLOBAL_HL      "Show Global Hardlimit" // show global HL - Stulle
     IDS_SHOW_DROPPED_SRC    "Dropped sources" // show # of dropped sources - Stulle

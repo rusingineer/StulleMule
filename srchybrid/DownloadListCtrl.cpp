@@ -4333,18 +4333,18 @@ void CDownloadListCtrl::CreateMenues()
 
 		// ==> drop sources - Stulle
 		m_DropMenu.CreateMenu();
-		m_DropMenu.AddMenuTitle(_T("DROP"), true, false); // XP Style Menu [Xanatos] - Stulle
-		m_DropMenu.AppendMenu(MF_STRING, MP_DROPLOWTOLOWIPSRCS,_T("Drop LowIP to LowIP Sources"));
-		m_DropMenu.AppendMenu(MF_STRING, MP_DROPUNKNOWNERRORBANNEDSRCS,_T("Drop Unknown, Error and Banned Sources"));
-		m_DropMenu.AppendMenu(MF_STRING, MP_DROPNONEEDEDSRCS,_T("Drop Not Needed Sources"));
-		m_DropMenu.AppendMenu(MF_STRING, MP_DROPFULLQSRCS,_T("Drop Full Queue Sources"));
-		m_DropMenu.AppendMenu(MF_STRING, MP_DROPHIGHQRSRCS,_T("Drop High Queue Rating Sources"));
-		m_DropMenu.AppendMenu(MF_STRING, MP_CLEANUP_NNS_FQS_HQRS_NONE_ERROR_BANNED_LOWTOLOWIP,_T("CleanUp => NNS, FQS, HQRS, UNK, ERR, BAN & L2L"));
-		m_DropMenu.AppendMenu(MF_STRING, MP_DROPLEECHER,_T("Drop Leecher Sources"));
+		m_DropMenu.AddMenuTitle(GetResString(IDS_DROPMENU_TITLE), true, false); // XP Style Menu [Xanatos] - Stulle
+		m_DropMenu.AppendMenu(MF_STRING, MP_DROPLOWTOLOWIPSRCS,GetResString(IDS_DROPMENU_L2L));
+		m_DropMenu.AppendMenu(MF_STRING, MP_DROPUNKNOWNERRORBANNEDSRCS,GetResString(IDS_DROPMENU_UNK_ERR_BAN));
+		m_DropMenu.AppendMenu(MF_STRING, MP_DROPNONEEDEDSRCS,GetResString(IDS_DROPMENU_NNS));
+		m_DropMenu.AppendMenu(MF_STRING, MP_DROPFULLQSRCS,GetResString(IDS_DROPMENU_FQS));
+		m_DropMenu.AppendMenu(MF_STRING, MP_DROPHIGHQRSRCS,GetResString(IDS_DROPMENU_HQRS));
+		m_DropMenu.AppendMenu(MF_STRING, MP_CLEANUP_NNS_FQS_HQRS_NONE_ERROR_BANNED_LOWTOLOWIP,GetResString(IDS_DROPMENU_ALL));
+		m_DropMenu.AppendMenu(MF_STRING, MP_DROPLEECHER,GetResString(IDS_DROPMENU_LEECHER));
 
 		m_FileMenu.AppendMenu(MF_SEPARATOR);
 		m_FileMenu.AppendMenu(MF_STRING, MP_SIVKA_FILE_SETTINGS,GetResString(IDS_SIVKAFILESETTINGS),_T("DROPDEFAULTS"));
-		m_FileMenu.AppendMenu(MF_STRING|MF_POPUP,(UINT_PTR)m_DropMenu.m_hMenu, _T("DROP"),_T("FUNNYNICK"));
+		m_FileMenu.AppendMenu(MF_STRING|MF_POPUP,(UINT_PTR)m_DropMenu.m_hMenu, GetResString(IDS_DROPMENU_TITLE),_T("FUNNYNICK"));
 		// <== drop sources - Stulle
 	}
 	m_FileMenu.AppendMenu(MF_SEPARATOR);

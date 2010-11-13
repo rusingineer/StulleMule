@@ -4057,8 +4057,16 @@
 #define IDS_DROP_DEFAULTS               60206
 #define IDC_GLOBAL_HL                   60207 // Global Source Limit (customize for files) - Stulle
 #define IDC_GLOBAL_HL_TAKEOVER          60208 // Global Source Limit (customize for files) - Stulle
+#define IDS_DROPMENU_TITLE              60209
+#define IDS_DROPMENU_L2L                60210
+#define IDS_DROPMENU_UNK_ERR_BAN        60211
+#define IDS_DROPMENU_NNS                60212
+#define IDS_DROPMENU_FQS                60213
+#define IDS_DROPMENU_HQRS               60214
+#define IDS_DROPMENU_ALL                60215
+#define IDS_DROPMENU_LEECHER            60216
 // <== drop sources - Stulle
-#define IDS_SHOW_GLOBAL_HL              60210 // show global HL - Stulle
+#define IDS_SHOW_GLOBAL_HL              60220 // show global HL - Stulle
 #define IDS_SHOW_DROPPED_SRC            60230 // show # of dropped sources - Stulle
 // ==> TBH: minimule - Stulle
 #define IDD_MINI_MULE                   60260

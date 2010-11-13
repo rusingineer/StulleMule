@@ -245,7 +245,7 @@ void CSivkaFileSettings::Localize(void)
 		GetDlgItem(IDC_HQRS_TIMERLABEL)->SetWindowText(GetResString(IDS_HQRS_TIMERLABEL));
 		GetDlgItem(IDC_REMOVEQRSLABEL)->SetWindowText(GetResString(IDS_REMOVEQRSLABEL));
 		GetDlgItem(IDC_REMOVEQRSLIMITLABEL)->SetWindowText(GetResString(IDS_REMOVEQRSLIMITLABEL));
-		GetDlgItem(IDC_TAKEOVER)->SetWindowText(GetResString(IDS_TAKEOVER));
+		GetDlgItem(IDC_TAKEOVER)->SetWindowText(GetResString(IDS_PW_APPLY));
 		GetDlgItem(IDC_DEFAULT_BUTTON)->SetWindowText(GetResString(IDS_DEFAULT));
 		GetDlgItem(IDOK)->SetWindowText(GetResString(IDS_FD_CLOSE));
 	}
