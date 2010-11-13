@@ -596,17 +596,20 @@ BOOL CClosableTabCtrl::OnEraseBkgnd(CDC* pDC)
 #ifndef DESIGN_SETTINGS
 	if(thePrefs.GetWindowsVersion() >= _WINVER_VISTA_)
 		return CTabCtrl::OnEraseBkgnd(pDC);
+
+	// Set brush to desired background color
+	CBrush backBrush(GetSysColor(COLOR_BTNFACE));
 #else //DESIGN_SETTINGS
 	if(thePrefs.GetWindowsVersion() >= _WINVER_VISTA_ && m_clrBack == CLR_DEFAULT)
 		return CTabCtrl::OnEraseBkgnd(pDC);
 
 	// Set brush to desired background color
 	CBrush backBrush((m_clrBack != CLR_DEFAULT)?m_clrBack:GetSysColor(COLOR_BTNFACE));
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 
 	// Save old brush
 	CBrush* pOldBrush = pDC->SelectObject(&backBrush);
-#endif
-	// <== Design Settings [eWombat/Stulle] - Stulle
 
 	// So it seems this finally got broken on VS2010 for XP... so when we erase background now we just set it ourself now...
 	CRect rect;
@@ -614,11 +617,7 @@ BOOL CClosableTabCtrl::OnEraseBkgnd(CDC* pDC)
 
 	pDC->PatBlt(rect.left, rect.top, rect.Width(), rect.Height(),
         PATCOPY);
-	// ==> Design Settings [eWombat/Stulle] - Stulle
-#ifdef DESIGN_SETTINGS
 	pDC->SelectObject(pOldBrush);
-#endif
-	// <== Design Settings [eWombat/Stulle] - Stulle
 	return TRUE;
 #endif
 	//MORPH END   - Changed by Stulle, Visual Studio 2010 Compatibility
