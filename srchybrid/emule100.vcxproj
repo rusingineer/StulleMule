@@ -271,6 +271,7 @@ del $(IntDir)emule.obj
     <ClCompile Include="AsyncSocketExLayer.cpp" />
     <ClCompile Include="BaseClient.cpp" />
     <ClCompile Include="BmiDlg.cpp" />
+    <ClCompile Include="ButtonVE.cpp" />
     <ClCompile Include="CaptchaGenerator.cpp" />
     <ClCompile Include="CBase64Coding.cpp" />
     <ClCompile Include="ClientCredits.cpp" />
@@ -975,6 +976,8 @@ del $(IntDir)emule.obj
     <ClInclude Include="AsyncSocketEx.h" />
     <ClInclude Include="AsyncSocketExLayer.h" />
     <ClInclude Include="BmiDlg.h" />
+    <ClInclude Include="ButtonVE.h" />
+    <ClInclude Include="ButtonVE_Helper.h" />
     <ClInclude Include="CaptchaGenerator.h" />
     <ClInclude Include="CBase64Coding.hpp" />
     <ClInclude Include="ClientCredits.h" />

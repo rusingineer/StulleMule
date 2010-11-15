@@ -960,6 +960,9 @@
     <ClCompile Include="MiniMule\tbhmm.cpp">
       <Filter>Minimule</Filter>
     </ClCompile>
+    <ClCompile Include="ButtonVE.cpp">
+      <Filter>Interface Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="MD4_asm.asm">
@@ -2951,6 +2954,12 @@
     </ClInclude>
     <ClInclude Include="MiniMule\TKTypes.h">
       <Filter>Minimule</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonVE.h">
+      <Filter>Interface Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonVE_Helper.h">
+      <Filter>Interface Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
