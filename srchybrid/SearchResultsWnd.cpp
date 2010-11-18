@@ -2122,10 +2122,29 @@ void CSearchResultsWnd::OnBackcolor()
 
 	m_brMyBrush.DeleteObject();
 
+	//MORPH START - Changed by Stulle, Visual Studio 2010 Compatibility
+#if _MSC_VER<1600
 	if(crTempColor != CLR_DEFAULT)
 		m_brMyBrush.CreateSolidBrush(crTempColor);
 	else
 		m_brMyBrush.CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
+#else
+	if(crTempColor != CLR_DEFAULT)
+	{
+		m_brMyBrush.CreateSolidBrush(crTempColor);
+		m_ctlOpenParamsWnd.SetBackgroundColor(crTempColor);
+		m_Download.SetBackgroundColor(crTempColor);
+		m_ClearAll.SetBackgroundColor(crTempColor);
+	}
+	else
+	{
+		m_brMyBrush.CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
+		m_ctlOpenParamsWnd.SetBackgroundColor(COLORREF(-1));
+		m_Download.SetBackgroundColor(COLORREF(-1));
+		m_ClearAll.SetBackgroundColor(COLORREF(-1));
+	}
+#endif
+	//MORPH END   - Changed by Stulle, Visual Studio 2010 Compatibility
 	searchselect.m_clrBack = crTempColor;
 }
 

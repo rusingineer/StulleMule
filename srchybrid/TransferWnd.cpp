@@ -3471,10 +3471,25 @@ void CTransferWnd::OnBackcolor()
 		
 	m_brMyBrush.DeleteObject();
 
+	//MORPH START - Changed by Stulle, Visual Studio 2010 Compatibility
+#if _MSC_VER<1600
 	if(crTempColor != CLR_DEFAULT)
 		m_brMyBrush.CreateSolidBrush(crTempColor);
 	else
 		m_brMyBrush.CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
+#else
+	if(crTempColor != CLR_DEFAULT)
+	{
+		m_brMyBrush.CreateSolidBrush(crTempColor);
+		m_Refresh.SetBackgroundColor(crTempColor);
+	}
+	else
+	{
+		m_brMyBrush.CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
+		m_Refresh.SetBackgroundColor(COLORREF(-1));
+	}
+#endif
+	//MORPH END   - Changed by Stulle, Visual Studio 2010 Compatibility
 }
 
 HBRUSH CTransferWnd::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
