@@ -6588,6 +6588,10 @@ void CPartFile::WriteToDisk() { //Called by Flush Thread
 		delete [] item->data;
 		item->data = NULL;
 		m_BufferedData_list_Locker.Lock();
+
+		// Remove item from queue
+		m_BufferedData_list.RemoveHead();
+
 		// Decrease buffer size
 		m_nTotalBufferData -= lenData;
 		uWrotetodisk+=lenData;
