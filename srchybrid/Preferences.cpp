@@ -4401,7 +4401,7 @@ void CPreferences::LoadPreferences()
 	// ==> push small files [sivka] - Stulle
     enablePushSmallFile = ini.GetBool(L"EnablePushSmallFile", false, L"StulleMule");
 	m_uTemp = ini.GetInt(L"PushSmallFiles", 2097152);
-		m_iPushSmallFiles = (m_uTemp > 1024 && m_uTemp <= PARTSIZE) ? m_uTemp : 2097152;
+		m_iPushSmallFiles = (m_uTemp >= 1024 && m_uTemp <= PARTSIZE) ? m_uTemp : 2097152;
 	m_uTemp = ini.GetInt(L"PushSmallBoost", 100);
 		m_iPushSmallBoost = (uint16)((m_uTemp > 0 && m_uTemp <= 65536) ? m_uTemp : 100);
 	// <== push small files [sivka] - Stulle

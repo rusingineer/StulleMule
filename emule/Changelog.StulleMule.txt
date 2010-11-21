@@ -20,6 +20,7 @@ Fixed: Service was not stopped when it should be stopped on starting emule.exe [
 	+ occured when service name was changed
 Fixed: Crashfix for reloading share via ASFU under certain circumstances [WiZaRd]
 Fixed: Improper display in Shared Files List due to PowerShare column [Stulle]
+Fixed: Push Small File settings got reset if 1kB was chosen [Stulle]
 
 
 eMule v0.49c StulleMule v6.2:
