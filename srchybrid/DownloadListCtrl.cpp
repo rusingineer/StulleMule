@@ -4255,7 +4255,12 @@ void CDownloadListCtrl::CreateMenues()
 	if (thePrefs.IsExtControlsEnabled())
 	{
 		m_PreviewMenu.CreateMenu();
+		// ==> XP Style Menu [Xanatos] - Stulle
+		/*
 		m_PreviewMenu.AddMenuTitle(NULL, true);
+		*/
+		m_PreviewMenu.AddMenuTitle(GetResString(IDS_MENU_PREVIEW), true, false);
+		// <== XP Style Menu [Xanatos] - Stulle
 		m_PreviewMenu.AppendMenu(MF_STRING, MP_PREVIEW, GetResString(IDS_DL_PREVIEW), _T("PREVIEW"));
     	//MORPH START - Added icon
     	/*
