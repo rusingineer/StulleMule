@@ -1,4 +1,43 @@
 --------------------------------------
+Changelog for eMule 0.50a MorphXT v12.6
+--------------------------------------
+19-12-2010
+
+CHANGE: Use owner-drawn push buttons in TransferWnd and SearchWnd [ied/Stulle]
+	+ fixes weird borders when compiling with VS10
+	+ http://www.codeproject.com/KB/vista/vistathemebuttons.aspx
+
+FIX: Category tab display on XP for VS10 [Stulle]
+FIX: Search and logs tabs (CClosableTab) display on XP for VS10 [Stulle]
+FIX: (Hopefully) Error causing flushed data to be lost on restart [Stulle]
+FIX: Require Obfuscation for Servers Setting not applied in 1st-time-Wizard [Stulle]
+
+
+--------------------------------------
+Changelog for eMule 0.50a MorphXT v12.5
+--------------------------------------
+23-10-2010
+
+CHANGE: Increased space for displaying number of clients on queue [Stulle]
+CHANGE: Place news feeds dir in config base dir instead of executable dir [Stulle]
+CHANGE: Rewrote drawing code of ServerListCtrl like official in other lists [Stulle]
+	+ fixes some bugs (e.g. auto resize on dbl click) and adds functionality
+FIX: + not showing before "All Directories" in SharedDirsTreeCtrl [Stulle]
+	+ rewrote passing of params for inserting the item for VS10
+FIX: Server icon not drawn in ServerWndCtrl [Stulle]
+FIX: Compilation of zlib and IP2Country on Visual Studio 2003 SP1 [Stulle]
+FIX: Display errors around Category tabs/buttons on Windows XP [Stulle]
+FIX: Display errors around closeable (search result) tabs on Windows XP [Stulle]
+FIX: Possible crash around Equal Chances For Each file in UploadListCtrl [Stulle]
+FIX: PartFileFlushThread was not terminated properly in all cases [WiZaRd]
+FIX: Sorting of score column in DownloadClientsCtrl was partially broken [TimDzang]
+FIX: Collection double extension fix was rendered useless [CB]
+FIX: Possible bug around FlushBuffersExceptionHandler(CFileException* error) [WiZaRd]
+FIX: Connection Wizard did not start after being selected in 1stTimeWizard [Stulle]
+REMOVED: Official ul/dl ratio restrictions (entirely handled by ZZ ratio now) [Stulle]
+
+
+--------------------------------------
 Changelog for eMule 0.50a MorphXT v12.4
 --------------------------------------
 26-07-2010
