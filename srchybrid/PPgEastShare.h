@@ -91,7 +91,12 @@ protected:
 	// EastShare End   - FollowTheMajority by AndCycle
 
 	// EastShare	Start - FairPlay by AndCycle
+	// ==> Integer based FairPlay - Stulle
+	/*
 	bool	m_bFairPlay;
+	*/
+	int		m_iFairPlay;
+	// <== Integer based FairPlay - Stulle
 	HTREEITEM m_htiFairPlay;
 	// EastShare	End   - FairPlay by AndCycle
 

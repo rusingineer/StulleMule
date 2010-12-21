@@ -146,7 +146,13 @@ void CPPgEastShare::DoDataExchange(CDataExchange* pDX)
 		// EastShare End   - FollowTheMajority by AndCycle
 
 		//EastShare	Start - FairPlay by AndCycle
+		// ==> Integer based FairPlay - Stulle
+		/*
 		m_htiFairPlay = m_ctrlTreeOptions.InsertCheckBox(GetResString(IDS_FAIR_PLAY), TVI_ROOT, m_bFairPlay); 
+		*/
+		m_htiFairPlay = m_ctrlTreeOptions.InsertItem(GetResString(IDS_FAIR_PLAY),TREEOPTSCTRLIMG_EDIT, TREEOPTSCTRLIMG_EDIT,m_htiFairPlay);
+		m_ctrlTreeOptions.AddEditBox(m_htiFairPlay, RUNTIME_CLASS(CNumTreeOptionsEdit));
+		// <== Integer based FairPlay - Stulle
 		//EastShare	End   - FairPlay by AndCycle
 
 		//EastShare Start - added by AndCycle, IP to Country
@@ -228,7 +234,13 @@ void CPPgEastShare::DoDataExchange(CDataExchange* pDX)
 	DDX_TreeCheck(pDX, IDC_EASTSHARE_OPTS, m_htiEnableEqualChanceForEachFile, m_bEnableEqualChanceForEachFile);//Morph - added by AndCycle, Equal Chance For Each File
 
 	DDX_TreeCheck(pDX, IDC_EASTSHARE_OPTS, m_htiFollowTheMajority, m_bFollowTheMajority); // EastShare       - FollowTheMajority by AndCycle
+	// ==> Integer based FairPlay - Stulle
+	/*
 	DDX_TreeCheck(pDX, IDC_EASTSHARE_OPTS, m_htiFairPlay, m_bFairPlay); //EastShare	- FairPlay by AndCycle
+	*/
+	DDX_TreeEdit(pDX, IDC_EASTSHARE_OPTS, m_htiFairPlay, m_iFairPlay);
+	DDV_MinMaxInt(pDX, m_iFairPlay, 0, 10);
+	// <== Integer based FairPlay - Stulle
 
 	// EastShare START - Added by TAHO, .met flies Control
 	DDX_TreeRadio(pDX, IDC_EASTSHARE_OPTS, m_htiMetControl, m_iPurgeMode);
@@ -275,7 +287,12 @@ BOOL CPPgEastShare::OnInitDialog()
 	m_iCreditSystem = thePrefs.GetCreditSystem(); //EastShare - Added by linekin , CreditSystem 
 	m_bEnableEqualChanceForEachFile = thePrefs.IsEqualChanceEnable();//Morph - added by AndCycle, Equal Chance For Each File
 	m_bFollowTheMajority = thePrefs.IsFollowTheMajorityEnabled(); // EastShare       - FollowTheMajority by AndCycle
+	// ==> Integer based FairPlay - Stulle
+	/*
 	m_bFairPlay = thePrefs.GetFairPlay() > 0 ; //EastShare	- FairPlay by AndCycle
+	*/
+	m_iFairPlay = thePrefs.GetFairPlay();
+	// <== Integer based FairPlay - Stulle
 
 	//EastShare START - Added by TAHO , .met file control
 	m_iKnownMetDays = thePrefs.GetKnownMetDays();
@@ -357,7 +374,12 @@ BOOL CPPgEastShare::OnApply()
 	//Morph - added by AndCycle, Equal Chance For Each File
 
 	thePrefs.m_bFollowTheMajority = m_bFollowTheMajority; // EastShare       - FollowTheMajority by AndCycle
+	// ==> Integer based FairPlay - Stulle
+	/*
 	thePrefs.m_iFairPlay = m_bFairPlay ? 1 : 0; //EastShare	- FairPlay by AndCycle
+	*/
+	thePrefs.m_iFairPlay = m_iFairPlay;
+	// <== Integer based FairPlay - Stulle
 
 	//EastShare START - Added by TAHO , .met file control
 	switch(m_iPurgeMode)
@@ -429,7 +451,12 @@ void CPPgEastShare::Localize(void)
 		SetTool(m_htiEnableChunkDots,IDS_ENABLE_CHUNKDOTS_TIP);
 		SetTool(m_htiEnableEqualChanceForEachFile,IDS_ECFEF_TIP);
 		SetTool(m_htiFollowTheMajority, IDS_FOLLOW_THE_MAJORITY_TIP); // EastShare       - FollowTheMajority by AndCycle
+		// ==> Integer based FairPlay - Stulle
+		/*
 		SetTool(m_htiFairPlay, IDS_FAIR_PLAY_TIP); //EastShare	- FairPlay by AndCycle
+		*/
+		SetTool(m_htiFairPlay, IDS_FAIR_PLAY_TIP_STULLE);
+		// <== Integer based FairPlay - Stulle
 		SetTool(m_htiIP2CountryName,IDS_IP2COUNTRY_TIP);
 		SetTool(m_htiIP2CountryName_DISABLE,IDS_DISABLED_TIP);
 		SetTool(m_htiIP2CountryShowFlag,IDS_COUNTRYNAME_SHOWFLAG_TIP);

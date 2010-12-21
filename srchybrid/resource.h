@@ -3545,7 +3545,12 @@
 #define IDS_MET_FILE_CONTROL_TIP        30486
 #define IDS_EXPIRED_KNOWN_TIP           30487
 #define IDS_FOLLOW_THE_MAJORITY_TIP     30488
+// ==> Integer based FairPlay - Stulle
+/*
 #define IDS_FAIR_PLAY_TIP               30489
+*/
+#define IDS_FAIR_PLAY_TIP_STULLE        30490
+// <== Integer based FairPlay - Stulle
 #define IDC_FILTERSERVERBYIPFILTE_TIP   30500
 #define IDC_STATIC_FILTERLEVE_TIP       30502
 #define IDC_RELOADFILTE_TIP             30504
