@@ -6318,7 +6318,7 @@ BEGIN
     IDS_FAIR_PLAY_TIP       "upload at least one copy of a downloaded file with priority."
 */
     IDS_FAIR_PLAY_TIP_STULLE       "Upload at least a given number of copies of a downloaded file with priority. (0 = disabled)"
-// <== m00h
+// <== Integer based FairPlay - Stulle
 END
 
 STRINGTABLE 
