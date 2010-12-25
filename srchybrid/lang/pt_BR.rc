@@ -3174,7 +3174,7 @@ BEGIN
     IDS_EXPIRED_KNOWN_TIP   "Limpar os arquivo .met depois de um\narquivo não ser visto por xxx dias.\nSalva espaço em disco. Aplica-se para\nknown*.met. Nunca defina um valor baixo\naqui. (menor que 30)"
     IDS_FOLLOW_THE_MAJORITY_TIP 
                             "Auto renomear seu arquivo com o nome usado pela maioria,\npode ser ativado diretamente clicando com botão direito\ne será desligado por qualquer operação de renomear."
-    IDS_FAIR_PLAY_TIP       "Pelo menos enviar uma cópia do arquivo baixado com prioridade."
+//    IDS_FAIR_PLAY_TIP       "Pelo menos enviar uma cópia do arquivo baixado com prioridade."
 END
 
 STRINGTABLE 

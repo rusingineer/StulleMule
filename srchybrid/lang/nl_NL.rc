@@ -3209,7 +3209,7 @@ BEGIN
     IDS_EXPIRED_KNOWN_TIP   "Clean up .met files after file \nhas not been seen for xxx days\nSaves diskspace. Applies for\nknown*.met. Never set a very\nlow value (less than 30) here"
     IDS_FOLLOW_THE_MAJORITY_TIP 
                             "Auto rename your file with the most popular filename used, \ncan also be directly activated from right click or disabled by any rename operation."
-    IDS_FAIR_PLAY_TIP       "upload at least one copy of a downloaded file with priority."
+//    IDS_FAIR_PLAY_TIP       "upload at least one copy of a downloaded file with priority."
 END
 
 STRINGTABLE 

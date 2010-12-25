@@ -3195,7 +3195,7 @@ BEGIN
     IDS_EXPIRED_KNOWN_TIP   "Czysæ pliki *.met gdy plik nie by³ widzniany od x dni.\nOpcja pomagaj¹ca odzyskiwaæ miejsce na dysku.\nNigdy nie ustawiaj wartoœci poni¿ej 30 dni."
     IDS_FOLLOW_THE_MAJORITY_TIP 
                             "Automatycznie zmieniaj nazwê pliku na najczêœciej u¿ywan¹. Opcja mo¿e byæ równie¿\nbezpoœrednio aktywowana z prawokliku, lub wy³¹czona poprzez ponown¹ zmianê nazwy."
-    IDS_FAIR_PLAY_TIP       "Uczciwa gra, wyœlij co najmniej jedn¹ kopiê pobranego pliku z priorytetem."
+//    IDS_FAIR_PLAY_TIP       "Uczciwa gra, wyœlij co najmniej jedn¹ kopiê pobranego pliku z priorytetem."
 END
 
 STRINGTABLE 

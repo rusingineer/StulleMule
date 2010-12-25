@@ -3215,7 +3215,7 @@ BEGIN
     IDS_EXPIRED_KNOWN_TIP   "Clean up .met files after file \nhas not been seen for xxx days\nSaves diskspace. Applies for\nknown*.met. Never set a very\nlow value (less than 30) here"
     IDS_FOLLOW_THE_MAJORITY_TIP 
                             "Ýndirmekte olduðunuz bir dosyanýn ismini, en fazla kaç kiþi \ndosyayý ayný isimle indirmekte ise onunla yer deðiþtirir. \nSað tuþ listesinden etkinleþtirilebilir ya da herhangi bir \nyeniden adlandýrma iþlemi ile devre dýþý býrakýlabilir."
-    IDS_FAIR_PLAY_TIP       "Tamamlanmýþ her dosya için en az bir dosya boyutu kadar gönderme yap."
+//    IDS_FAIR_PLAY_TIP       "Tamamlanmýþ her dosya için en az bir dosya boyutu kadar gönderme yap."
 END
 
 STRINGTABLE 
@@ -4133,19 +4133,6 @@ BEGIN
     IDS_FUNCTION            "Function"
     IDS_RELEASER            "Sunum özellikleri"
 // <== XP Style Menu [Xanatos] - Stulle
-// ==> Adjustable NT Service Strings - Stulle
-    IDS_SERVICE_STR_GROUP   "NT Hizmet girdileri (boþ = öntanýmlý)"
-    IDS_SERVICE_NAME        "Ýsim (ekleme için)"
-    IDS_SERVICE_DISP_NAME   "Görünen isim"
-    IDS_SERVICE_DESCR       "Görünen açýklama"
-    IDS_SERVICE_NAME_CHANGED "Zaten eklenmiþ durumdaki NT Hizmetinin ismini deðiþtirdiniz.\nYaptýðýnýz deðiþikliklerin uygulanabilmesi için eMule bu hizmeti tekrar ekleyecek.\nDevam etmek istiyor musunuz?"
-    IDS_SERVICE_STR_CHANGED "NT Hizmet girdisi deðiþti"
-    IDS_SERVICE_DISP_CHANGED "NT Hizmetinin görünen ismini ya da açýklamasýný deðiþtirdiniz.\nCiddi bir ayar olmasa dahi yapýlan deðiþikliklerin geçerli olabilmesi için hizmetin yeniden yüklenmesi gerekli.\nHizmet yeniden yüklensin mi? Deðiþiklikleri sýfýrlamak için iptale basýn."
-    IDS_SERVICE_UNINSTALL_FAIL "NT Hizmetini kaldýrma baþarýsýz.\nLütfen günlük mesajlarýný kontrol ediniz.\nTüm deðiþiklikler sýfýrlandý."
-    IDS_SERVICE_UNINSTALL_TITLE "Kaldýrma baþarýsýz"
-    IDS_SERVICE_INSTALL_FAIL "NT Hizmeti ekleme baþarýsýz.\nLütfen günlük mesajlarýný kontrol ediniz ve NT Hizmet bölümünden hizmeti tekrar yüklemeyi deneyiniz."
-    IDS_SERVICE_INSTALL_TITLE "Ekleme baþarýsýz"
-// <== Adjustable NT Service Strings - Stulle
 END
 
 #endif    // Turkish resources

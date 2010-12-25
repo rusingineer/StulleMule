@@ -3193,7 +3193,7 @@ BEGIN
 	IDS_EXPIRED_KNOWN_TIP   "清除known*.met檔案裡的內容以節省磁碟空間。\n請不要設定小於30的值。"
     IDS_FOLLOW_THE_MAJORITY_TIP
 							   "自動用最多人使用的檔案名稱當作檔名。\n停用這個選項您還是可以在右鍵選單找到這個功能。"
-	IDS_FAIR_PLAY_TIP       "當您下載完一個檔案的時候，\n提高該檔案的優先權值到您上傳一整份該檔案到網路上。"
+//	IDS_FAIR_PLAY_TIP       "當您下載完一個檔案的時候，\n提高該檔案的優先權值到您上傳一整份該檔案到網路上。"
 END
 
 STRINGTABLE

@@ -3471,7 +3471,7 @@ BEGIN
 	IDS_FOLLOW_THE_MAJORITY_TIP  "Renombra automáticamente tu archivo con el nombre usado por la mayoría de clientes,\npuede ser activado directamente con el botón derecho o desactivado en cualquier operación de renombrado"
     IDS_FOLLOW_THE_MAJORITY "Seguir a la Mayoría"
 	IDS_FAIR_PLAY           "Juego Justo"
-	IDS_FAIR_PLAY_TIP       "Al menos se sube una copia del fichero descargado con mayor prioridad"
+//	IDS_FAIR_PLAY_TIP       "Al menos se sube una copia del fichero descargado con mayor prioridad"
 END
 
 STRINGTABLE
