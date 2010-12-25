@@ -3152,7 +3152,8 @@ BEGIN
     IDS_PAYBACKFIRSTLIMI_TIP       "Volume de fichier que le client distant doit nous avoir donné avant qu'on ne lui transmette des données (PayBackFirst)"
     IDS_EXPIRED_KNOWN_TIP       "Nettoie les fichiers .met de ce qui n'a pas été vu depuis xx jours.\nSauve de l'espace disque. S'applique pour known*.met.\nNe jamais mettre ici une valeur trop basse (pas en dessous de 30)."
     IDS_FOLLOW_THE_MAJORITY_TIP       "Renomme automatiquement votre fichier avec la majorité du nom,\nPeut être directement activé par clic droit ou modifié par n'importe quelle opération de renommage."
-    IDS_FAIR_PLAY_TIP       "Au moins une copie envoyée du fichier téléchargé avec priorité."
+//    IDS_FAIR_PLAY_TIP       "Au moins une copie envoyée du fichier téléchargé avec priorité."
+    IDS_FAIR_PLAY_TIP_STULLE       "Partager en priorité les fichiers téléchargés au moins un\nnombre donné de fois. (0 = Désactivé)"
 END
 
 STRINGTABLE
@@ -3730,7 +3731,10 @@ BEGIN
     IDS_SHOWSRCONTITLE       "Afficher le nb de sources dans le titre"
     IDS_SHOWSRCSTRING       "Sources:"
 // <== Show sources on title - Stulle
+// ==> show overhead on title - Stulle
     IDS_SHOWOVERHEADONTITLE       "Afficher le surplus de bande passante dans le titre"
+    IDS_SHOWOVERHEADONTITLE_TIP   "Afficher le surplus de bande passante pour l'émission et la\nrécetption dans le titre de la fenêtre eMule"
+// <== show overhead on title - Stulle
 // ==> ZZ Ratio Activation Changes - Stulle
     IDS_ZZRATIO_CHECK5_NEW       "Moyenne d'émission < 10Ko/s et limite < 12"
     IDS_ZZRATIO_CHECK6       "zzRatio activé jusqu'à la fin de session"
@@ -3819,6 +3823,14 @@ BEGIN
     IDS_SIVKAFILESETTINGS       "Sivka – Configuration fichier(s)"
     IDS_HARDLIMIT_LABEL       "Nb maxi de sources (0 = par défaut)"
     IDS_DROP_DEFAULTS       "Paramétrages de purge par défaut"
+    IDS_DROPMENU_TITLE      "ABANDON"
+    IDS_DROPMENU_L2L        "Ecarter les sources LowID-à-LowID"
+    IDS_DROPMENU_UNK_ERR_BAN "Ecarter les sources Inconnues, Erronées ou Bannies"
+    IDS_DROPMENU_NNS        "Ecarter les sources non-pertinentes"
+    IDS_DROPMENU_FQS        "Ecarter les sources avec file d'attente pleine"
+    IDS_DROPMENU_HQRS       "Ecarter les sources aux rangs de file d'attente élevés"
+    IDS_DROPMENU_ALL        "Nettoyage => NNS, FQS, HQRS, UNK, ERR, BAN & L2L"
+    IDS_DROPMENU_LEECHER    "Drop Leecher Sources"
 // <== drop sources - Stulle
     IDS_SHOW_GLOBAL_HL       "Affiche le nb maxi de sources"
     IDS_SHOW_DROPPED_SRC       "Sources abandonnées"

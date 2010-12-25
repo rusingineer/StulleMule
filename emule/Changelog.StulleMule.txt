@@ -2,7 +2,7 @@ CHANGELOG FOR EMULE StulleMule MOD
 
 eMule v0.50a StulleMule v7.0:
 ------------------------
-- XX.XX.2010 -
+- 25.12.2010 -
 -------------------------------------------------------------------------------
 based on eMule 0.50a MorphXT 12.6 compiled with vs2010
 
@@ -20,6 +20,8 @@ Changed: Allowed localization of Dropmenu [Stulle]
 Changed: Fair Play is now integerbased [Stulle]
 
 Updated: Anti-Leecher-Lists (DLP v43) [zz_fly]
+Updated: Following language files: German [Stulle]; French [jamjam];
+	Chinese (P.R.C.) [zz_fly]; Italian [Myth88]
 
 Fixed: Global Mod statistics were not displayed [Stulle]
 Fixed: Service was not stopped when it should be stopped on starting emule.exe [Stulle]

@@ -3192,7 +3192,8 @@ BEGIN
     IDS_EXPIRED_KNOWN_TIP   "Bereinigung der known*.met Dateien. \nWurde eine bekannte Datei xxx Tage nicht mehr gesehen \nwerden diese aus der Known.met entfernt."
     IDS_FOLLOW_THE_MAJORITY_TIP 
                             "Downloads automatisch in den meistgenutzten Dateinamen umbenennen, \nkann über Rechtsklick auf eine Datei aktiviert werden."
-    IDS_FAIR_PLAY_TIP       "Dateien die von dir noch nicht einmal komplett rausgegeben wurden \n werden mit Priorität hochgeladen."
+//    IDS_FAIR_PLAY_TIP       "Dateien die von dir noch nicht einmal komplett rausgegeben wurden \n werden mit Priorität hochgeladen."
+    IDS_FAIR_PLAY_TIP_STULLE       "Dateien die von dir noch nicht n-Mal komplett rausgegeben wurden\nwerden mit Priorität hochgeladen, wobei du n angibst.\n(0 = deaktiviert)"
 END
 
 STRINGTABLE 
@@ -3824,7 +3825,10 @@ BEGIN
     IDS_SHOWSRCONTITLE      "Zeige Quellen im Titel"
     IDS_SHOWSRCSTRING       "Quellen:"
 // <== Show sources on title - Stulle
-    IDS_SHOWOVERHEADONTITLE "Zeige Overhead im Titel"// show overhead on title - Stulle
+// ==> show overhead on title - Stulle
+    IDS_SHOWOVERHEADONTITLE "Zeige Overhead im Titel"
+    IDS_SHOWOVERHEADONTITLE_TIP "Zeigt den aktuellen Overhead für Down- und Upload Geschwindigkeit\nin eMule's Fenstertitel."
+// <== show overhead on title - Stulle
 // ==> ZZ Ratio Activation Changes - Stulle
     IDS_ZZRATIO_CHECK5_NEW  "Durchschnittlicher UL < 10KB/s und UL Limit < 12"
     IDS_ZZRATIO_CHECK6      "zzRatio aktiviert bis Session endet"
@@ -3895,7 +3899,7 @@ BEGIN
     IDS_FN_TAG_AT_END       "Zeige Tag am Ende"
 // <== FunnyNick Tag - Stulle
 // ==> Pay Back First for insecure Clients - Stulle
-    IDS_PAYBACKFIRST2       "zuerst zurückgeben für Clients ohne SUI"
+    IDS_PAYBACKFIRST2       "Zuerst zurückgeben für Clients ohne SUI"
     IDS_PAYBACKFIRSTLIMIT2  "Übertragung vor Auslösen (Standard 50MB)"
 // <== Pay Back First for insecure Clients - Stulle
     IDS_CLIENT_BAN_TIME     "Zeit die ein Client gebannt bleibt in h" // adjust ClientBanTime - Stulle
@@ -3913,6 +3917,14 @@ BEGIN
     IDS_SIVKAFILESETTINGS   "Sivka - Datei(en) Einstellungen"
     IDS_HARDLIMIT_LABEL     "Hard Limit (0=Nutze standart)"
     IDS_DROP_DEFAULTS       "Drop Standard Einstellungen"
+    IDS_DROPMENU_TITLE      "DROP"
+    IDS_DROPMENU_L2L        "Drop LowIP zu LowIP Sources"
+    IDS_DROPMENU_UNK_ERR_BAN "Drop Unbekannt, Fehlerhaft und gebannte Quellen"
+    IDS_DROPMENU_NNS        "Drop nicht gebrauchte Quellen"
+    IDS_DROPMENU_FQS        "Drop volle Warteschlange Quellen"
+    IDS_DROPMENU_HQRS       "Drop Hoher Warteschlangenplatz Quellen"
+    IDS_DROPMENU_ALL        "Aufräumen => NNS, FQS, HQRS, UNK, ERR, BAN & L2L"
+    IDS_DROPMENU_LEECHER    "Drop Leecher Quellen"
 // <== drop sources - Stulle
     IDS_SHOW_GLOBAL_HL      "Zeige globales Hardlimit" // show global HL - Stulle
     IDS_SHOW_DROPPED_SRC    "Gedroppte Quellen" // show # of dropped sources - Stulle

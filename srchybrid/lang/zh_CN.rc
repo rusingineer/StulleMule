@@ -3221,7 +3221,8 @@ BEGIN
     IDS_EXPIRED_KNOWN_TIP   "在某个文件消失超过一定天数后, 清除.met文件以节约硬盘空间.\n针对know*.met进行操作, 切勿设定小于30的数值!"
     IDS_FOLLOW_THE_MAJORITY_TIP 
                             "根据最常见的名字自动重命名下载中的文件, \n可通过右键点击选择激活, 并可通过任何重命名操作取消."
-    IDS_FAIR_PLAY_TIP       "以高优先级上传已下载的文件, 直到传出完整的一份."
+//    IDS_FAIR_PLAY_TIP       "以高优先级上传已下载的文件, 直到传出完整的一份."
+    IDS_FAIR_PLAY_TIP_STULLE       "枑詢眒狟婥恅璃腔奻換蚥珂撰, 壺準坳眒煦砅賸跤隅腔爺杅 (0=輦蚚)" //"Upload at least a given number of copies of a downloaded file with priority. (0 = disabled)"
 END
 
 STRINGTABLE 
@@ -3839,7 +3840,10 @@ BEGIN
     IDS_SHOWSRCONTITLE      "在标题栏显示来源"
     IDS_SHOWSRCSTRING       "来源:"
 // <== Show sources on title - Stulle
-    IDS_SHOWOVERHEADONTITLE "在标题栏显示额外开销带宽"// show overhead on title - Stulle
+// ==> show overhead on title - Stulle
+    IDS_SHOWOVERHEADONTITLE "在标题栏显示额外开销带宽"
+    IDS_SHOWOVERHEADONTITLE_TIP "婓eMule敦諳梓枙戲奻珆尨\n絞?奻換睿狟婥腔塗俋羲种"
+// <== show overhead on title - Stulle
 // ==> ZZ Ratio Activation Changes - Stulle
     IDS_ZZRATIO_CHECK5_NEW  "平均上传 < 10KB/秒且上传上限 < 12"
     IDS_ZZRATIO_CHECK6      "启用zzRatio直到进程终止"
@@ -3873,6 +3877,7 @@ BEGIN
     IDS_EXTRA_BYTES         "多余字节检查"
     IDS_NICK_CHANGER        "昵称变换检查"
     IDS_FILEFAKER           "文件伪装检查"
+    IDS_VAGAA "检测哇嘎"
 // <== ban systems optional - Stulle
     IDS_CON_TWEAKS          "连接调节"
 // ==> Inform Clients after IP Change - Stulle
@@ -3927,6 +3932,14 @@ BEGIN
     IDS_SIVKAFILESETTINGS   "Sivka - File(s) Settings"
     IDS_HARDLIMIT_LABEL     "硬性限制 (0=使用默认设置)"
     IDS_DROP_DEFAULTS       "来源放弃设置"
+    IDS_DROPMENU_TITLE      "枌壺" //"DROP"
+    IDS_DROPMENU_L2L        "枌壺LowID善LowID懂埭" //"Drop LowIP to LowIP Sources"
+    IDS_DROPMENU_UNK_ERR_BAN "枌壺帤眭﹜渣昫睿眒郯砦腔懂埭" //"Drop Unknown, Error and Banned Sources"
+    IDS_DROPMENU_NNS        "枌壺拸剒?腔懂埭" //"Drop Not Needed Sources"
+    IDS_DROPMENU_FQS        "枌壺勦蹈眒雛腔懂埭" //"Drop Full Queue Sources"
+    IDS_DROPMENU_HQRS       "枌壺勦蹈徹酗腔懂埭" //"Drop High Queue Rating Sources"
+    IDS_DROPMENU_ALL        "枌壺奻扴?窒懂埭" //"CleanUp => NNS, FQS, HQRS, UNK, ERR, BAN & L2L"
+    IDS_DROPMENU_LEECHER    "枌壺柲悛諦誧傷" //"Drop Leecher Sources"
 // <== drop sources - Stulle
     IDS_SHOW_GLOBAL_HL      "显示全局硬性限制" // show global HL - Stulle
     IDS_SHOW_DROPPED_SRC    "放弃的来源数" // show # of dropped sources - Stulle
@@ -3941,6 +3954,7 @@ BEGIN
     IDS_MM_COMPL            "在进程中显示已完成的文件"
     IDS_MM_RATIO            "上传:下载 :"
     IDS_MM_OPEN             "最小化到系统托盘时自动开启迷你骡"
+    IDS_MM_GROUP "TBH 迷你骡"
 // <== TBH: minimule - Stulle
     IDS_SHOWINMSN7          "在MSN7(或更高版本)中显示eMule状态" //Show in MSN7 [TPT] - Stulle
 // ==> Anti Uploader Ban - Stulle
@@ -4001,6 +4015,7 @@ BEGIN
 // ==> Release Bonus [sivka] - Stulle
     IDS_RELEASE_BONUS_GROUP "发布奖励(对正在发布的文件, 假定客户已经排队一定时间)"
     IDS_RELEASE_BONUS_EDIT  "奖励天数"
+    IDS_RELEASE_BONUS_12 "12小时"
 // <== Release Bonus [sivka] - Stulle
     IDS_RELEASE_SCORE_ASSURANCE "保证下载发布中的文件的客户的初始积分" // Release Score Assurance - Stulle
 // ==> CPU/MEM usage [$ick$/Stulle] - Stulle
@@ -4044,9 +4059,6 @@ BEGIN
     IDS_BAN_SPAMMER             "垃圾信息"
     IDS_BAN_FILEFAKER           "伪装文件"
     IDS_BAN_APPLE_JUICE         "AppleJuice"
-    IDS_VAGAA "检测哇嘎"
-    IDS_MM_GROUP "TBH 迷你骡"
-    IDS_RELEASE_BONUS_12 "12小时"
     IDS_BAN_VAGAA "哇嘎"
 // <== Reduce Score for leecher - Stulle
     IDS_MOD_STATS               "Mod 统计信息" // Global Mod statistics [Stulle/some code by SlugFiller] - Stulle
@@ -4136,19 +4148,6 @@ BEGIN
     IDS_FUNCTION            "功能"
     IDS_RELEASER            "发布功能"
 // <== XP Style Menu [Xanatos] - Stulle
-// ==> Adjustable NT Service Strings - Stulle
-    IDS_SERVICE_STR_GROUP   "NT 服务字符串 (留空 = 默认)"
-    IDS_SERVICE_NAME        "服务名字 (安装时使用)"
-    IDS_SERVICE_DISP_NAME   "服务显示名称"
-    IDS_SERVICE_DESCR       "服务的描述"
-    IDS_SERVICE_NAME_CHANGED "你修改了一个已安装的 NT 服务的名字.\n为了使得改动生效, eMule会重新安装这个服务.\n要继续吗?"
-    IDS_SERVICE_STR_CHANGED "NT 服务字符串改变了"
-    IDS_SERVICE_DISP_CHANGED "你改变了 NT 服务的显示名称或者描述.\n这虽然不是重要的设置, 但是要生效就必须重新安装服务.\n现在就重新安装服务吗? 取消就重置所有改动."
-    IDS_SERVICE_UNINSTALL_FAIL "NT 服务卸载失败.\n请检查你的日志.\n所有改动都已重置."
-    IDS_SERVICE_UNINSTALL_TITLE "服务卸载失败"
-    IDS_SERVICE_INSTALL_FAIL "NT 服务安装失败.\n请检查你的日志并在尝试在 NT 服务面板重新安装本服务."
-    IDS_SERVICE_INSTALL_TITLE "服务安装失败"
-// <== Adjustable NT Service Strings - Stulle
 END
 
 #endif    // Chinese (P.R.C.) resources

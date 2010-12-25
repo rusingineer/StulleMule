@@ -3182,7 +3182,8 @@ BEGIN
     IDS_EXPIRED_KNOWN_TIP   "Cancella i File .met se un File non è stato visto per xxx giorni (recupera\nspazio su disco). Applicabile per i File 'known*.met'. Non impostare mai\nun valore troppo basso (meno di 30)"
     IDS_FOLLOW_THE_MAJORITY_TIP 
                             "Rinomina automaticamente i tuoi File con quello maggiormente usato, può essere anche attivato\ndirettamente tramite Click sul tasto destro del mouse o disabilitato tramite una qualsiasi\noperazione di cambio nome"
-    IDS_FAIR_PLAY_TIP       "Invia almeno una copia del File scaricato con una maggiore priorità"
+//    IDS_FAIR_PLAY_TIP       "Invia almeno una copia del File scaricato con una maggiore priorità"
+    IDS_FAIR_PLAY_TIP_STULLE       "Invia almeno una copia del File scaricato con una maggiore priorità"
 END
 
 STRINGTABLE 
@@ -3820,7 +3821,10 @@ BEGIN
     IDS_SHOWSRCONTITLE      "Mostra Fonti nel titolo"
     IDS_SHOWSRCSTRING       "Fonti:"
 // <== Show sources on title - Stulle
-    IDS_SHOWOVERHEADONTITLE "Mostra Overhead nel titolo"// show overhead on title - Stulle
+// ==> show overhead on title - Stulle
+    IDS_SHOWOVERHEADONTITLE "Visualizza overhead nella barra di titolo"
+    IDS_SHOWOVERHEADONTITLE_TIP "Visualizza l'overhead di download e upload momentaneo\nnella barra di titolo di eMule."
+// <== show overhead on title - Stulle
 // ==> ZZ Ratio Activation Changes - Stulle
     IDS_ZZRATIO_CHECK5_NEW  "Media UL < 10KB/s e Limite UL < 12"
     IDS_ZZRATIO_CHECK6      "zzRatio attivo solo per questa sessione"
@@ -3910,6 +3914,14 @@ BEGIN
     IDS_SIVKAFILESETTINGS   "Sivka - Settaggi file"
     IDS_HARDLIMIT_LABEL     "Hard Limit (0=usa valore predefinito)"
     IDS_DROP_DEFAULTS       "Settaggi di rimozione predefiniti"
+    IDS_DROPMENU_TITLE      "Scarta"
+    IDS_DROPMENU_L2L        "Scarta fonti LowIP a LowIP"
+    IDS_DROPMENU_UNK_ERR_BAN "Scarta fonti sconosciute, errate e bannate"
+    IDS_DROPMENU_NNS        "Scarta fonti senza parti utili"
+    IDS_DROPMENU_FQS        "Scarta fonti con coda di attesa piena"
+    IDS_DROPMENU_HQRS       "Scarta fonti con coda di attesa troppo lunga"
+    IDS_DROPMENU_ALL        "Pulitura => NNS, FQS, HQRS, UNK, ERR, BAN & L2L"
+    IDS_DROPMENU_LEECHER    "Scarta fonti leecher"
 // <== drop sources - Stulle
     IDS_SHOW_GLOBAL_HL      "Mostra HardLimit globale" // show global HL - Stulle
     IDS_SHOW_DROPPED_SRC    "Fonti rimosse" // show # of dropped sources - Stulle
