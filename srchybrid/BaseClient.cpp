@@ -496,6 +496,60 @@ uint8 CUpDownClient::TestLeecher(){
 		{
 			return BAN_MORPH_LEECHER;
 		}
+		CString strMod = CString(m_strModVersion);
+		if( strMod.IsEmpty() ||
+			(strMod.Find(_T("CHN "))==0 && strMod.GetLength() > 8) ||
+			(strMod.Find(_T("Apollo"))==0) ||  //Apollo is a Portugal Mod
+			(strMod.Find(_T("sivka"))==0) ||
+			(strMod.Find(_T("aMule CVS"))==0)
+		  )
+		{
+			;//do nothing
+		}
+		else
+		{
+			if(_tcsstr(m_strClientSoftware, _T("eMule v")) && (strMod.GetLength() <= 4)) //most of them are fincan
+				return BAN_BAD_MOD;
+			int iNumberFound = -1;
+			_TINT ch;
+			bool bBad = false;
+			bool bNotEnd = false;
+			for(int i = 0; i < strMod.GetLength() && bBad == false; ++i)
+			{
+				ch = strMod.GetAt(i); 
+				if( ch == L'.' || ch == L' ' )
+				{
+					bNotEnd = true; //these chars should not be the end of modstring
+					iNumberFound = -1; //this is a simple hack to not punish mods like TK4 or Spike2 :)
+					continue; //skip "legal" chars
+				}
+				if( ch == L'-' /*|| ch == L'+'*/ ) //connector characters, connect two string or two numbers
+				{
+					bNotEnd = true; //these chars should not be the end of modstring
+					if(iNumberFound != -1) 
+						iNumberFound++; //exclude some modstring like v#.#-a1
+					continue;
+				}
+				if( _istpunct(ch) || _istspace(ch))
+					bBad = true; //illegal punctuation or whitespace character
+				else if(_istcntrl(ch))
+					bBad = true; //control character in modstring!?
+				else
+				{
+					bNotEnd = false;
+					if( _istdigit(ch) )
+						iNumberFound = i;
+					else if ( (iNumberFound == i-1) && _istxdigit(ch) ) //abcdef is legal in the end of version number, also exclude bowlfish tk4 and so on
+					{
+						;//do nothing
+					}
+					else if(iNumberFound != -1)
+						bBad = true; //that is: number out of row, e.g. not MorphXT v11.9 but Morph11XT.9
+				}
+			}
+			if(bBad || bNotEnd)
+				return BAN_BAD_MOD;
+		}
 	}
 	//MORPH END - Added by Stulle, Morph Leecher Detection
 	// ==> AntiNickThief [WiZaRd] - Stulle
@@ -599,6 +653,7 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_strModVersion,_T("SpeedX"))||
 				StrStrI(m_strModVersion,_T("AIDEADSL"))||
 				StrStrI(m_strModVersion,_T("Hypnotix"))||
+				_tcsstr(m_strModVersion, _T("Bowlfish")) || //international filter, change to softban.
 				StrStrI(m_strModVersion,_T("BLACKMULE"))|| 
 				StrStrI(m_strModVersion,_T("blackviper"))||
 				StrStrI(m_strModVersion,_T("BlackAngel"))||
@@ -629,7 +684,6 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_strModVersion, _T("Exorzist"))||
 				StrStrI(m_strModVersion, _T("A.i.d.e-A.D.S.L"))||
 				StrStrI(m_strModVersion,_T("DarkDragon"))||
-				(StrStrI(m_strModVersion, _T("Xtreme")) && StrStrI(m_strModVersion, _T("]")))||
 				StrStrI(m_strModVersion,_T("Rockesel"))||
 				StrStrI(m_strModVersion,_T("Community"))|| 
 				StrStrI(m_strModVersion,_T("IcE-MoD"))||
@@ -695,9 +749,21 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_strModVersion, _T("Hardstyle"))|| //MyTh
 				StrStrI(m_strModVersion, _T("pP.r12b"))|| //MyTh
 				StrStrI(m_strModVersion, _T("Simple Life"))|| //MyTh
-				StrStrI(m_strModVersion, _T("PRO"))|| //MyTh eMule 0.49a PRO (+ONO)
 				StrStrI(m_strModVersion, _T("TYRANUS"))|| //MyTh
-				StrStrI(m_strClientSoftware,_T("eMule v2.0")) || //6/2007 fake Xtreme / GPL-breaker
+				//StrStrI(m_strClientSoftware,_T("eMule v2.0")) || //6/2007 fake Xtreme / GPL-breaker
+				_tcsstr(m_strClientSoftware, _T("eMule v1."))|| //ban all version number >= 1.0
+				_tcsstr(m_strClientSoftware, _T("eMule v2."))||
+				//_tcsstr(m_strClientSoftware, _T("eMule v3."))||
+				_tcsstr(m_strClientSoftware, _T("Shareaza v6."))|| //Shareaza's current version is 2.5.2 
+				_tcsstr(m_strClientSoftware, _T("Shareaza v5."))||
+				_tcsstr(m_strClientSoftware, _T("Shareaza v4."))||
+				_tcsstr(m_strClientSoftware, _T("Shareaza v3."))||
+				StrStrI(m_strModVersion, _T(".COM"))|| //no domain name in modstring
+				StrStrI(m_strModVersion, _T(".ORG"))||
+				StrStrI(m_strModVersion, _T(".NET"))||
+				StrStrI(m_strModVersion, _T(".BIZ"))||
+				StrStrI(m_strModVersion, _T(".INFO"))||
+				(_tcsstr(m_strClientSoftware, _T("lphant v2.01")) && _tcsstr(m_strModVersion, _T("Plus")))|| //www.lphantplus.com, no src
 				// added in 6.1
 				//modstring of XL
 				_tcsstr(m_strModVersion, _T("20071122")) || _tcsstr(m_strModVersion, _T("20080228")) ||
@@ -711,11 +777,14 @@ uint8 CUpDownClient::TestLeecher(){
 				//end
 				((_tcsstr(m_strModVersion, _T("MorphXT v9.6")) || _tcsstr(m_strModVersion, _T("Xtreme 7")) || _tcsstr(m_strModVersion, _T("ZZUL Plus 1"))) && _tcsstr(m_strClientSoftware, _T("0.48a"))) || //should not 0.48a
 				_tcsstr(m_strModVersion, _T("NetF WARP 9")) || //should be NetF WARP 0.3a.9
+				_tcsstr(m_strModVersion, _T("VeryCD 080126")) || //Fake VeryCD
 				_tcsstr(m_strModVersion, _T("VeryCD 080730")) || //Fake VeryCD
 				_tcsstr(m_strModVersion, _T("VeryCD 080509")) || //Fake VeryCD
 				_tcsstr(m_strModVersion, _T("VeryCD 080606")) || //Fake VeryCD
 				_tcsstr(m_strModVersion, _T("VeryCD 080624")) || //Fake VeryCD
 				_tcsstr(m_strModVersion, _T("VeryCD 080630")) || //Fake VeryCD
+				//(_tcsstr(m_strModVersion, _T("easyMule 10")) && _tcsstr(m_strClientSoftware,_T("0.48a"))) || //easymule 10#### are not based on .48a // we do it differently
+				(_tcsstr(m_strModVersion, _T("VeryCD 080919")) && _tcsstr(m_strClientSoftware,_T("0.49b"))) || //fake clientversion, should be 0.48a
 				_tcsstr(m_strModVersion, _T("FreeCD")) || //BitComet, changed to hardban
 				_tcsstr(m_strModVersion, _T("PlayMule")) || //PlayMule
 				( !CString(m_strModVersion).IsEmpty() && CString(m_strModVersion).Trim().IsEmpty() ) || //pruma, korean leecher, modversion is a space
@@ -737,6 +806,12 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_strModVersion, _T("Apace")) ||
 				StrStrI(m_strModVersion,_T("L!()Netw0rk")) ||
 				StrStrI(m_strModVersion,_T("L!ONetwork")) ||
+				StrStrI(m_strModVersion, _T("l!onet"))||
+				StrStrI(m_strModVersion, _T("l!0net"))||
+				StrStrI(m_strModVersion, _T("lionet"))||
+				StrStrI(m_strModVersion, _T("li0net"))||
+				StrStrI(m_strModVersion, _T("li()net"))||
+				StrStrI(m_strModVersion, _T("L!()Net"))||
 				StrStrI(m_strModVersion, _T("FreeCD")) || //GPL-Breaker
 				StrStrI(m_strModVersion,_T("800STER")) ||
 				StrStrI(m_strModVersion,_T("8OOSTER")) ||
@@ -744,6 +819,7 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_strModVersion,_T("B00ST")) ||
 				StrStrI(m_strModVersion, _T("T-L-N BO0ST")) || //by briandgwx
 				StrStrI(m_strModVersion, _T("T L N B O O S T")) ||	//by taz-me
+				StrStrI(m_strModVersion, _T("iberica")) ||  //by briandgwx
 //from Riso64bit
 				_tcsstr(m_strModVersion, _T("Thor ")) ||
 				_tcsstr(m_strModVersion, _T("DeSfAlko")) ||
@@ -764,7 +840,7 @@ uint8 CUpDownClient::TestLeecher(){
 				_tcsstr(m_strModVersion, _T("ZZULtimativ-R")) ||
 				_tcsstr(m_strModVersion, _T("Div eMule")) ||
 				_tcsstr(m_strModVersion, _T("Pwr eMule")) ||
-				_tcsstr(m_strModVersion, _T("VipeR")) ||
+				//_tcsstr(m_strModVersion, _T("VipeR")) || //it become good
 				_tcsstr(m_strModVersion, _T("Methadone")) ||
 				_tcsstr(m_strModVersion, _T("Titandonkey")) ||
 				_tcsstr(m_strModVersion, _T("SpeedShare")) ||
@@ -778,12 +854,72 @@ uint8 CUpDownClient::TestLeecher(){
 				_tcsstr(m_strModVersion, _T("Okinawa")) ||
 				_tcsstr(m_strModVersion, _T("Hiroshima")) ||
 				_tcsstr(m_strModVersion, _T("Kamikaze")) ||
+				_tcsstr(m_strModVersion, _T("Yotoruma")) ||
+				_tcsstr(m_strModVersion, _T("Nagasaki")) ||
 				_tcsstr(m_strModVersion, _T("Addiction")) ||
 				_tcsstr(m_strModVersion, _T("Bondage")) ||
 				_tcsstr(m_strModVersion, _T("eMuleLife")) ||
 				StrStrI(m_strModVersion, _T("PP-edition")) ||
 				_tcsstr(m_strModVersion, _T("ZZULtra")) ||
-				StrStrI(m_strModVersion, L"RapCom Mod") || //added dlarge 
+				_tcsstr(m_strModVersion, _T("eMulix")) ||
+				_tcsstr(m_strModVersion, _T("BigBang")) ||
+				_tcsstr(m_strModVersion, _T("PR0 ")) || //0(zero)
+				_tcsstr(m_strModVersion, _T("PRO ")) || //o
+				_tcsstr(m_strModVersion, _T("LoCMuLe")) ||
+				_tcsstr(m_strModVersion, _T("Flux ")) ||
+				_tcsstr(m_strModVersion, _T("UniATeam")) ||
+				StrStrI(m_strModVersion, _T("Torenkey")) ||
+				StrStrI(m_strModVersion, _T("RSVCD")) ||
+				_tcsstr(m_strModVersion, _T("BlueEarth")) ||
+				_tcsstr(m_strModVersion, _T("RocketMule")) ||
+				_tcsstr(m_strModVersion, _T("eMule 0.4")) || //some bad mods write clientversion in modstring
+				_tcsstr(m_strModVersion, _T("Emule")) ||
+				_tcsstr(m_strModVersion, _T("eMule v")) ||
+				_tcsstr(m_strModVersion, _T("OrAnGe")) ||
+				StrStrI(m_strModVersion, _T("Evil Mod")) ||
+				StrStrI(m_strModVersion, _T("StulleMule v")) || //real modstring is "StulleMule #.#", no 'v'
+				StrStrI(m_strModVersion, _T("X-Ray v")) || 
+				StrStrI(m_strModVersion, _T("Ulti F"))||
+				StrStrI(m_strModVersion, _T("ChímÊrÂ"))||
+				StrStrI(m_strModVersion, _T("ÇhïmerÀ"))||
+				StrStrI(m_strModVersion, _T("Plus Plus"))|| //some of them did not banned in bin
+				_tcsstr(m_strModVersion, _T("UMatic"))||
+				_tcsstr(m_strModVersion, _T("BRAZILINJAPAN"))|| //no source
+				StrStrI(m_strModVersion, _T("Pigpen"))||
+				_tcsstr(m_strModVersion, _T("TCMod"))||
+				StrStrI(m_strModVersion, _T("UltiMatiX"))||
+				_tcsstr(m_strModVersion, _T("Perestroika"))||
+				_tcsstr(m_strModVersion, _T("Ebola")) ||
+				StrStrI(m_strModVersion, _T("StulleMule Plus")) ||
+				_tcsstr(m_strModVersion, _T("DVD-START.COM")) ||
+				_tcsstr(m_strModVersion, _T("Penthotal")) ||
+				_tcsstr(m_strClientSoftware,_T("eMule Compat v2.1")) || //+Ultra
+				//_tcsstr(modversion, _T("TSmod")) ||
+				_tcsstr(m_strModVersion, _T("Okaemule")) ||
+				_tcsstr(m_strModVersion, _T("Okamula")) ||
+				_tcsstr(m_strModVersion, _T("Potenza")) ||
+				_tcsstr(m_strModVersion, _T("AntraX MoD")) ||
+				//_tcsstr(m_strModVersion, _T("Picapica")) ||
+				//_tcsstr(m_strModVersion, _T("PeaceMule")) ||
+				_tcsstr(m_strModVersion, _T("0.49b")) ||
+				_tcsstr(m_strModVersion, _T("0.49c")) ||
+				_tcsstr(m_strModVersion, _T("Metha")) ||
+				_tcsstr(m_strModVersion, _T("xtreme")) ||
+				_tcsstr(m_strModVersion, _T("XTreme")) ||
+				//newlines 2009/11/8
+				_tcsstr(m_strModVersion, _T("UMatiX-45a")) ||
+				StrStrI(m_strModVersion, _T("maultierpower")) || // maultier-power.com sponsorize applejuice
+				StrStrI(m_strModVersion, _T("PoWeR MoD")) ||
+				StrStrI(m_strModVersion, _T("UltiAnalyzer")) ||
+				StrStrI(m_strModVersion, _T("UBR-Mod")) ||
+				//2009/11/29
+				StrStrI(m_strModVersion, _T("UltraFast")) || //thl
+				//2010/4/4
+				_tcsstr(m_strModVersion, _T("Devils Mod")) ||
+				StrStrI(m_strModVersion, _T("-XDP-")) ||
+				//2010/6/6
+				_tcsstr(m_strModVersion, _T("Sharinghooligan")) ||
+				StrStrI(m_strModVersion, L"RapCom") || //added dlarge 
 				StrStrI(m_strModVersion, L"SBI leecher") || //added dlarge 
 				StrStrI(m_strModVersion, L"TS Next Lite") || //added dlarge  
 				StrStrI(m_strModVersion, L"TR-P2P-MoD") || // JvA: bad client
@@ -810,69 +946,69 @@ uint8 CUpDownClient::TestLeecher(){
 		{
 			if (StrStrI(m_pszUsername,_T("$GAM3R$"))||
 				StrStrI(m_pszUsername,_T("G@m3r"))||
-				StrStrI(m_pszUsername,_T("$WAREZ$"))||
+				//StrStrI(m_pszUsername,_T("$WAREZ$"))||
 				//StrStrI(m_pszUsername,_T("RAMMSTEIN"))|| // removed - Stulle	
 				//StrStrI(m_pszUsername,_T("toXic"))|| //removed for the moment
-				StrStrI(m_pszUsername,_T("Leecha"))||
+				//StrStrI(m_pszUsername,_T("Leecha"))||
 				//StrStrI(m_pszUsername,_T("eDevil"))|| //removed for the moment
 				StrStrI(m_pszUsername,_T("darkmule"))||
 				StrStrI(m_pszUsername,_T("phArAo"))||
 				StrStrI(m_pszUsername,_T("dodgethis"))||
-				StrStrI(m_pszUsername,_T("Reverse"))||
+				//StrStrI(m_pszUsername,_T("Reverse"))||
 				StrStrI(m_pszUsername,_T("eVortex"))||
 				StrStrI(m_pszUsername,_T("|eVorte|X|"))||
 				//StrStrI(m_pszUsername,_T("Chief"))|| // removed - Stulle	
 				//StrStrI(m_pszUsername,"Mison"))|| //Temporaly desactivated, ban only on mod tag
-				StrStrI(m_pszUsername,_T("$motty"))||
+				//StrStrI(m_pszUsername,_T("$motty"))||
 				StrStrI(m_pszUsername,_T("emule-speed"))||
-				StrStrI(m_pszUsername,_T("celinesexy"))||
-				StrStrI(m_pszUsername,_T("Gate-eMule"))||
-				StrStrI(m_pszUsername,_T("energyfaker"))||
-				StrStrI(m_pszUsername,_T("BuzzFuzz"))||
-				StrStrI(m_pszUsername,_T("Speed-Unit"))|| 
-				StrStrI(m_pszUsername,_T("Killians"))||
-				StrStrI(m_pszUsername,_T("pubsman"))||
+				StrStrI(m_pszUsername,_T("Intuition"))||
+				//StrStrI(m_pszUsername,_T("celinesexy"))||
+				//StrStrI(m_pszUsername,_T("Gate-eMule"))||
+				//StrStrI(m_pszUsername,_T("energyfaker"))||
+				//StrStrI(m_pszUsername,_T("BuzzFuzz"))||
+				//StrStrI(m_pszUsername,_T("Speed-Unit"))|| 
+				//StrStrI(m_pszUsername,_T("Killians"))||
+				//StrStrI(m_pszUsername,_T("pubsman"))||
 				StrStrI(m_pszUsername,_T("00de.de"))|| //Commander - Added: LeecherMod
-				StrStrI(m_pszUsername,_T("OO.de"))|| //Commander - Added: LeecherMod
+				//StrStrI(m_pszUsername,_T("OO.de"))|| //Commander - Added: LeecherMod
 				// EastShare - Added by Pretender, TAHO
 				StrStrI(m_pszUsername,_T("eMule@#$"))||
 				StrStrI(m_pszUsername,_T("emule-element"))||
 				StrStrI(m_pszUsername,_T("DarkMule"))||
 				// EastShare - Added by Pretender, TAHO
 				// ==> added - Stulle
-				StrStrI(m_pszUsername,_T("00de"))||
+				//StrStrI(m_pszUsername,_T("00de"))||
 				StrStrI(m_pszUsername,_T("futurezone-reloaded"))||
 				StrStrI(m_pszUsername,_T("Dazzle Mod"))||
 				StrStrI(m_pszUsername,_T("Emule FX"))||
-				StrStrI(m_pszUsername,_T("OOde")) ||
-				StrStrI(m_pszUsername,_T("Rappi")) ||
+				//StrStrI(m_pszUsername,_T("OOde")) ||
+				//StrStrI(m_pszUsername,_T("Rappi")) ||
 				StrStrI(m_pszUsername,_T("Ketamine")) ||
-				StrStrI(m_pszUsername,_T("HARDMULE")) ||
-				StrStrI(m_pszUsername,_T("emuleech")) ||
-				StrStrI(m_pszUsername, _T("SchlumpMule"))||
-				StrStrI(m_pszUsername, _T("Safty´s"))||
+				//StrStrI(m_pszUsername,_T("HARDMULE")) ||
+				StrStrI(m_pszUsername,_T("emuleech.com")) ||
+				//StrStrI(m_pszUsername, _T("SchlumpMule"))||
+				//StrStrI(m_pszUsername, _T("Safty´s"))||
 				StrStr(m_pszUsername, _T("UnKnOwN pOiSoN"))||
-				StrStrI(m_pszUsername, _T("ElfenPower"))||
-				StrStrI(m_pszUsername, _T("eMule Cow"))||
+				//StrStrI(m_pszUsername, _T("ElfenPower"))||
+				//StrStrI(m_pszUsername, _T("eMule Cow"))||
 				//StrStrI(m_pszUsername, _T("Freezamule"))||
 				StrStr(m_pszUsername, _T("EGOmule"))||
 				StrStrI(m_pszUsername, _T("-=EGOist=-"))||
-				StrStrI(m_pszUsername, _T("FreezaVamp"))||
+				//StrStrI(m_pszUsername, _T("FreezaVamp"))||
 				StrStrI(m_pszUsername, _T("Muli_Checka"))||
-				StrStr(m_pszUsername, _T("PrOjEcT-SaNdStOrM"))||
-				StrStr(m_pszUsername, _T("NotHer eDitiOn"))||
-				StrStrI(m_pszUsername, _T("eSl@d3vil"))||
-				StrStrI(m_pszUsername, _T(" AgentSmith"))||
-				StrStrI(m_pszUsername, _T("rabb_it"))||
-				StrStrI(m_pszUsername, _T("ServerClient"))||
+				//StrStr(m_pszUsername, _T("PrOjEcT-SaNdStOrM"))||
+				//StrStr(m_pszUsername, _T("NotHer eDitiOn"))||
+				//StrStrI(m_pszUsername, _T("eSl@d3vil"))||
+				//StrStrI(m_pszUsername, _T(" AgentSmith"))||
+				//StrStrI(m_pszUsername, _T("rabb_it"))||
+				//StrStrI(m_pszUsername, _T("ServerClient"))||
 				StrStrI(m_pszUsername, _T(">>Power-Mod"))||
 				StrStr(m_pszUsername, _T("DM_X"))||
 				StrCmpI(m_pszUsername, _T("Muse"))==0 ||
-				StrStr(m_pszUsername, _T("ZamBoR"))||
-				StrStr(m_pszUsername, _T("emule.razorback3.com"))||
+				//StrStr(m_pszUsername, _T("ZamBoR"))||
 				StrStrI(m_pszUsername,_T("[LSD.19"))||
 				StrStr(m_pszUsername, _T("Gate-To-Darkness.com"))||
-				StrStr(m_pszUsername, _T("emule.razorback3.com"))||
+				StrStrI(m_pszUsername,_T("Razorback")) ||
 				StrStr(m_pszUsername, _T("Titanesel.tk"))||
 				StrStr(m_pszUsername, _T("bigbang.to"))||
 				StrStrI(m_pszUsername,_T("leecherclients.org")) ||  //Xman 10/06
@@ -886,10 +1022,14 @@ uint8 CUpDownClient::TestLeecher(){
 				// added in 6.1
 				StrStrI(m_pszUsername, L"futuremod.de") || // JvA: apple-com adress
 				StrStrI(m_pszUsername, L"@ Raptor") ||     //added dlarge
+				_tcsstr(m_pszUsername,_T("a1[VeryCD]xthame")) || //XL
 				StrStrI(m_pszUsername,_T("Flashget")) || //FlashGet
 				StrStrI(m_pszUsername,_T("http://www.net-xfer.com")) || //netxfer
 				StrStrI(m_pszUsername,_T("emuIe-project.net")) || //phishing site
 				StrStrI(m_pszUsername,_T("QQDownload")) || //tencent
+				_tcsstr(m_pszUsername,_T("MTVP2P")) || //community username from Chengr28
+				_tcsstr(m_pszUsername,_T("qobfxb")) || //community username
+				_tcsstr(m_pszUsername,_T("[CHN][VeryCD]QQ"))|| //QQDownload
 				StrStrI(m_pszUsername, _T("DONKEY2007")) || //korea
 				StrStrI(m_pszUsername, _T("www.Freang.com")) ||
 				StrStrI(m_pszUsername, _T("www.pruna.com")) ||
@@ -897,7 +1037,7 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_pszUsername, _T("superemule")) ||
 				StrStrI(m_pszUsername, _T("PRUNA 2008")) ||
 				StrStrI(m_pszUsername, _T("MOYAM")) ||
-				StrStrI(m_pszUsername, _T("Li()Network")) || //lionetwork
+				StrStrI(m_pszUsername, _T("eDonkey2009")) || //lionetwork
 				_tcsstr(m_pszUsername,L"dianlei.com") ||
 				_tcsstr(m_pszUsername,L"[eMuleBT]") ||
 				_tcsstr(m_pszUsername,L"[PPMule]") ||
@@ -906,28 +1046,48 @@ uint8 CUpDownClient::TestLeecher(){
 				_tcsstr(m_pszUsername,L"[Chinfo]") ||
 				_tcsstr(m_pszUsername,L"vgo.21cn") ||
 //more AJ modstrings
-				( StrStrI(m_pszUsername, L"[") && StrStrI(m_pszUsername, L"]")
-				&& (
+				//( StrStrI(m_pszUsername, L"[") && StrStrI(m_pszUsername, L"]")
+				//&& (
 					StrStrI(m_pszUsername, L"Applejuice") ||
 					StrStrI(m_pszUsername, L"Wikinger") ||
 					StrStrI(m_pszUsername, L"ROCKFORCE") ||
 					StrStrI(m_pszUsername, L"RC-ATLANTIS") ||
 					StrStrI(m_pszUsername, L"Fireball") ||
-					StrStrI(m_pszUsername, L"SunPower")
-					)
-				) ||
+					StrStrI(m_pszUsername, L"SunPower") ||
+				//	)
+				//) ||
 //zz_fly Start
 				_tcsstr(m_pszUsername,_T("a1[VeryCD]xthame")) || //XL
 //zz_fly End
+				StrStrI(m_pszUsername, _T("lionetwork"))||
+				StrStrI(m_pszUsername, _T("[lionheart"))||
+				StrStrI(m_pszUsername, _T("li@network"))||
+				StrStrI(m_pszUsername, _T("l!onetwork"))||
+				StrStrI(m_pszUsername, _T("li()net"))||
+				StrStrI(m_pszUsername, _T("l!0net"))||
+				StrStrI(m_pszUsername, _T("L!()Network")) ||
+				StrStrI(m_pszUsername, _T("Li()Network")) ||
+				StrStrI(m_pszUsername, _T("L!0Network")) ||
+				StrStrI(m_pszUsername, _T("Li@Network")) ||	 
 //from Riso64bit
 				_tcsstr(m_pszUsername, _T("FincanMod")) || //fincan
 				_tcsstr(m_pszUsername, _T("Finc@nMod")) ||
-				StrStrI(m_pszUsername, _T("www.titanmule.to")) ||
+				StrStrI(m_pszUsername, _T("titanmule")) ||
+				StrStrI(m_pszUsername, _T(".c0.il")) || //0, zero
+				StrStrI(m_pszUsername, _T("Goop.Co.il")) || //israel community
+				StrStrI(m_pszUsername, _T("Div.Co.il")) ||
+				StrStrI(m_pszUsername, _T("emule.co.il")) ||
+				StrStrI(m_pszUsername, _T("pwr.co.il")) ||
+				StrStrI(m_pszUsername, _T("nFo.Co.il")) ||
+				StrStrI(m_pszUsername, _T("lhnet.co.il")) ||
+				StrStrI(m_pszUsername, _T("ynet.co.il")) ||
+				StrStrI(m_pszUsername, _T("wnet.co.il")) ||
+				StrStrI(m_pszUsername, _T("Paf.co.il")) ||
+				StrStrI(m_pszUsername, _T("finder.co.il")) ||
+				StrStrI(m_pszUsername, _T("joop.Co.il")) ||
 				StrStrI(m_pszUsername, _T("Www.NFOil.com")) ||
 				StrStrI(m_pszUsername, _T("TLN eMule")) ||
 				StrStrI(m_pszUsername, _T("LHeMule")) ||
-				_tcsstr(m_pszUsername, _T("L!()Network")) ||
-				_tcsstr(m_pszUsername, _T("Li()Network")) ||
 				StrStrI(m_pszUsername, _T("VMULE 2007")) ||
 				StrStrI(m_pszUsername, _T("TLNGuest")) ||
 				StrStrI(m_pszUsername, _T("Div eMule 2007")) ||
@@ -935,21 +1095,157 @@ uint8 CUpDownClient::TestLeecher(){
 				StrStrI(m_pszUsername, _T("emuIe-co.net")) ||
 				StrStrI(m_pszUsername, _T("AE CoM UseR")) ||
 				StrStrI(m_pszUsername, _T("BTFaw.Com")) ||
-				StrStrI(m_pszUsername, _T("warezfaw.net")) ||
+				StrStrI(m_pszUsername, _T("warezfaw")) ||
 				StrStrI(m_pszUsername, _T("lh.2y.net")) ||
+				//StrStrI(m_pszUsername, _T("viper-istraeL.Org")) ||
 				StrStrI(m_pszUsername, _T("[Pwr Mule]Usuario")) ||
 				StrStrI(m_pszUsername, _T("Www.D-iL.Net")) ||
-				_tcsstr(m_pszUsername, _T("http://emule.net")) ||
 				StrStrI(m_pszUsername, _T("www.aideadsl.com")) ||
 				StrStrI(m_pszUsername, _T("tangot.com")) ||
 				StrStrI(m_pszUsername, _T("r3wlx.com")) ||
 				StrStrI(m_pszUsername, _T("http://yo.com")) ||
 				StrStrI(m_pszUsername, _T("Angel eMule")) ||
 				StrStrI(m_pszUsername, _T("AngelMule")) ||
-				_tcsstr(m_pszUsername, _T("Ultimativ"))||
-				StrStrI(m_pszUsername, _T("www.eChanblardNext.org")) ||		
-				StrStrI(m_pszUsername, _T("www.extremule.com")) || //phishing site
+				//StrStrI(m_pszUsername, _T("www.eChanblardNext.org")) ||	
+				//StrStrI(m_pszUsername, _T("www.e-sipa.de")) ||
+				StrStrI(m_pszUsername, _T("[TEC]")) || //fincan
+				StrStrI(m_pszUsername, _T("e-Sipa")) ||	
+				StrStrI(m_pszUsername, _T("emuleech")) ||
+				StrStrI(m_pszUsername, _T("mkp2p")) ||
+				_tcsstr(m_pszUsername, _T("[ CHN]")) || //a space after bracket
+				StrStrI(m_pszUsername, _T("PlayMule")) ||
+				StrStrI(m_pszUsername, _T("eDonkey2008")) ||
+				StrStrI(m_pszUsername, _T("Torenkey")) ||
+				//StrStrI(m_pszUsername, _T("sdjtuning")) ||
+				StrStrI(m_pszUsername, _T("RAPCOM")) ||
+				_tcsstr(m_pszUsername, _T("ZZULtimativ-R")) ||
+				_tcsstr(m_pszUsername, _T("ZZ-R ")) ||
+				StrStrI(m_pszUsername, _T("OFF +")) ||
+				StrStrI(m_pszUsername, _T("OFF+")) ||
+				StrStrI(m_pszUsername, _T("Ultim@tiv")) ||
+				StrStrI(m_pszUsername, _T("[CHN][VeryCD][Your")) ||
+				_tcsstr(m_pszUsername, _T("eMuleUniATeam")) ||
+				StrStrI(m_pszUsername, _T("mods.sub.cc")) ||
+				_tcsstr(m_pszUsername, _T("ExtrEMule")) ||
+				_tcsstr(m_pszUsername, _T("Titandonkey")) ||
+				_tcsstr(m_pszUsername, _T("xtmhtl [ePlus]"))|| //same name, same userhash
+				_tcsstr(m_pszUsername, _T("eMule Accelerator")) ||
+				//2010/4/4
+				StrStrI(m_pszUsername, _T("eMule Pro Ultra")) ||
+				StrStrI(m_pszUsername, _T("[CHN][VeryCD][m_pszUsername]")) || //[CHN][VeryCD][username] eMule v0.48a [xl build58]
+				//2010/5/29
+				StrStrI(m_pszUsername, _T("Fireb@ll")) ||
+				//2010/6/6
+				StrStrI(m_pszUsername, _T("monster-mod.com")) ||
+				StrStrI(m_pszUsername, _T("Reptil-Crew-3")) || //Reptil mod
+				StrStrI(m_pszUsername, _T("!Lou-Nissart!")) || //no src only BIN (kick from upload)
+
+				//all sites below are phishing sites
+				StrStrI(m_pszUsername, _T("www.extremule.com")) ||
 				StrStrI(m_pszUsername, _T("www.emuleproject.com")) ||
+				StrStrI(m_pszUsername, _T("bigbang-emule.de.vu")) ||
+				StrStrI(m_pszUsername, _T("emulenet.de.vu")) ||
+				_tcsstr(m_pszUsername, _T("http://emule.net")) ||
+				StrStrI(m_pszUsername, _T("http://emulo.net")) ||
+				StrStrI(m_pszUsername, _T("http://projekt.org")) ||
+				StrStrI(m_pszUsername, _T("CryptMule.de.vu")) ||
+				StrStrI(m_pszUsername, _T("titanload.to")) ||
+				StrStrI(m_pszUsername, _T("http://emule-projekt.net")) ||
+				StrStrI(m_pszUsername, _T("emuleitalianogratis.com")) ||
+				StrStrI(m_pszUsername, _T("http://www.official-emule.com")) ||
+				StrStrI(m_pszUsername, _T("emulepro.6x.to")) ||
+				//StrStrI(m_pszUsername, _T("power-portal")) || //MyTh NOT to ban!
+				StrStrI(m_pszUsername, _T("e-mule.nu")) ||
+				StrStrI(m_pszUsername, _T("emulesoftware.com")) ||
+				StrStrI(m_pszUsername, _T("emuleitaliano.com")) ||
+				StrStrI(m_pszUsername, _T("scaricareemule.com")) ||
+				StrStrI(m_pszUsername, _T("emule--it.com")) ||
+				StrStrI(m_pszUsername, _T("italian.eazel.com")) ||
+				StrStrI(m_pszUsername, _T("speed-downloading.com")) ||
+				StrStrI(m_pszUsername, _T("nuovaversione.com")) ||
+				StrStrI(m_pszUsername, _T("emuleplus.com")) ||
+				StrStrI(m_pszUsername, _T("emuleultra.com")) ||
+				StrStrI(m_pszUsername, _T("emule.org")) ||
+				StrStrI(m_pszUsername, _T("[emule.de v")) || //default name: [emule.de v ##]
+				StrStrI(m_pszUsername, _T("emule.fr")) ||
+				StrStrI(m_pszUsername, _T("emule.ru")) ||
+				StrStrI(m_pszUsername, _T("emule.com")) ||
+				StrStrI(m_pszUsername, _T("emule-mods.biz")) || 
+				StrStrI(m_pszUsername, _T("emule-projet")) ||
+				StrStrI(m_pszUsername, _T("maomao.eu")) ||
+				StrStrI(m_pszUsername, _T("donkey.com")) ||
+				StrStrI(m_pszUsername, _T("super4.com")) ||
+				StrStrI(m_pszUsername, _T("emule.cc")) ||
+				StrStrI(m_pszUsername, _T("emule.net")) ||
+				StrStrI(m_pszUsername, _T("emulegratis.net")) ||
+				//new lines 2009/11/8
+				StrStrI(m_pszUsername, _T("emulespeedup.de.vu")) ||
+				StrStrI(m_pszUsername, _T("superemule.6x.to")) ||
+				StrStrI(m_pszUsername, _T("emulea.com")) ||
+				StrStrI(m_pszUsername, _T("emule24horas.com")) ||
+				StrStrI(m_pszUsername, _T("emule.es")) ||
+				StrStrI(m_pszUsername, _T("emulext.net")) ||
+				StrStrI(m_pszUsername, _T("netemule.com")) ||
+				StrStrI(m_pszUsername, _T("gratis-emule.com")) ||
+				StrStrI(m_pszUsername, _T("emuleproject.com")) ||
+				StrStrI(m_pszUsername, _T("emuleplusplus.de")) ||
+				StrStrI(m_pszUsername, _T("wikingergilde")) ||
+				StrStrI(m_pszUsername, _T("emuleclassic.com")) ||
+				StrStrI(m_pszUsername, _T("mega-emule.com")) ||
+				StrStrI(m_pszUsername, _T("speedyp2p.com")) ||
+				StrStrI(m_pszUsername, _T("anubisp2p.com")) ||
+				StrStrI(m_pszUsername, _T("cruxp2p.com")) ||
+				StrStrI(m_pszUsername, _T("downloademulegratis.com")) ||
+				StrStrI(m_pszUsername, _T("emulegold.com")) ||
+				StrStrI(m_pszUsername, _T("pro-sharing.com")) ||
+				StrStrI(m_pszUsername, _T("turbomule ")) ||
+				StrStrI(m_pszUsername, _T("devhancer.com")) ||
+				StrStrI(m_pszUsername, _T("emulefileswap.com")) ||
+				StrStrI(m_pszUsername, _T("p2psharing.biz")) ||
+				StrStrI(m_pszUsername, _T("fastsearchbooster.biz")) ||
+				StrStrI(m_pszUsername, _T("emule-features.6x.to")) ||
+				StrStrI(m_pszUsername, _T("emule-pro.blogspot.com")) ||
+				StrStrI(m_pszUsername, _T("emule-ng.com")) ||
+				StrStrI(m_pszUsername, _T("version049c-official.com")) ||
+				StrStrI(m_pszUsername, _T("emule.to")) ||
+				StrStrI(m_pszUsername, _T("adunanza.italiazip.com")) ||
+				StrStrI(m_pszUsername, _T("emulesoftware.com")) ||
+				StrStrI(m_pszUsername, _T("phpnuke.org")) ||
+				//new lines 2009/11/29
+				StrStrI(m_pszUsername, _T("gratis.emule49-info.com")) ||
+				StrStrI(m_pszUsername, _T("emuleds.com")) ||
+				StrStrI(m_pszUsername, _T("scarica-emule-gratis.com")) ||
+				StrStrI(m_pszUsername, _T("mp3edonkeysearch.com")) ||
+				StrStrI(m_pszUsername, _T("mp3rocket.com")) ||
+				StrStrI(m_pszUsername, _T("emule-rocket.com")) ||
+				StrStrI(m_pszUsername, _T("MonkeyP2P")) ||
+				//new lines 2010/01/17
+				StrStrI(m_pszUsername, _T("http://alpha-gaming.net")) ||
+				//new lines 2010/4/4
+				StrStrI(m_pszUsername, _T("piolet.com")) ||
+				StrStrI(m_pszUsername, _T("hermesp2p.com")) ||
+				StrStrI(m_pszUsername, _T("shareghost.com")) ||
+				StrStrI(m_pszUsername, _T("zultrax.com")) ||
+				StrStrI(m_pszUsername, _T("getfasterp2p.com")) ||
+				StrStrI(m_pszUsername, _T("pro-sharing.com")) ||
+				StrStrI(m_pszUsername, _T("truxshare.com")) ||
+				StrStrI(m_pszUsername, _T("meteorshare.com")) ||
+				StrStrI(m_pszUsername, _T("manolito.com")) ||
+				StrStrI(m_pszUsername, _T("blubster.com")) ||
+				StrStrI(m_pszUsername, _T("fastsearchbooster.biz")) ||
+				StrStrI(m_pszUsername, _T("e-mule-")) || // detect any mirror simil to "e-mule-it.com"
+				StrStrI(m_pszUsername, _T("download-gratis-emule.com")) ||
+				StrStrI(m_pszUsername, _T("emule-italy.it")) ||
+				StrStrI(m_pszUsername, _T("e-mule.be")) ||
+				StrStrI(m_pszUsername, _T("official-emule")) ||
+				StrStrI(m_pszUsername, _T("emule-gratis.it")) ||
+				StrStrI(m_pszUsername, _T("devhancer")) ||
+				//2010/5/29
+				StrStrI(m_pszUsername, _T("dbgo.com")) ||
+				StrStrI(m_pszUsername, _T("net2search.com")) ||
+				//2010/6/6
+				StrStrI(m_pszUsername, _T("p2phood.com")) ||
+				StrStrI(m_pszUsername, _T("intelpeers.com")) ||
 //End
 				// <== added - Stulle
 				StrStrI(m_pszUsername,_T("emule")) && StrStrI(m_pszUsername,_T("booster"))
@@ -1006,10 +1302,26 @@ uint8 CUpDownClient::TestLeecher(){
 		static const TCHAR refuserhash1[] = _T("455361F9D95C3CD7E6BF2192D1CB3D02");
 		static const TCHAR refuserhash2[] = _T("DA1CEEE05B0E5319B3B48CAED24C6F4A");
 		static const TCHAR refuserhash3[] = _T("C8B5F41441C615FBABAD9A7E55294D01");
+		static const TCHAR refuserhash6[] = _T("A2221641460E961C8B7FF21A53FB6F6C"); //**Riso64Bit**
+		static const TCHAR refuserhash7[] = _T("888F4742450EF75F9DD8B7E53FA06FF0"); //**Riso64Bit**
+		static const TCHAR refuserhash8[] = _T("0B76CC42CB0E81B0DC6120D2BCB36FF9"); //**Riso64Bit**
+		static const TCHAR refuserhash9[] = _T("EAA383FD9E0E68538C7AC8AD15526F7A"); //**Riso64Bit**
+		static const TCHAR refuserhash10[]= _T("65C3B2E8940E582630A7F58AF9F26F9E"); //from TaiWan
+		static const TCHAR refuserhash11[]= _T("9BA09B83DC0EE78BE20280C387936F00"); //from SS1900
+		static const TCHAR refuserhash12[]= _T("C92859E4860EA0F15F7837750C886FB6"); //from SS1900
+		static const TCHAR refuserhash13[]= _T("CB42F563EE0EA7907395420CAC146FF5"); //From "qobfxb" multi user [DargonD] 
 		if(_tcsicmp(userhash,refuserhash0)==0 ||
 		_tcsicmp(userhash,refuserhash1)==0 ||
 		_tcsicmp(userhash,refuserhash2)==0 ||
-		_tcsicmp(userhash,refuserhash3)==0)
+		_tcsicmp(userhash,refuserhash3)==0 ||
+		_tcsicmp(userhash,refuserhash6)==0 ||
+		_tcsicmp(userhash,refuserhash7)==0 ||
+		_tcsicmp(userhash,refuserhash8)==0 ||
+		_tcsicmp(userhash,refuserhash9)==0 ||
+		_tcsicmp(userhash,refuserhash10)==0 ||
+		_tcsicmp(userhash,refuserhash11)==0 ||
+		_tcsicmp(userhash,refuserhash12)==0 ||
+		_tcsicmp(userhash,refuserhash13)==0)
 			// ==> Reduce Score for leecher - Stulle
 			/*
 			return _T("Community userhash");
@@ -4618,7 +4930,10 @@ void CUpDownClient::ProcessChatMessage(CSafeMemFile* data, uint32 nLength)
 			StrStr(strMessageCheck, _T("[te@m projekt")) || //5 /2007
 			StrStr(strMessageCheck, _T("eMule PRO Ultra2")) || //8/2007
 			StrStr(strMessageCheck, _T("HyperMule")) || //8/2007
-			StrStr(strMessageCheck, _T("FXeMule")) 
+			StrStr(strMessageCheck, _T("FXeMule")) ||
+			_tcsstr(strMessageCheck, _T("angelmule.com")) || //**Riso64Bit**
+			_tcsstr(strMessageCheck, _T("RocketMule")) || //**Riso64Bit**
+			CString(strMessageCheck).Trim().IsEmpty()
 			)
 		{
 			BanLeecher(NULL,BAN_SPAMMER);
@@ -5168,7 +5483,7 @@ switch(tag->GetNameID())
 	case CT_UNKNOWNxEC:		strSnafuTag=apszSnafuTag[18];break; //Xman x4 Speedmule
 	case CT_UNKNOWNx4D:		strSnafuTag=apszSnafuTag[19];break;// pimp my mule misuse an official tag in hello
 	case CT_UNKNOWNxD2:		strSnafuTag=apszSnafuTag[20];break;//squallATF
-	case CT_UNKNOWNx85:		strSnafuTag=apszSnafuTag[21];break;//zz_fly
+	//case CT_UNKNOWNx85:		strSnafuTag=apszSnafuTag[21];break;//zz_fly
 	}
 	if (tag->IsStr() && tag->GetStr().GetLength() >= 32)
 		strSnafuTag=apszSnafuTag[17];
@@ -5643,6 +5958,52 @@ bool CUpDownClient::IsLeecherName(CString Username)
 			if(StrStr(tempstr + 7, _T("[ePlus]")))
 				return true;
 	}
+
+	int find=Username.ReverseFind(_T('['));
+	if(find>=0 )
+	{
+		CString addon=Username.Mid(find+1);
+		//zz_fly :: start
+		if(find == Username.GetLength()-6){
+			bool bFoundRandomPadding = false;
+			_TINT ch;
+			for(int i=1;i<5;i++){
+				ch = Username.GetAt(find+i);
+				if( _istpunct(ch) || /*_istspace(ch) ||*/ _istcntrl(ch)){
+					bFoundRandomPadding = true;
+					break;
+				}
+			}
+			if(bFoundRandomPadding && !m_strModVersion.IsEmpty() && (Username.Find(_T("http://emule-project.net ["))==0) && (find==25))
+				return true; //username like "http://emule-project.net [random]"
+			if(bFoundRandomPadding && m_strModVersion.IsEmpty() && (find==Username.Find(_T('['))))
+				return true; //username has a random padding [random], it should be a mod function, but there is no modstring
+			if(bFoundRandomPadding && (Username.Find(_T("Silver Surfer User"))==0) && (m_strModVersion.Find(_T("Silver"))==-1))
+				return true; //**Riso64Bit** :: fake silver surfer
+		}
+		//zz_fly :: end
+	}
+
+#define NUMBERSOFSTRING 9
+	static const CString testModString[] = {_T("Xtreme"), _T("ScarAngel"), _T("Mephisto"), _T("MorphXT"), _T("EastShare"), _T("StulleMule"), /*_T("Magic Angel"),*/ _T("DreaMule"), _T("X-Mod"), _T("RaJiL")};
+	static const float testMinVer[] = {4.4f, 2.5f, 1.5f, 10.0f, 13.0f, 6.0f, /*3.0f,*/ 3.0f, 0.0f, 2.2f};
+	for(int i=0; i<NUMBERSOFSTRING; i++){
+		bool tag1 = (Username.Find(_T('«') + testModString[i]) != -1);
+		if(m_strModVersion.Find(testModString[i]) != -1) {
+			float version = (float)_tstof(m_strModVersion.Right(4));
+			if(!tag1 && ((testMinVer[i] == 0.0f) || (version == 9.7f) || (version >= testMinVer[i])))
+				return true;
+		}
+		else if(tag1)
+			return true;
+	}
+
+	//doubled  «...» in the username, like "username «Xtreme #.#» «abcd»"
+	int posr1 = Username.Find(_T('»'));
+	int posr2 = Username.ReverseFind(_T('»'));
+	if((posr1 > 5) && (posr2 - posr1 > 5) && ((Username.GetAt(posr1 - 5) == _T('«')) || (Username.GetAt(posr2 - 5) == _T('«'))))
+		return true;
+	//zz_fly :: end
 
 	return false;
 }

@@ -7,6 +7,9 @@ eMule v0.50a StulleMule v7.0:
 based on eMule 0.50a MorphXT 12.6 compiled with vs2010
 
 Added: Tooltip for Show overhead on title [Stulle]
+Added: Random Modstring detection [WiZaRd]
+Added: Mod faker detection based on "«...»" in nick [zz_fly]
+Added: Leecher nick detection (randomized nick) [zz_fly]
 
 Changed: Updated Enhanced Client Recognition to v2 (minor change) [Stulle/WiZaRd]
 Changed: Disable ASFU if too many folders are shared [Stulle]
@@ -15,6 +18,8 @@ Changed: No Pay back First for non-SUI clients if client ident failed [Stulle]
 Changed: Reworked coloring of windows (fixes some tab controls on Vista/7) [Stulle]
 Changed: Allowed localization of Dropmenu [Stulle]
 Changed: Fair Play is now integerbased [Stulle]
+
+Updated: Anti-Leecher-Lists (DLP v43) [zz_fly]
 
 Fixed: Global Mod statistics were not displayed [Stulle]
 Fixed: Service was not stopped when it should be stopped on starting emule.exe [Stulle]
