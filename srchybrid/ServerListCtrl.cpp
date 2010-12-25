@@ -1125,6 +1125,8 @@ void CServerListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 //		crOldTextColor= dc.SetTextColor(m_crWindowText);
 	 // leuke_he  ipfilter servers . 
 #else
+	// moved InitItemMemDC code here to be able to color connected server
+	bCtrlFocused = ((GetFocus() == this) || (GetStyle() & LVS_SHOWSELALWAYS));
 	int iClientStyle = style_se_default;
 	if(thePrefs.GetStyleOnOff(server_styles, style_se_connected)!=0
 		&& cur_srv != NULL
@@ -1132,8 +1134,7 @@ void CServerListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		&& _tcsicmp(cur_srv->GetAddress(), server->GetAddress()) == 0)
 		iClientStyle = style_se_connected;
 	else if(thePrefs.GetStyleOnOff(server_styles, style_se_static)!=0
-		&& cur_srv != NULL
-		&& cur_srv->IsStaticMember())
+		&& server->IsStaticMember())
 		iClientStyle = style_se_static;
 	else if(thePrefs.GetStyleOnOff(server_styles, style_se_filtered)!=0
 		&& theApp.ipfilter->IsFiltered(server->GetIP()))
@@ -1243,7 +1244,12 @@ void CServerListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	}
 	DrawFocusRect(dc, lpDrawItemStruct->rcItem, lpDrawItemStruct->itemState & ODS_FOCUS, bCtrlFocused, lpDrawItemStruct->itemState & ODS_SELECTED);
 
-	dc.SetTextColor(crOldTextColor);
+	dc->SetTextColor(crOldTextColor);
+	// ==> Design Settings [eWombat/Stulle] - Stulle
+#ifdef DESIGN_SETTINGS
+	dc->SelectObject(pOldFont);
+#endif
+	// <== Design Settings [eWombat/Stulle] - Stulle
 	if (!theApp.IsRunningAsService(SVC_SVR_OPT)) // MORPH leuk_he:run as ntservice v1..
 		m_updatethread->AddItemUpdated((LPARAM)server); //MORPH - UpdateItemThread
 }
